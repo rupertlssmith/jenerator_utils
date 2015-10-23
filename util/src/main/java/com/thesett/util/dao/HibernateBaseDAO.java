@@ -1,0 +1,202 @@
+package com.thesett.util.dao;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.Set;
+
+import javax.validation.ConstraintViolation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
+
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import com.thesett.util.entity.Entity;
+import com.thesett.util.entity.EntityAlreadyExistsException;
+import com.thesett.util.entity.EntityNotExistsException;
+import com.thesett.util.entity.EntityValidationException;
+import com.thesett.util.generics.Generics;
+
+/**
+ * HibernateBaseDAO is an implementation of the {@link BaseDAO} on top of a hibernate session factory.
+ *
+ * <pre><p/><table id="crc"><caption>CRC Card</caption>
+ * <tr><th> Responsibilities </th><th> Collaborations </th>
+ * <tr><td> CRUD and simple finds on an entity. </td></tr>
+ * </table></pre>
+ *
+ * @param <E> The type of entities that this DAO manages.
+ * @param <K> The type of database K that the entity uses.
+ */
+public abstract class HibernateBaseDAO<E extends Entity<K>, K extends Serializable> implements BaseDAO<E, K> {
+    /** The Hibernate session factory. */
+    private final SessionFactory sessionFactory;
+
+    /** The type of the entity that the DAO persists. */
+    private final Class<?> entityClass;
+
+    /** The bean validator to apply prior to all data insertion. */
+    private final Validator validator;
+
+    /**
+     * Creates the Hibernate DAO on top of the specified session factory.
+     *
+     * @param sessionFactory   The Hibernate session factory to use.
+     * @param validatorFactory The bean validator factory to use to validate all data prior to insertion.
+     */
+    public HibernateBaseDAO(SessionFactory sessionFactory, ValidatorFactory validatorFactory) {
+        this.sessionFactory = sessionFactory;
+        this.validator = validatorFactory.getValidator();
+
+        // Note: this only works because this class is abstract, and sub-classes will provide the type parameter
+        // directly.
+        this.entityClass = Generics.getTypeParameter(getClass());
+    }
+
+    /** {@inheritDoc} */
+    public E create(E entity) throws EntityAlreadyExistsException, EntityValidationException {
+        checkNotNull(entity);
+
+        validate(entity);
+
+        // Check that an entity with matching id does not already exist.
+        if (entity.getId() != null && retrieve(entity.getId()) != null) {
+            throw new EntityAlreadyExistsException();
+        }
+
+        currentSession().save(entity);
+
+        return entity;
+    }
+
+    /** {@inheritDoc} */
+    public E retrieve(K id) {
+        checkNotNull(id);
+
+        return (E) currentSession().get(entityClass, id);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * <p/>The id passed to this method must not by <tt>null</tt>. It will be set on the entity as its id, potentially
+     * overwriting a different id that may already be set on the entity, meaning that this method can be used to copy
+     * the value of one entity over another. It is up to the caller to ensure that this behaviour is only used
+     * intentionally, this method does not prevent it or check for it in any way. The entity being updated can be given
+     * to this method without an id on it.
+     *
+     * @throws EntityValidationException Iff the id on the entity is <tt>null</tt>.
+     */
+    public E update(K id, E entity) throws EntityNotExistsException, EntityValidationException {
+        checkNotNull(id);
+        checkNotNull(entity);
+
+        entity.setId(id);
+
+        validate(entity);
+
+        // Check that an entity with matching id already exists, in order to update it.
+        if (retrieve(entity.getId()) == null) {
+            throw new EntityNotExistsException();
+        }
+
+        return (E) currentSession().merge(entity);
+    }
+
+    /** {@inheritDoc} */
+    public void delete(K id) {
+        checkNotNull(id);
+
+        currentSession().delete(retrieve(id));
+    }
+
+    /** {@inheritDoc} */
+    public E detach(E e) {
+        currentSession().flush(); // Sometimes needed because new objects cannot be evicted without flushing first.
+        currentSession().evict(e);
+
+        return e;
+    }
+
+    /**
+     * Retrieves a named query.
+     *
+     * @param  queryName The name of the query to retrieve.
+     *
+     * @return The matching query.
+     */
+    protected Query namedQuery(String queryName) {
+        return currentSession().getNamedQuery(queryName);
+    }
+
+    /**
+     * Applies a query and returns the results of it in a list.
+     *
+     * @param  query The query to apply.
+     *
+     * @return A list of query results.
+     */
+    protected List<E> list(Query query) {
+        return checkNotNull(query).list();
+    }
+
+    /**
+     * Applies a query that is expected to find at most one match.
+     *
+     * @param  query The query to apply.
+     *
+     * @return The single match, or <tt>null</tt> if none is found.
+     */
+    protected E findOne(Query query) {
+        return (E) checkNotNull(query).uniqueResult();
+    }
+
+    /**
+     * Applies a query that may find more than one match, but returns only the first result.
+     *
+     * @param  query The query to apply.
+     *
+     * @return The single match, or <tt>null</tt> if none is found.
+     */
+    protected E findFirst(Query query) {
+        List list = checkNotNull(query).list();
+
+        if (!list.isEmpty()) {
+            return (E) list.get(0);
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Returns the current {@link Session}.
+     *
+     * @return the current session
+     */
+    protected Session currentSession() {
+        return sessionFactory.getCurrentSession();
+    }
+
+    protected <O> O checkNotNull(O object) {
+        if (object == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return object;
+    }
+
+    /**
+     * Applies bean validation to the entity.
+     *
+     * @param  entity The entity to validate.
+     *
+     * @throws EntityValidationException If the entity fails validation checks.
+     */
+    private void validate(E entity) throws EntityValidationException {
+        Set<ConstraintViolation<E>> violations = validator.validate(entity);
+
+        if (!violations.isEmpty()) {
+            throw new EntityValidationException(violations.toString());
+        }
+    }
+}

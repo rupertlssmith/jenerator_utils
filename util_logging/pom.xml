@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.thesett.jenerator.utils</groupId>
+        <artifactId>jenerator_utils_parent</artifactId>
+        <version>1.0.5-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>jenerator_util_logging</artifactId>
+    <name>${project.artifactId}</name>
+    <description>Standardized Logging configuration.</description>
+
+    <!-- This is packages as a jar for flexibility. Normally the jar will be unpacked and the
+         logging configuration added as a filke to the binary package, since having it as a file
+         make it easier to modify by hand, should this be needed.
+         The jar can also included as a jar with the logging config inside it. -->
+    <packaging>jar</packaging>
+
+    <properties>
+        <topdir>${basedir}/..</topdir>
+    </properties>
+
+</project>
