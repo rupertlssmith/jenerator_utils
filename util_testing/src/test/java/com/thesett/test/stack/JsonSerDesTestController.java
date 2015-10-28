@@ -5,10 +5,7 @@ import java.lang.reflect.Proxy;
 
 import com.thesett.util.entity.CRUD;
 import com.thesett.util.entity.Entity;
-import com.thesett.util.entity.EntityAlreadyExistsException;
-import com.thesett.util.entity.EntityDeletionException;
-import com.thesett.util.entity.EntityNotExistsException;
-import com.thesett.util.entity.EntityValidationException;
+import com.thesett.util.entity.EntityException;
 import com.thesett.util.json.JsonClientProxy;
 
 /**
@@ -38,7 +35,7 @@ public class JsonSerDesTestController<E extends Entity<K>, K extends Serializabl
     }
 
     /** {@inheritDoc} */
-    public E create(E entity) throws EntityAlreadyExistsException, EntityValidationException {
+    public E create(E entity) throws EntityException {
         return proxiedDelegate.create(entity);
     }
 
@@ -48,12 +45,12 @@ public class JsonSerDesTestController<E extends Entity<K>, K extends Serializabl
     }
 
     /** {@inheritDoc} */
-    public E update(K id, E entity) throws EntityNotExistsException, EntityValidationException {
+    public E update(K id, E entity) throws EntityException {
         return proxiedDelegate.update(id, entity);
     }
 
     /** {@inheritDoc} */
-    public void delete(K id) throws EntityDeletionException {
+    public void delete(K id) throws EntityException {
         proxiedDelegate.delete(id);
     }
 }

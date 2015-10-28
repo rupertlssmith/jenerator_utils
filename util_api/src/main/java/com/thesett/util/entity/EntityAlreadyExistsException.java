@@ -9,5 +9,5 @@ package com.thesett.util.entity;
  * <tr><td> Indicate that an entity cannot be created as it already exists. </td></tr>
  * </table></pre>
  */
-public class EntityAlreadyExistsException extends Exception {
+public class EntityAlreadyExistsException extends EntityException {
 }

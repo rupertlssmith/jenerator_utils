@@ -62,4 +62,18 @@ public class CollectionUtil {
 
         return exemplars;
     }
+
+    /**
+     * Provides the first item from a list, unless the list is <tt>null</tt> or empty, in which case <tt>null</tt> is
+     * returned. This is useful because the behaviour of List.get(0) is to throw an exception is the list is empty.
+     *
+     * @param  list The list to take the first item from.
+     * @param  <T>  The type of the items in the list.
+     *
+     * @return The first item from a list, unless the list is <tt>null</tt> or empty, in which case <tt>null</tt> is
+     *         returned.
+     */
+    public static <T> T first(List<T> list) {
+        return list.isEmpty() || list == null ? null : list.get(0);
+    }
 }

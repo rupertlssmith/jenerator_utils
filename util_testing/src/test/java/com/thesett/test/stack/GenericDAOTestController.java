@@ -15,6 +15,7 @@ import com.thesett.util.entity.CRUD;
 import com.thesett.util.entity.Entity;
 import com.thesett.util.entity.EntityAlreadyExistsException;
 import com.thesett.util.entity.EntityDeletionException;
+import com.thesett.util.entity.EntityException;
 import com.thesett.util.entity.EntityNotExistsException;
 import com.thesett.util.entity.EntityValidationException;
 
@@ -59,7 +60,7 @@ public class GenericDAOTestController<E extends Entity<K>, K extends Serializabl
     }
 
     /** {@inheritDoc} */
-    public E create(E entity) throws EntityAlreadyExistsException, EntityValidationException {
+    public E create(E entity) throws EntityException {
         if (entity == null) {
             throw new IllegalArgumentException("'entity' cannot be null.");
         }
@@ -99,7 +100,7 @@ public class GenericDAOTestController<E extends Entity<K>, K extends Serializabl
     }
 
     /** {@inheritDoc} */
-    public E update(K id, E entity) throws EntityNotExistsException, EntityValidationException {
+    public E update(K id, E entity) throws EntityException {
         if (entity == null) {
             throw new IllegalArgumentException("'entity' cannot be null.");
         }
@@ -120,7 +121,7 @@ public class GenericDAOTestController<E extends Entity<K>, K extends Serializabl
     }
 
     /** {@inheritDoc} */
-    public void delete(K id) throws EntityDeletionException {
+    public void delete(K id) throws EntityException {
         if (id == null) {
             throw new IllegalArgumentException("'id' cannot be null.");
         }

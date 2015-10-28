@@ -20,8 +20,8 @@ public interface Create<E> {
      *
      * @return A new instance of the entity (attached).
      *
-     * @throws EntityAlreadyExistsException If the entity cannot be created because it already exists.
-     * @throws EntityValidationException    If the entity cannot be created because it is invalid.
+     * @throws EntityException If the entity cannot be created because it already exists (EntityAlreadyExistsException).
+     *                         If the entity cannot be created because it is invalid (EntityValidationException).
      */
-    E create(E entity) throws EntityAlreadyExistsException, EntityValidationException;
+    E create(E entity) throws EntityException;
 }

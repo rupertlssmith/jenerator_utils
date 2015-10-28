@@ -6,7 +6,6 @@ import java.util.List;
 import javax.sql.DataSource;
 import javax.validation.ValidatorFactory;
 
-import com.thesett.catalogue.model.Catalogue;
 import org.hibernate.SessionFactory;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -23,9 +22,9 @@ import com.thesett.test.stack.TestIdMaintainerTestController;
 import com.thesett.util.dao.BaseDAO;
 import com.thesett.util.entity.CRUD;
 import com.thesett.util.entity.Entity;
-import com.thesett.util.entity.EntityAlreadyExistsException;
-import com.thesett.util.entity.EntityValidationException;
+import com.thesett.util.entity.EntityException;
 
+import com.thesett.catalogue.model.Catalogue;
 import com.thesett.common.util.ReflectionUtils;
 
 public abstract class DatabaseCRUDTestBase<E extends Entity<K>, K extends Serializable> extends CRUDTestBase<E, K> {
@@ -182,8 +181,7 @@ public abstract class DatabaseCRUDTestBase<E extends Entity<K>, K extends Serial
      *
      * @param findAllMethodName The name of the find all method to invoke.
      */
-    public void testFindAllNotEmpty(String findAllMethodName) throws EntityValidationException,
-        EntityAlreadyExistsException {
+    public void testFindAllNotEmpty(String findAllMethodName) throws EntityException {
         BaseDAO<E, K> txEntityDAO = getTransactionalDAO();
 
         Entity created = txEntityDAO.create(testData.getInitialValue());

@@ -4,8 +4,7 @@ import java.io.Serializable;
 
 import com.thesett.util.entity.CRUD;
 import com.thesett.util.entity.Entity;
-import com.thesett.util.entity.EntityAlreadyExistsException;
-import com.thesett.util.entity.EntityValidationException;
+import com.thesett.util.entity.EntityException;
 
 /**
  * TestIdMaintainerTestController keeps the test entities supplied by a {@link CRUDTestDataSupplier} consistent, when
@@ -39,7 +38,7 @@ public class TestIdMaintainerTestController<E extends Entity<K>, K extends Seria
     }
 
     /** {@inheritDoc} */
-    public E create(E entity) throws EntityAlreadyExistsException, EntityValidationException {
+    public E create(E entity) throws EntityException {
         // Perform delegation to create the entity.
         E result = super.create(entity);
 

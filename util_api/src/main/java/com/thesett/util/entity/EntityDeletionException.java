@@ -8,7 +8,7 @@ package com.thesett.util.entity;
  * <tr><td> Indicate that an entity cannot be deleted. </td></tr>
  * </table></pre>
  */
-public class EntityDeletionException extends Exception {
+public class EntityDeletionException extends EntityException {
     /**
      * Creates a validation exception.
      *

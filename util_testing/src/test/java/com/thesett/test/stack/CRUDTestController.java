@@ -7,6 +7,7 @@ import com.thesett.util.entity.CRUD;
 import com.thesett.util.entity.Entity;
 import com.thesett.util.entity.EntityAlreadyExistsException;
 import com.thesett.util.entity.EntityDeletionException;
+import com.thesett.util.entity.EntityException;
 import com.thesett.util.entity.EntityNotExistsException;
 import com.thesett.util.entity.EntityValidationException;
 
@@ -83,7 +84,7 @@ public abstract class CRUDTestController<E extends Entity<K>, K extends Serializ
      *
      * <p/>Delegates the operation if a {@link #delegate} is set, otherwise returns <tt>null</tt>.
      */
-    public E create(E entity) throws EntityAlreadyExistsException, EntityValidationException {
+    public E create(E entity) throws EntityException {
         if (delegate != null) {
             return delegate.create(entity);
         }
@@ -109,7 +110,7 @@ public abstract class CRUDTestController<E extends Entity<K>, K extends Serializ
      *
      * <p/>Delegates the operation if a {@link #delegate} is set, otherwise returns <tt>null</tt>.
      */
-    public E update(K id, E entity) throws EntityNotExistsException, EntityValidationException {
+    public E update(K id, E entity) throws EntityException {
         if (delegate != null) {
             return delegate.update(id, entity);
         }
@@ -122,7 +123,7 @@ public abstract class CRUDTestController<E extends Entity<K>, K extends Serializ
      *
      * <p/>Delegates the operation if a {@link #delegate} is set, otherwise does nothing.
      */
-    public void delete(K id) throws EntityDeletionException {
+    public void delete(K id) throws EntityException {
         if (delegate != null) {
             delegate.delete(id);
         }

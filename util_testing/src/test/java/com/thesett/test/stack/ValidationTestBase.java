@@ -15,7 +15,7 @@ import com.thesett.test.rules.BeforeClassResetRule;
 import com.thesett.test.rules.FireOnceRule;
 import com.thesett.util.commands.refdata.RefDataUtils;
 import com.thesett.util.entity.Entity;
-import com.thesett.util.entity.EntityAlreadyExistsException;
+import com.thesett.util.entity.EntityException;
 import com.thesett.util.entity.EntityValidationException;
 
 @RunWith(Parameterized.class)
@@ -92,11 +92,12 @@ public abstract class ValidationTestBase<E extends Entity<K>, K extends Serializ
             }
 
             testController.apply(); // Runs the test case and validates the results.
-        } catch (EntityAlreadyExistsException e) {
-            throw new IllegalStateException(e);
         } catch (EntityValidationException e) {
             failedValidation = true;
             Assert.assertFalse("Failed validation but was expected to pass: " + e.getMessage(), expectedValid);
+        } catch (EntityException e) {
+            // Entity exceptions other than validation should not happen.
+            throw new IllegalStateException(e);
         }
 
         if (!expectedValid) {

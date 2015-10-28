@@ -5,8 +5,7 @@ import java.io.Serializable;
 import com.thesett.util.entity.CRUD;
 import com.thesett.util.entity.Entity;
 import com.thesett.util.entity.EntityAlreadyExistsException;
-import com.thesett.util.entity.EntityDeletionException;
-import com.thesett.util.entity.EntityNotExistsException;
+import com.thesett.util.entity.EntityException;
 import com.thesett.util.entity.EntityValidationException;
 
 /**
@@ -48,7 +47,7 @@ public class PrerequisitesTestController<E extends Entity<K>, K extends Serializ
      *
      * <p/>Consumes the first operation, then forwards to the delegate.
      */
-    public E create(E entity) throws EntityAlreadyExistsException, EntityValidationException {
+    public E create(E entity) throws EntityException {
         if (firstOp) {
             firstOp = false;
         }
@@ -68,9 +67,7 @@ public class PrerequisitesTestController<E extends Entity<K>, K extends Serializ
                 super.create(testDataSupplier.getInitialValue());
                 firstOp = false;
             }
-        } catch (EntityAlreadyExistsException e) {
-            throw new IllegalStateException("Create of initial test data failed.", e);
-        } catch (EntityValidationException e) {
+        } catch (EntityException e) {
             throw new IllegalStateException("Create of initial test data failed.", e);
         }
 
@@ -84,13 +81,13 @@ public class PrerequisitesTestController<E extends Entity<K>, K extends Serializ
      * <p/>Creates an entity instance, then forwards to the delegate. No id substitution is needed as the test data
      * supplier itself will update the id of the entity to update, if needed.
      */
-    public E update(K id, E entity) throws EntityNotExistsException, EntityValidationException {
+    public E update(K id, E entity) throws EntityException {
         try {
             if (firstOp) {
                 super.create(testDataSupplier.getInitialValue());
                 firstOp = false;
             }
-        } catch (EntityAlreadyExistsException e) {
+        } catch (EntityException e) {
             throw new IllegalStateException("Create of initial test data failed.", e);
         }
 
@@ -103,15 +100,13 @@ public class PrerequisitesTestController<E extends Entity<K>, K extends Serializ
      *
      * <p/>Creates an entity instance, then forwards to the delegate substituting the newly assigned id.
      */
-    public void delete(K id) throws EntityDeletionException {
+    public void delete(K id) throws EntityException {
         try {
             if (firstOp) {
                 super.create(testDataSupplier.getInitialValue());
                 firstOp = false;
             }
-        } catch (EntityAlreadyExistsException e) {
-            throw new IllegalStateException("Create of initial test data failed.", e);
-        } catch (EntityValidationException e) {
+        } catch (EntityException e) {
             throw new IllegalStateException("Create of initial test data failed.", e);
         }
 

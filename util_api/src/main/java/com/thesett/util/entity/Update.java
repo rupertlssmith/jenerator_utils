@@ -26,8 +26,8 @@ public interface Update<E, K extends Serializable> {
      *
      * @return The modified entity (attached).
      *
-     * @throws EntityNotExistsException  If the entity cannot be modified because it does not exist.
-     * @throws EntityValidationException If the entity cannot be saved because it is invalid.
+     * @throws EntityException If the entity cannot be modified because it does not exist (EntityNotExistsException). If
+     *                         the entity cannot be saved because it is invalid (EntityValidationException).
      */
-    E update(K id, E entity) throws EntityNotExistsException, EntityValidationException;
+    E update(K id, E entity) throws EntityException;
 }

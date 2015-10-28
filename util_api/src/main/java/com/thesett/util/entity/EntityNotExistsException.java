@@ -9,5 +9,5 @@ package com.thesett.util.entity;
  * <tr><td> Indicates that an entity does not exist, so cannot be operated upon. </td></tr>
  * </table></pre>
  */
-public class EntityNotExistsException extends Exception {
+public class EntityNotExistsException extends EntityException {
 }

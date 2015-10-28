@@ -18,7 +18,7 @@ public interface Delete<K extends Serializable> {
      *
      * @param  id The id of the entity to remove.
      *
-     * @throws EntityDeletionException If the entity cannot be deleted.
+     * @throws EntityException If the entity cannot be deleted (EntityDeletionException).
      */
-    void delete(K id) throws EntityDeletionException;
+    void delete(K id) throws EntityException;
 }

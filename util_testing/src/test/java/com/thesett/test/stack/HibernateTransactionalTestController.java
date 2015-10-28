@@ -7,10 +7,7 @@ import org.hibernate.SessionFactory;
 import com.thesett.util.dao.HibernateTransactionalProxy;
 import com.thesett.util.entity.CRUD;
 import com.thesett.util.entity.Entity;
-import com.thesett.util.entity.EntityAlreadyExistsException;
-import com.thesett.util.entity.EntityDeletionException;
-import com.thesett.util.entity.EntityNotExistsException;
-import com.thesett.util.entity.EntityValidationException;
+import com.thesett.util.entity.EntityException;
 
 /**
  * HibernateTransactionalTestController applies wraps all test methods in Hibernate transactions on the current
@@ -40,7 +37,7 @@ public class HibernateTransactionalTestController<E extends Entity<K>, K extends
     }
 
     /** {@inheritDoc} */
-    public E create(E entity) throws EntityAlreadyExistsException, EntityValidationException {
+    public E create(E entity) throws EntityException {
         return proxiedDelegate.create(entity);
     }
 
@@ -50,12 +47,12 @@ public class HibernateTransactionalTestController<E extends Entity<K>, K extends
     }
 
     /** {@inheritDoc} */
-    public E update(K id, E entity) throws EntityNotExistsException, EntityValidationException {
+    public E update(K id, E entity) throws EntityException {
         return proxiedDelegate.update(id, entity);
     }
 
     /** {@inheritDoc} */
-    public void delete(K id) throws EntityDeletionException {
+    public void delete(K id) throws EntityException {
         proxiedDelegate.delete(id);
     }
 }

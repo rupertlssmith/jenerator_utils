@@ -10,7 +10,7 @@ package com.thesett.util.entity;
  * <tr><td> Indicate that an entity is not valid for purpose. </td></tr>
  * </table></pre>
  */
-public class EntityValidationException extends Exception {
+public class EntityValidationException extends EntityException {
     /**
      * Creates a validation exception.
      *

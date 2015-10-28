@@ -14,6 +14,7 @@ import com.thesett.test.rules.FireOnceRule;
 import com.thesett.util.entity.Entity;
 import com.thesett.util.entity.EntityAlreadyExistsException;
 import com.thesett.util.entity.EntityDeletionException;
+import com.thesett.util.entity.EntityException;
 import com.thesett.util.entity.EntityNotExistsException;
 import com.thesett.util.entity.EntityValidationException;
 
@@ -154,12 +155,12 @@ public abstract class CRUDTestBase<E extends Entity<K>, K extends Serializable> 
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testCreateNullFails() throws EntityAlreadyExistsException, EntityValidationException {
+    public void testCreateNullFails() throws EntityException {
         testController.create(null);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testRetreiveNullFails() throws EntityAlreadyExistsException, EntityValidationException {
+    public void testRetreiveNullFails() throws EntityException {
         // Create and set id null needed to defeat test prerequisites supplying an id.
         testController.create(testData.getInitialValue());
         testData.setId(null);
@@ -168,8 +169,7 @@ public abstract class CRUDTestBase<E extends Entity<K>, K extends Serializable> 
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testUpdateNullFails() throws EntityNotExistsException, EntityAlreadyExistsException,
-        EntityValidationException {
+    public void testUpdateNullFails() throws EntityException {
         // Create and set id null needed to defeat test prerequisites supplying an id.
         testController.create(testData.getInitialValue());
         testData.setId(null);
@@ -178,7 +178,7 @@ public abstract class CRUDTestBase<E extends Entity<K>, K extends Serializable> 
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testDeleteNullFails() throws EntityAlreadyExistsException, EntityValidationException, EntityDeletionException {
+    public void testDeleteNullFails() throws EntityException {
         // Create and set id null needed to defeat test prerequisites supplying an id.
         testController.create(testData.getInitialValue());
         testData.setId(null);
@@ -187,7 +187,7 @@ public abstract class CRUDTestBase<E extends Entity<K>, K extends Serializable> 
     }
 
     @Test
-    public void testCreateRetrieve() throws EntityAlreadyExistsException, EntityValidationException {
+    public void testCreateRetrieve() throws EntityException {
         E created = testController.create(testData.getInitialValue());
         E retrieved = testController.retrieve(created.getId());
 
@@ -203,7 +203,7 @@ public abstract class CRUDTestBase<E extends Entity<K>, K extends Serializable> 
     }
 
     @Test
-    public void testUpdateRetrieve() throws EntityNotExistsException, EntityValidationException {
+    public void testUpdateRetrieve() throws EntityException {
         E updated = testController.update(testData.getUpdatedValue().getId(), testData.getUpdatedValue());
         E retrieved = testController.retrieve(testData.getInitialValue().getId());
 
@@ -219,7 +219,7 @@ public abstract class CRUDTestBase<E extends Entity<K>, K extends Serializable> 
     }
 
     @Test
-    public void testDeleteRetrieve() throws EntityDeletionException {
+    public void testDeleteRetrieve() throws EntityException {
         testController.delete(testData.getInitialValue().getId());
 
         E retrieved = testController.retrieve(testData.getInitialValue().getId());
@@ -230,7 +230,7 @@ public abstract class CRUDTestBase<E extends Entity<K>, K extends Serializable> 
     }
 
     @Test
-    public void testCreateDelete() throws EntityAlreadyExistsException, EntityValidationException, EntityDeletionException {
+    public void testCreateDelete() throws EntityException {
         E created = testController.create(testData.getInitialValue());
         testController.delete(created.getId());
 
@@ -238,7 +238,7 @@ public abstract class CRUDTestBase<E extends Entity<K>, K extends Serializable> 
     }
 
     @Test
-    public void testRetrieveDelete() throws EntityDeletionException {
+    public void testRetrieveDelete() throws EntityException {
         E retrieved = testController.retrieve(testData.getInitialValue().getId());
         testController.delete(testData.getInitialValue().getId());
 
@@ -246,7 +246,7 @@ public abstract class CRUDTestBase<E extends Entity<K>, K extends Serializable> 
     }
 
     @Test
-    public void testUpdateDelete() throws EntityNotExistsException, EntityValidationException, EntityDeletionException {
+    public void testUpdateDelete() throws EntityException {
         E updated = testController.update(testData.getUpdatedValue().getId(), testData.getUpdatedValue());
         testController.delete(testData.getInitialValue().getId());
 
@@ -254,7 +254,7 @@ public abstract class CRUDTestBase<E extends Entity<K>, K extends Serializable> 
     }
 
     @Test
-    public void testRetrieveCreate() throws EntityValidationException {
+    public void testRetrieveCreate() throws EntityException {
         boolean createFailed = false;
 
         try {
@@ -270,7 +270,7 @@ public abstract class CRUDTestBase<E extends Entity<K>, K extends Serializable> 
     }
 
     @Test
-    public void testUpdateCreate() throws EntityNotExistsException, EntityValidationException {
+    public void testUpdateCreate() throws EntityException {
         boolean createFailed = false;
 
         try {
@@ -286,7 +286,7 @@ public abstract class CRUDTestBase<E extends Entity<K>, K extends Serializable> 
     }
 
     @Test
-    public void testDeleteCreate() throws EntityAlreadyExistsException, EntityValidationException, EntityDeletionException {
+    public void testDeleteCreate() throws EntityException {
         testController.delete(testData.getInitialValue().getId());
 
         E created = testController.create(testData.getInitialValue());
@@ -298,7 +298,7 @@ public abstract class CRUDTestBase<E extends Entity<K>, K extends Serializable> 
     }
 
     @Test
-    public void testCreateUpdate() throws EntityAlreadyExistsException, EntityNotExistsException,
+    public void testCreateUpdate() throws EntityException,
         EntityValidationException {
         E created = testController.create(testData.getInitialValue());
         E updated = testController.update(testData.getUpdatedValue().getId(), testData.getUpdatedValue());
@@ -315,7 +315,7 @@ public abstract class CRUDTestBase<E extends Entity<K>, K extends Serializable> 
     }
 
     @Test
-    public void testDeleteUpdate() throws EntityValidationException, EntityDeletionException {
+    public void testDeleteUpdate() throws EntityException {
         boolean updateFailed = false;
 
         try {
@@ -332,7 +332,7 @@ public abstract class CRUDTestBase<E extends Entity<K>, K extends Serializable> 
     }
 
     @Test
-    public void testRetrieveUpdate() throws EntityNotExistsException, EntityValidationException {
+    public void testRetrieveUpdate() throws EntityException {
         E retrieved = testController.retrieve(testData.getInitialValue().getId());
         E updated = testController.update(testData.getUpdatedValue().getId(), testData.getUpdatedValue());
 
