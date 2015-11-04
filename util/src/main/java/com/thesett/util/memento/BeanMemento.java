@@ -223,6 +223,11 @@ public class BeanMemento implements Memento, Serializable {
                     Character.isUpperCase(methodName.charAt(3)) && Modifier.isPublic(nextMethod.getModifiers()) &&
                     (nextMethod.getParameterTypes().length == 0)) {
                 String propName = Character.toLowerCase(methodName.charAt(3)) + methodName.substring(4);
+
+                // Ignore getClass().
+                if ("class".equals(propName))
+                    continue;
+
                 /*log.fine(methodName + " is a valid getter method for the property " + propName + ".");*/
 
                 try {

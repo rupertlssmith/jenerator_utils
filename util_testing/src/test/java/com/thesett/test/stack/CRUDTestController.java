@@ -1,6 +1,7 @@
 package com.thesett.test.stack;
 
 import java.io.Serializable;
+import java.util.List;
 
 import com.thesett.util.dao.BaseDAO;
 import com.thesett.util.entity.CRUD;
@@ -136,6 +137,16 @@ public abstract class CRUDTestController<E extends Entity<K>, K extends Serializ
      */
     public E detach(E e) {
         return e;
+    }
+
+    /** {@inheritDoc} */
+    public List<E> browse(String entityTypeName) {
+        throw new UnsupportedOperationException();
+    }
+
+    /** {@inheritDoc} */
+    public List<E> findByExample(E example, String entityTypeName) {
+        throw new UnsupportedOperationException();
     }
 
     /**

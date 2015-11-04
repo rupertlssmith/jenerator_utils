@@ -15,7 +15,6 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Conjunction;
 import org.hibernate.criterion.Criterion;
-import org.hibernate.criterion.Example;
 import org.hibernate.criterion.ProjectionList;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Property;
@@ -25,7 +24,6 @@ import com.thesett.util.entity.Entity;
 import com.thesett.util.memento.BeanMemento;
 import com.thesett.util.reflection.ReflectionUtils;
 
-import com.thesett.aima.attribute.impl.EnumeratedStringAttribute;
 import com.thesett.aima.attribute.impl.HierarchyAttribute;
 import com.thesett.aima.attribute.impl.HierarchyAttributeFactory;
 import com.thesett.aima.state.Attribute;
@@ -35,7 +33,6 @@ import com.thesett.catalogue.model.Catalogue;
 import com.thesett.catalogue.model.EntityType;
 import com.thesett.catalogue.model.PagingResult;
 import com.thesett.catalogue.model.ViewType;
-import com.thesett.catalogue.model.impl.Relationship;
 
 /**
  * ModelAwareBaseDAO is a DAO that makes use of the runtime model ({@link Catalogue}) to provide more flexible queries
@@ -159,59 +156,6 @@ public class HibernateModelAwareDAO<E extends Entity<K>, K extends Serializable>
         }
 
         return results;
-    }
-
-    /** {@inheritDoc} */
-    public List<E> findByExample(E example, String entityTypeName) {
-        // Create the basic example criteria.
-        Criteria exampleCriteria = currentSession().createCriteria(example.getClass()).add(Example.create(example));
-
-        // Explore relationships and add any required join criteria for them.
-        EntityType entityType = catalogue.getEntityType(entityTypeName);
-        Map<String, Relationship> relationships = entityType.getRelationships();
-
-        BeanMemento memento = new BeanMemento(example);
-        memento.captureNonNull();
-
-        // Add criteria for all relationships.
-        for (Map.Entry<String, Relationship> relationshipEntry : relationships.entrySet()) {
-            String field = relationshipEntry.getKey();
-            Relationship relationship = relationshipEntry.getValue();
-
-            try {
-                Object relatedItem = memento.get(example.getClass(), field);
-
-                if (relatedItem != null) {
-                    exampleCriteria.createCriteria(field).add(Example.create(relatedItem));
-                }
-            } catch (NoSuchFieldException e) {
-                // Ignore unknown fields.
-                e = null;
-            }
-        }
-
-        // Add criteria for relationships to reference data types.
-        Map<String, Type> allPropertyTypes = entityType.getAllPropertyTypes();
-
-        for (Map.Entry<String, Type> propertyTypeEntry : allPropertyTypes.entrySet()) {
-            String field = propertyTypeEntry.getKey();
-            Type type = propertyTypeEntry.getValue();
-
-            if (type instanceof EnumeratedStringAttribute.EnumeratedStringType) {
-                try {
-                    Object propValue = memento.get(example.getClass(), field);
-
-                    if (propValue != null) {
-                        exampleCriteria.add(Restrictions.eq(field, propValue));
-                    }
-                } catch (NoSuchFieldException e) {
-                    // Ignore unknown fields.
-                    e = null;
-                }
-            }
-        }
-
-        return exampleCriteria.list();
     }
 
     /** {@inheritDoc} */

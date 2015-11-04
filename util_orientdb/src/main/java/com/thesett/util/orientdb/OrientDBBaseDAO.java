@@ -1,6 +1,7 @@
 package com.thesett.util.orientdb;
 
 import java.io.Serializable;
+import java.util.List;
 
 import javax.validation.ValidatorFactory;
 
@@ -48,6 +49,16 @@ public class OrientDBBaseDAO<E extends Entity<K>, K extends Serializable> implem
 
     /** {@inheritDoc} */
     public E update(K id, E entity) throws EntityNotExistsException, EntityValidationException {
+        throw new UnsupportedOperationException();
+    }
+
+    /** {@inheritDoc} */
+    public List<E> browse(String entityTypeName) {
+        throw new UnsupportedOperationException();
+    }
+
+    /** {@inheritDoc} */
+    public List<E> findByExample(E example, String entityTypeName) {
         throw new UnsupportedOperationException();
     }
 }

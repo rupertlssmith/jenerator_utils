@@ -8,14 +8,20 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
+import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Example;
+import org.hibernate.criterion.Restrictions;
 import com.thesett.util.entity.Entity;
 import com.thesett.util.entity.EntityAlreadyExistsException;
 import com.thesett.util.entity.EntityNotExistsException;
 import com.thesett.util.entity.EntityValidationException;
 import com.thesett.util.generics.Generics;
+import com.thesett.util.memento.BeanMemento;
+
+import com.thesett.aima.attribute.impl.EnumeratedStringAttribute;
 
 /**
  * HibernateBaseDAO is an implementation of the {@link BaseDAO} on top of a hibernate session factory.
@@ -30,13 +36,13 @@ import com.thesett.util.generics.Generics;
  */
 public abstract class HibernateBaseDAO<E extends Entity<K>, K extends Serializable> implements BaseDAO<E, K> {
     /** The Hibernate session factory. */
-    private final SessionFactory sessionFactory;
+    protected final SessionFactory sessionFactory;
 
     /** The type of the entity that the DAO persists. */
-    private final Class<?> entityClass;
+    protected final Class<?> entityClass;
 
     /** The bean validator to apply prior to all data insertion. */
-    private final Validator validator;
+    protected final Validator validator;
 
     /**
      * Creates the Hibernate DAO on top of the specified session factory.
@@ -116,6 +122,58 @@ public abstract class HibernateBaseDAO<E extends Entity<K>, K extends Serializab
         currentSession().evict(e);
 
         return e;
+    }
+
+    /** {@inheritDoc} */
+    public List<E> browse(String entityTypeName) {
+        Session session = currentSession();
+
+        // Create the selection criteria for the block.
+        Criteria selectCriteria = session.createCriteria(entityClass);
+
+        // Execute the query to get the block.
+        List results = selectCriteria.list();
+
+        return results;
+    }
+
+    /** {@inheritDoc} */
+    public List<E> findByExample(E example, String entityTypeName) {
+        // Create the basic example criteria.
+        Criteria exampleCriteria = currentSession().createCriteria(example.getClass()).add(Example.create(example));
+
+        BeanMemento memento = new BeanMemento(example);
+        memento.captureNonNull();
+
+        // Add criteria for all relationships (including relationships to reference data).
+        for (String field : memento.getAllFieldNames(example.getClass())) {
+            try {
+                Object relatedItem = memento.get(example.getClass(), field);
+
+                if (relatedItem != null) {
+                    if (relatedItem instanceof Entity) {
+                        exampleCriteria.createCriteria(field).add(Example.create(relatedItem));
+                    } else {
+                        // TODO: Improve this, it uses exceptions for flow control. Would be better if enum types
+                        // implemented a marker interface, and an instanceof check could be done here.
+                        try {
+                            relatedItem.getClass().getConstructor(EnumeratedStringAttribute.class);
+                        } catch (NoSuchMethodException e) {
+                            e = null;
+
+                            continue;
+                        }
+
+                        exampleCriteria.add(Restrictions.eq(field, relatedItem));
+                    }
+                }
+            } catch (NoSuchFieldException e) {
+                // Ignore unknown fields.
+                e = null;
+            }
+        }
+
+        return exampleCriteria.list();
     }
 
     /**

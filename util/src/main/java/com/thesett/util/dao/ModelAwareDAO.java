@@ -79,18 +79,6 @@ public interface ModelAwareDAO<E extends Entity<K>, K extends Serializable> exte
     <T> Map<EntityType, List> browse(Map<String, Attribute> matchings, String viewTypeName, Class<T> viewClass);
 
     /**
-     * Lists all values that have fields that match the non-null fields in the example. Id fields are ignored.
-     * Associations are expanded into join criteria recursively, treating the associated values as examples. The ability
-     * to supported associated examples goes deeper than the default behaviour of Hibernate for example.
-     *
-     * @param  example        The example to query by.
-     * @param  entityTypeName The name of the entity type to query.
-     *
-     * @return A list of all matching values.
-     */
-    List<E> findByExample(E example, String entityTypeName);
-
-    /**
      * Executes a query specified in parts and returns the results in pages. The query to execute consists of an entity
      * name to query on, optional criterion to apply to that entity, and optional joined entity names and criterion to
      * restrict by. This is built into two criteria to be executed against the current session; one to count how many
