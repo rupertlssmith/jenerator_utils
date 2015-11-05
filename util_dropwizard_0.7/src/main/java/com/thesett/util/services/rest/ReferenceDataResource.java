@@ -1,6 +1,5 @@
 package com.thesett.util.services.rest;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -19,35 +18,26 @@ import com.thesett.util.model.RefDataItem;
 import com.thesett.util.services.ReferenceDataService;
 
 import com.thesett.aima.attribute.impl.EnumeratedStringAttribute;
-import com.thesett.catalogue.model.Catalogue;
 
 @Path("/api/refdata/")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(value = MediaType.APPLICATION_JSON)
 public class ReferenceDataResource implements ReferenceDataService {
-    private final Catalogue model;
+    private final List<String> refDataTypes;
 
     /**
      * Creates the reference data RESTful service implementation.
      *
-     * @param model The runtime data model.
+     * @param refDataTypes A list of the reference data types.
      */
-    public ReferenceDataResource(Catalogue model) {
-        this.model = model;
+    public ReferenceDataResource(List<String> refDataTypes) {
+        this.refDataTypes = refDataTypes;
     }
 
     /** {@inheritDoc} */
     @GET
     public List<String> findAllTypes() {
-        List<String> result = new LinkedList<>();
-
-        Collection<EnumeratedStringAttribute.EnumeratedStringType> enumTypes = model.getAllEnumTypes();
-
-        for (EnumeratedStringAttribute.EnumeratedStringType enumType : enumTypes) {
-            result.add(enumType.getName());
-        }
-
-        return result;
+        return Collections.unmodifiableList(refDataTypes);
     }
 
     /** {@inheritDoc} */

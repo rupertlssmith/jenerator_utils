@@ -5,7 +5,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
@@ -49,12 +48,7 @@ public abstract class RefDataLoadCommand<T extends Configuration> extends Config
      */
     public void loadReferenceData(T configuration) throws RefDataLoadException {
         String refdataPackage = getRefdataPackage(configuration);
-
-        // Find all the reference data.
-        List<String> resources = RefDataUtils.findRefData(refdataPackage);
-
-        // Load and extract all the reference data from the resources found.
-        Set<RefDataBundle> refDataBundles = RefDataUtils.extractReferenceData(refdataPackage, resources);
+        Set<RefDataBundle> refDataBundles = RefDataUtils.getRefDataBundles(refdataPackage);
 
         // Open a connection to the database.
         Connection connection = getConnection(configuration);
@@ -74,7 +68,6 @@ public abstract class RefDataLoadCommand<T extends Configuration> extends Config
      *
      * @throws RefDataLoadException If an error occurs that prevents the reference data loading process from completing.
      */
-
     protected void run(Bootstrap<T> bootstrap, Namespace namespace, T configuration) throws RefDataLoadException {
         loadReferenceData(configuration);
     }

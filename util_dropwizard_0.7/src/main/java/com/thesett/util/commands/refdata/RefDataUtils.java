@@ -178,4 +178,12 @@ public class RefDataUtils {
                 resource + ".", "RDL", 8, e);
         }
     }
+
+    public static Set<RefDataBundle> getRefDataBundles(String refdataPackage) throws RefDataLoadException {
+        // Find all the reference data.
+        List<String> resources = findRefData(refdataPackage);
+
+        // Load and extract all the reference data from the resources found.
+        return extractReferenceData(refdataPackage, resources);
+    }
 }
