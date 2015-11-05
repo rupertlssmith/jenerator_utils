@@ -37,9 +37,6 @@ public abstract class DatabaseValidationTestBase<E extends Entity<K>, K extends 
      */
     private static DataSource dataSource;
 
-    /** The data model catalogue for the data model under test. */
-    protected static Catalogue catalogue;
-
     /** The configured bean validator factory. */
     protected static ValidatorFactory validatorFactory;
 
@@ -89,7 +86,6 @@ public abstract class DatabaseValidationTestBase<E extends Entity<K>, K extends 
     @Before
     public void setup() throws Exception {
         startDropWizardApp();
-        initCatalogue();
         initDatasource();
         initHibernateSessionFactory();
         insertReferenceData();
@@ -104,13 +100,6 @@ public abstract class DatabaseValidationTestBase<E extends Entity<K>, K extends 
         if (fireOnceRule.shouldFireRule()) {
             dropwizardTestController = new DropwizardTestController(starsApplicationClass, configPath);
             dropwizardTestController.start();
-        }
-    }
-
-    /** Sets up the data model catalogue for the data model under test. */
-    public void initCatalogue() {
-        if (fireOnceRule.shouldFireRule()) {
-            catalogue = testSetupController.initCatalogue(dropwizardTestController.getConfiguration());
         }
     }
 
@@ -139,7 +128,7 @@ public abstract class DatabaseValidationTestBase<E extends Entity<K>, K extends 
     }
 
     /** Loads all reference data caches into memory. */
-    public void loadReferenceData() {
+    public void loadReferenceData() throws Exception {
         if (fireOnceRule.shouldFireRule()) {
             testSetupController.loadReferenceData(dropwizardTestController.getConfiguration());
         }

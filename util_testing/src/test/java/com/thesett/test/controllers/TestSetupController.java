@@ -3,7 +3,6 @@ package com.thesett.test.controllers;
 import javax.sql.DataSource;
 import javax.validation.ValidatorFactory;
 
-import com.thesett.catalogue.model.Catalogue;
 import io.dropwizard.Configuration;
 
 import org.apache.commons.dbcp2.BasicDataSource;
@@ -42,15 +41,6 @@ public interface TestSetupController<T extends Configuration> {
     SessionFactory initHibernateSessionFactory(T configuration);
 
     /**
-     * Sets up the data model catalogue using the resource from the DropWizard configuration.
-     *
-     * @param configuration The configuration.
-     *
-     * @return The data model catalogue.
-     */
-    Catalogue initCatalogue(T configuration);
-
-    /**
      * Inserts all reference data into the database.
      *
      * @param  configuration The DropWizard configuration.
@@ -64,7 +54,7 @@ public interface TestSetupController<T extends Configuration> {
      *
      * @param configuration The configuration.
      */
-    void loadReferenceData(T configuration);
+    void loadReferenceData(T configuration) throws RefDataLoadException;
 
     /**
      * Loads the bean validator configuration, and provides a factory to access it with.
