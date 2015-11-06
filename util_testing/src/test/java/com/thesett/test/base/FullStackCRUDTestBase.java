@@ -6,6 +6,7 @@ import java.util.List;
 import javax.sql.DataSource;
 import javax.validation.ValidatorFactory;
 
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.hibernate.SessionFactory;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -22,7 +23,6 @@ import com.thesett.util.entity.CRUD;
 import com.thesett.util.entity.Entity;
 import com.thesett.util.entity.EntityException;
 
-import com.thesett.catalogue.model.Catalogue;
 import com.thesett.common.util.ReflectionUtils;
 
 public abstract class FullStackCRUDTestBase<E extends Entity<K>, K extends Serializable> extends CRUDTestBase<E, K> {
@@ -75,7 +75,13 @@ public abstract class FullStackCRUDTestBase<E extends Entity<K>, K extends Seria
 
     @AfterClass
     public static void tearDown() throws Exception {
-        dropwizardTestController.stop();
+        if (dropwizardTestController != null) {
+            dropwizardTestController.stop();
+        }
+
+        if (dataSource != null) {
+            ((BasicDataSource) dataSource).close();
+        }
     }
 
     @Before
@@ -108,6 +114,11 @@ public abstract class FullStackCRUDTestBase<E extends Entity<K>, K extends Seria
     /** Sets up a hibernate session factory using the database parameters from the DropWizard configuration. */
     public void initHibernateSessionFactory() {
         if (fireOnceRule.shouldFireRule()) {
+            // Close any previous session factory, to help clean up connections.
+            if (sessionFactory != null) {
+                sessionFactory.close();
+            }
+
             sessionFactory =
                 testSetupController.initHibernateSessionFactory(dropwizardTestController.getConfiguration());
         }

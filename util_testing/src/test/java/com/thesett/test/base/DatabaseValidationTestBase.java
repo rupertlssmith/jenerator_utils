@@ -5,6 +5,7 @@ import java.io.Serializable;
 import javax.sql.DataSource;
 import javax.validation.ValidatorFactory;
 
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.hibernate.SessionFactory;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -20,8 +21,6 @@ import com.thesett.test.stack.TestIdMaintainerTestController;
 import com.thesett.test.stack.ValidationTestBase;
 import com.thesett.util.entity.CRUD;
 import com.thesett.util.entity.Entity;
-
-import com.thesett.catalogue.model.Catalogue;
 
 public abstract class DatabaseValidationTestBase<E extends Entity<K>, K extends Serializable>
     extends ValidationTestBase<E, K> {
@@ -81,6 +80,10 @@ public abstract class DatabaseValidationTestBase<E extends Entity<K>, K extends 
         if (dropwizardTestController != null) {
             dropwizardTestController.stop();
         }
+
+        if (dataSource != null) {
+            ((BasicDataSource) dataSource).close();
+        }
     }
 
     @Before
@@ -115,6 +118,11 @@ public abstract class DatabaseValidationTestBase<E extends Entity<K>, K extends 
     /** Sets up a hibernate session factory using the database parameters from the DropWizard configuration. */
     public void initHibernateSessionFactory() {
         if (fireOnceRule.shouldFireRule()) {
+            // Close any previous session factory, to help clean up connections.
+            if (sessionFactory != null) {
+                sessionFactory.close();
+            }
+
             sessionFactory =
                 testSetupController.initHibernateSessionFactory(dropwizardTestController.getConfiguration());
         }
