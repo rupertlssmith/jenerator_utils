@@ -1,6 +1,7 @@
 package com.thesett.util.config;
 
 import io.dropwizard.db.DataSourceFactory;
+import io.dropwizard.db.PooledDataSourceFactory;
 
 import org.apache.commons.dbcp2.BasicDataSource;
 
@@ -20,10 +21,14 @@ public class ConfigurationUtils {
     /**
      * Extracts a data source from a data source factory.
      *
+     * @param  pooledDataSourceFactory Dropwizard's pool data source factory.
+     *
      * @return A data source to directly access the database.
      */
-    public static BasicDataSource getBasicDataSource(DataSourceFactory dataSourceFactory) {
+    public static BasicDataSource getBasicDataSource(PooledDataSourceFactory pooledDataSourceFactory) {
         BasicDataSource ds = new BasicDataSource();
+
+        DataSourceFactory dataSourceFactory = (DataSourceFactory) pooledDataSourceFactory;
 
         ds.setDriverClassName(dataSourceFactory.getDriverClass());
         ds.setUsername(dataSourceFactory.getUser());

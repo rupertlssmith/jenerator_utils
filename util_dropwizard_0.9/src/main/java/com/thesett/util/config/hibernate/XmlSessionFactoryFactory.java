@@ -4,8 +4,8 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
-import io.dropwizard.db.DataSourceFactory;
 import io.dropwizard.db.ManagedDataSource;
+import io.dropwizard.db.PooledDataSourceFactory;
 import io.dropwizard.hibernate.SessionFactoryManager;
 import io.dropwizard.setup.Environment;
 
@@ -29,7 +29,7 @@ public class XmlSessionFactoryFactory {
      *
      * @param  bundle                   The Hibernate XML configuration bundle.
      * @param  environment              The Drop Wizard environment.
-     * @param  dataSourceFactory        A Drop Wizard data source factory.
+     * @param  PooledDataSourceFactory  A Drop Wizard data source factory.
      * @param  hibernateXmlResourceName The name of the resource on the classpath to load the Hiberate XML config from.
      *
      * @return A Hibernate session factory.
@@ -37,10 +37,11 @@ public class XmlSessionFactoryFactory {
      * @throws ClassNotFoundException If some class cannot be found, such as a JDBC driver.
      */
     public SessionFactory build(HibernateXmlBundle<?> bundle, Environment environment,
-        DataSourceFactory dataSourceFactory, String hibernateXmlResourceName) throws ClassNotFoundException {
-        ManagedDataSource dataSource = dataSourceFactory.build(environment.metrics(), "hibernate");
+        PooledDataSourceFactory PooledDataSourceFactory, String hibernateXmlResourceName)
+        throws ClassNotFoundException {
+        ManagedDataSource dataSource = PooledDataSourceFactory.build(environment.metrics(), "hibernate");
 
-        return build(bundle, environment, dataSourceFactory, dataSource, hibernateXmlResourceName);
+        return build(bundle, environment, PooledDataSourceFactory, dataSource, hibernateXmlResourceName);
     }
 
     /**
@@ -48,7 +49,7 @@ public class XmlSessionFactoryFactory {
      *
      * @param  bundle                   The Hibernate XML configuration bundle.
      * @param  environment              The Drop Wizard environment.
-     * @param  dataSourceFactory        A Drop Wizard data source factory.
+     * @param  PooledDataSourceFactory  A Drop Wizard data source factory.
      * @param  dataSource               A managed data source built from the data source factory.
      * @param  hibernateXmlResourceName The name of the resource on the classpath to load the Hiberate XML config from.
      *
@@ -57,11 +58,11 @@ public class XmlSessionFactoryFactory {
      * @throws ClassNotFoundException If some class cannot be found, such as a JDBC driver.
      */
     public SessionFactory build(HibernateXmlBundle<?> bundle, Environment environment,
-        DataSourceFactory dataSourceFactory, ManagedDataSource dataSource, String hibernateXmlResourceName)
+        PooledDataSourceFactory PooledDataSourceFactory, ManagedDataSource dataSource, String hibernateXmlResourceName)
         throws ClassNotFoundException {
-        ConnectionProvider provider = buildConnectionProvider(dataSource, dataSourceFactory.getProperties());
+        ConnectionProvider provider = buildConnectionProvider(dataSource, PooledDataSourceFactory.getProperties());
         SessionFactory factory =
-            buildSessionFactory(bundle, dataSourceFactory, provider, dataSourceFactory.getProperties(),
+            buildSessionFactory(bundle, PooledDataSourceFactory, provider, PooledDataSourceFactory.getProperties(),
                 hibernateXmlResourceName);
         SessionFactoryManager managedFactory = new SessionFactoryManager(factory, dataSource);
 
@@ -90,21 +91,22 @@ public class XmlSessionFactoryFactory {
      * Builds a Hibernate session factory from a {@link HibernateXmlBundle} configuration bundle.
      *
      * @param  bundle                   The Hibernate XML configuration bundle.
-     * @param  dataSourceFactory        A Drop Wizard data source factory.
+     * @param  PooledDataSourceFactory  A Drop Wizard data source factory.
      * @param  connectionProvider       A Drop Wizard connection provider.
      * @param  properties               Additional data source configuration properties.
      * @param  hibernateXmlResourceName The name of the resource on the classpath to load the Hiberate XML config from.
      *
      * @return A Hibernate session factory.
      */
-    private SessionFactory buildSessionFactory(HibernateXmlBundle<?> bundle, DataSourceFactory dataSourceFactory,
-        ConnectionProvider connectionProvider, Map<String, String> properties, String hibernateXmlResourceName) {
+    private SessionFactory buildSessionFactory(HibernateXmlBundle<?> bundle,
+        PooledDataSourceFactory PooledDataSourceFactory, ConnectionProvider connectionProvider,
+        Map<String, String> properties, String hibernateXmlResourceName) {
         Configuration configuration = new Configuration();
 
         // Set up some configuration properties for Hibernate.
         configuration.setProperty(AvailableSettings.CURRENT_SESSION_CONTEXT_CLASS, "managed");
         configuration.setProperty(AvailableSettings.USE_SQL_COMMENTS,
-            Boolean.toString(dataSourceFactory.isAutoCommentsEnabled()));
+            Boolean.toString(PooledDataSourceFactory.isAutoCommentsEnabled()));
         configuration.setProperty(AvailableSettings.USE_GET_GENERATED_KEYS, "true");
         configuration.setProperty(AvailableSettings.GENERATE_STATISTICS, "false");
         configuration.setProperty(AvailableSettings.SHOW_SQL, "true");

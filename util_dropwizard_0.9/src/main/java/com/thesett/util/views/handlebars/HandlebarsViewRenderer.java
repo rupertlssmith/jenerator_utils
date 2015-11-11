@@ -52,6 +52,10 @@ public class HandlebarsViewRenderer implements ViewRenderer {
     /** The caching switch. */
     protected static boolean useCache = true;
 
+    /** {@inheritDoc} */
+    public void configure(Map<String, String> stringStringMap) {
+    }
+
     /**
      * {@inheritDoc}
      *
@@ -80,6 +84,11 @@ public class HandlebarsViewRenderer implements ViewRenderer {
                 loadTemplate(view.getTemplateName()).apply(view, writer);
             }
         }
+    }
+
+    /** {@inheritDoc} */
+    public String getSuffix() {
+        return "";
     }
 
     /**

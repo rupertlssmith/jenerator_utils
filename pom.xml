@@ -17,14 +17,15 @@
         <maven.assembly.plugin.version>2.2-beta-5</maven.assembly.plugin.version>
 
         <!-- Versions. -->
-        <dropwizard.version>0.7.1</dropwizard.version>
+        <dropwizard.version>0.9.1</dropwizard.version>
         <handlebars.java.version>2.2.2</handlebars.java.version>
         <h2.version>1.4.180</h2.version>
         <postgres.version>9.1-901-1.jdbc4</postgres.version>
         <sundial.version>1.1.3</sundial.version>
         <google.collections.version>1.0</google.collections.version>
         <hibernate.version>4.3.5.Final</hibernate.version>
-        <jackson.version>2.3.3</jackson.version>
+        <hibernate.validator.version>5.1.1.Final</hibernate.validator.version>
+        <jackson.version>2.6.3</jackson.version>
         <commons.compress.version>1.8.1</commons.compress.version>
         <commons.io.version>1.3.2</commons.io.version>
         <jenerator.version>0.8.21</jenerator.version>
@@ -36,174 +37,124 @@
         <jmockit.version>1.10</jmockit.version>
         <jacoco.version>0.7.4.201502262128</jacoco.version>
         <shiro.version>1.2.1</shiro.version>
+        <junit.version>4.11</junit.version>
+        <hamcrest.version>1.3</hamcrest.version>
+        <dbsetup.version>1.3.0</dbsetup.version>
+        <commons.dbcp.version>2.0.1</commons.dbcp.version>
+        <guava.version>16.0.1</guava.version>
+        <javax.ws.rs.api.version>2.0.1</javax.ws.rs.api.version>
+        <hyperexpress.version>2.3</hyperexpress.version>
+        <slf4j.version>1.7.7</slf4j.version>
+        <javax.servlet.version>3.0.1</javax.servlet.version>
+        <snakeyaml.version>1.15</snakeyaml.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
+            
+            <dependency>
+                <groupId>io.dropwizard</groupId>
+                <artifactId>dropwizard-bom</artifactId>
+                <version>${dropwizard.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!-- hk2 dependencies are excluded as there is a malformed parent pom on 2.4.0-b31. -->
             <dependency>
                 <groupId>io.dropwizard</groupId>
                 <artifactId>dropwizard-core</artifactId>
                 <version>${dropwizard.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>io.dropwizard</groupId>
-                <artifactId>dropwizard-hibernate</artifactId>
-                <version>${dropwizard.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>io.dropwizard</groupId>
-                <artifactId>dropwizard-migrations</artifactId>
-                <version>${dropwizard.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>io.dropwizard</groupId>
-                <artifactId>dropwizard-assets</artifactId>
-                <version>${dropwizard.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>io.dropwizard</groupId>
-                <artifactId>dropwizard-lifecycle</artifactId>
-                <version>${dropwizard.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>io.dropwizard</groupId>
-                <artifactId>dropwizard-servlets</artifactId>
-                <version>${dropwizard.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>io.dropwizard</groupId>
-                <artifactId>dropwizard-views-freemarker</artifactId>
-                <version>${dropwizard.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>io.dropwizard</groupId>
-                <artifactId>dropwizard-views-mustache</artifactId>
-                <version>${dropwizard.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>io.dropwizard</groupId>
-                <artifactId>dropwizard-client</artifactId>
-                <version>${dropwizard.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>io.dropwizard</groupId>
-                <artifactId>dropwizard-views</artifactId>
-                <version>${dropwizard.version}</version>
-            </dependency>
-        
-            <dependency>
-                <groupId>com.github.jknack</groupId>
-                <artifactId>handlebars</artifactId>
-                <version>${handlebars.java.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.glassfish.hk2</groupId>
+                        <artifactId>hk2-api</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.glassfish.hk2.external</groupId>
+                        <artifactId>javax.inject</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.glassfish.hk2</groupId>
+                        <artifactId>hk2-locator</artifactId>
+                    </exclusion>
+                </exclusions>                
             </dependency>
             
             <dependency>
-                <groupId>com.github.jknack</groupId>
-                <artifactId>handlebars-guava-cache</artifactId>
-                <version>${handlebars.java.version}</version>
-            </dependency>            
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>${commons.io.version}</version>
+            </dependency>
+            
+            <dependency>
+                <groupId>javax.ws.rs</groupId>
+                <artifactId>javax.ws.rs-api</artifactId>
+                <version>${javax.ws.rs.api.version}</version>
+            </dependency>
 
             <dependency>
                 <groupId>org.apache.shiro</groupId>
                 <artifactId>shiro-web</artifactId>
                 <version>${shiro.version}</version>
             </dependency>
+
+            <dependency>
+                <groupId>com.github.jknack</groupId>
+                <artifactId>handlebars</artifactId>
+                <version>${handlebars.java.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.github.jknack</groupId>
+                <artifactId>handlebars-guava-cache</artifactId>
+                <version>${handlebars.java.version}</version>
+            </dependency>
             
             <dependency>
-                <groupId>com.h2database</groupId>
-                <artifactId>h2</artifactId>
-                <version>${h2.version}</version>
+                <groupId>com.strategicgains</groupId>
+                <artifactId>HyperExpress-HAL</artifactId>
+                <version>${hyperexpress.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>com.force.api</groupId>
-                <artifactId>force-wsc</artifactId>
-                <version>${force.wsc.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.force.api</groupId>
-                <artifactId>force-partner-api</artifactId>
-                <version>${force.partner.version}</version>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-dbcp2</artifactId>
+                <version>${commons.dbcp.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>postgresql</groupId>
-                <artifactId>postgresql</artifactId>
-                <version>${postgres.version}</version>
+                <groupId>com.thesett</groupId>
+                <artifactId>catalogue-model-processor</artifactId>
+                <version>${jenerator.version}</version>
             </dependency>
+
+            <dependency>
+                <groupId>com.thesett</groupId>
+                <artifactId>power_model_validation</artifactId>
+                <version>${jenerator.version}</version>
+            </dependency>
+
             <dependency>
                 <groupId>com.xeiam</groupId>
                 <artifactId>sundial</artifactId>
                 <version>${sundial.version}</version>
             </dependency>
-            <dependency>
-                <groupId>org.webjars</groupId>
-                <artifactId>bootstrap</artifactId>
-                <version>${bootstrap.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.google.collections</groupId>
-                <artifactId>google-collections</artifactId>
-                <version>${google.collections.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.bazaarvoice.dropwizard</groupId>
-                <artifactId>dropwizard-configurable-assets-bundle</artifactId>
-                <version>${dropwizardassetsbundle.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.fasterxml.jackson.dataformat</groupId>
-                <artifactId>jackson-dataformat-csv</artifactId>
-                <version>${jackson.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.fasterxml.jackson.datatype</groupId>
-                <artifactId>jackson-datatype-joda</artifactId>
-                <version>${jackson.version}</version>
-            </dependency>
+
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-compress</artifactId>
                 <version>${commons.compress.version}</version>
             </dependency>
+            
             <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-io</artifactId>
-                <version>${commons.io.version}</version>
+                <groupId>com.fasterxml.jackson.dataformat</groupId>
+                <artifactId>jackson-dataformat-csv</artifactId>
+                <version>${jackson.version}</version>
             </dependency>
-            <dependency>
-                <groupId>joda-time</groupId>
-                <artifactId>joda-time</artifactId>
-                <version>${jodatime.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.jadira.usertype</groupId>
-                <artifactId>usertype.core</artifactId>
-                <version>${jadira.version}</version>
-            </dependency>
-
+            
             <!-- Test dependencies. -->
-            <dependency>
-                <groupId>io.dropwizard</groupId>
-                <artifactId>dropwizard-testing</artifactId>
-                <version>${dropwizard.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
-                <version>4.11</version>
-            </dependency>
-
+            
             <dependency>
                 <groupId>org.jmockit</groupId>
                 <artifactId>jmockit</artifactId>
@@ -211,30 +162,6 @@
                 <scope>test</scope>
             </dependency>
 
-            <dependency>
-                <groupId>org.hamcrest</groupId>
-                <artifactId>hamcrest-core</artifactId>
-                <version>1.3</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.ninja-squad</groupId>
-                <artifactId>DbSetup</artifactId>
-                <version>1.3.0</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-dbcp2</artifactId>
-                <version>2.0.1</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.jacoco</groupId>
-                <artifactId>org.jacoco.agent</artifactId>
-                <classifier>runtime</classifier>
-                <version>${jacoco.version}</version>
-            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -244,8 +171,7 @@
         <module>util_servlet</module>
         <module>util_errors</module>
         <module>util_rest</module>
-        <module>util_dropwizard_0.7</module>
-        <module>util_orientdb</module>
+        <module>util_dropwizard_0.9</module>
         <module>util_testing</module>
         <module>util_logging</module>
         <module>util_uploader</module>
@@ -261,7 +187,7 @@
                     <artifactId>maven-assembly-plugin</artifactId>
                     <version>${maven.assembly.plugin.version}</version>
                 </plugin>
-                
+
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
@@ -275,7 +201,7 @@
                         <showDeprecation>true</showDeprecation>
                     </configuration>
                 </plugin>
-                
+
             </plugins>
         </pluginManagement>
     </build>

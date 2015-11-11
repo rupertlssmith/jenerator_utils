@@ -3,10 +3,9 @@ package com.thesett.util.errors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
-
-import com.sun.jersey.api.NotFoundException;
 
 import org.hibernate.ObjectNotFoundException;
 import org.hibernate.exception.ConstraintViolationException;
