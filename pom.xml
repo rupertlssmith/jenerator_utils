@@ -28,8 +28,8 @@
         <jackson.version>2.6.3</jackson.version>
         <commons.compress.version>1.8.1</commons.compress.version>
         <commons.io.version>1.3.2</commons.io.version>
-        <jenerator.version>0.8.21</jenerator.version>
-        <lojix.version>0.8.21</lojix.version>
+        <jenerator.version>0.8.22</jenerator.version>
+        <lojix.version>0.8.22</lojix.version>
         <jodatime.version>2.3</jodatime.version>
         <jadira.version>3.0.0.GA</jadira.version>
         <force.wsc.version>32.1.0</force.wsc.version>

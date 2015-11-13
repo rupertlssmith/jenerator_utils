@@ -11,6 +11,7 @@ import org.junit.Assert;
 import com.thesett.util.memento.BeanMemento;
 import com.thesett.util.memento.DirectMemento;
 import com.thesett.util.memento.Memento;
+import com.thesett.util.model.RefDataItem;
 
 import com.thesett.aima.attribute.impl.EnumeratedStringAttribute;
 import com.thesett.common.util.ReflectionUtils;
@@ -46,14 +47,19 @@ public class RefDataTypeVariations {
         String typeName = StringUtils.uncapitalize(typeClass.getSimpleName());
 
         try {
-            variations.add((T) ReflectionUtils.getConstructor(typeClass, new Class[] { long.class })
-                .newInstance(memento.get(typeClass, "id")));
+            Long id = (Long) memento.get(typeClass, "id");
+            EnumeratedStringAttribute attribute = (EnumeratedStringAttribute) memento.get(typeClass, typeName);
+            String value = attribute.getStringValue();
+
+            variations.add((T) ReflectionUtils.getConstructor(typeClass, new Class[] { long.class }).newInstance(id));
             variations.add((T) ReflectionUtils.getConstructor(typeClass, new Class[] { String.class })
-                .newInstance(memento.get(typeClass, "id").toString()));
+                .newInstance(id.toString()));
             variations.add((T) ReflectionUtils.getConstructor(typeClass,
-                    new Class[] { EnumeratedStringAttribute.class }).newInstance(memento.get(typeClass, typeName)));
+                    new Class[] { EnumeratedStringAttribute.class }).newInstance(attribute));
             variations.add((T) ReflectionUtils.getConstructor(typeClass, new Class[] { String.class })
-                .newInstance(((EnumeratedStringAttribute) memento.get(typeClass, typeName)).getStringValue()));
+                .newInstance(value));
+            variations.add((T) ReflectionUtils.getConstructor(typeClass, new Class[] { RefDataItem.class })
+                .newInstance(new RefDataItem(id, value)));
         } catch (NoSuchFieldException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
             throw new IllegalStateException(e);
         }

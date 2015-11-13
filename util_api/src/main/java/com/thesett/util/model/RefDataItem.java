@@ -56,6 +56,16 @@ public class RefDataItem implements Comparable<RefDataItem> {
     }
 
     /**
+     * Accepts a new value for the name property.
+     *
+     * @param name The name property.
+     */
+    public RefDataItem withName(String name) {
+        this.name = name;
+        return this;
+    }
+
+    /**
      * Provides the name property.
      *
      * @return The name property.
