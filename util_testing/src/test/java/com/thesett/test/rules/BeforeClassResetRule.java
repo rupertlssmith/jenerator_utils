@@ -14,6 +14,9 @@ import org.junit.runners.model.Statement;
  * </table></pre>
  */
 public class BeforeClassResetRule implements TestRule {
+    /** <tt>true</tt> iff the rule should be fired. */
+    private boolean fireRule = true;
+
     /** The reset flag. */
     private boolean reset = false;
 
@@ -44,5 +47,13 @@ public class BeforeClassResetRule implements TestRule {
         }
 
         return false;
+    }
+
+    public boolean isFireRule() {
+        return fireRule;
+    }
+
+    public void setFireRule(boolean fireRule) {
+        this.fireRule = fireRule;
     }
 }

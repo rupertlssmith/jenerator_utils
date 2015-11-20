@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.hibernate.TransactionException;
 import org.hibernate.context.internal.ManagedSessionContext;
 import com.thesett.util.hibernate.HibernateDetachUtil;
@@ -67,13 +68,24 @@ public class HibernateSessionAndDetachProxy implements InvocationHandler {
         Session session = sessionFactory.openSession();
         Session oldSession = null;
 
+        boolean applyTx = false;
+
         try {
             oldSession = ManagedSessionContext.bind(session);
-            sessionFactory.getCurrentSession().getTransaction().begin();
+
+            Transaction transaction = sessionFactory.getCurrentSession().getTransaction();
+
+            applyTx = !transaction.isActive();
+
+            if (applyTx) {
+                transaction.begin();
+            }
 
             Object result = method.invoke(obj, args);
 
-            sessionFactory.getCurrentSession().getTransaction().commit();
+            if (applyTx) {
+                transaction.commit();
+            }
 
             if (result != null) {
                 HibernateDetachUtil.nullOutUninitializedFields(result, HibernateDetachUtil.FieldAccessType.Field);
@@ -81,15 +93,19 @@ public class HibernateSessionAndDetachProxy implements InvocationHandler {
 
             return result;
         } catch (InvocationTargetException e) {
-            if (e.getCause() instanceof RuntimeException) {
-                tryRollback();
-            } else {
-                tryCommit();
+            if (applyTx) {
+                if (e.getCause() instanceof RuntimeException) {
+                    tryRollback();
+                } else {
+                    tryCommit();
+                }
             }
 
             throw e.getCause();
         } catch (Throwable e) {
-            tryRollback();
+            if (applyTx) {
+                tryRollback();
+            }
 
             throw e;
         } finally {

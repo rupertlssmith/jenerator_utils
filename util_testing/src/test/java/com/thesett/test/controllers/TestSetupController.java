@@ -79,7 +79,8 @@ public interface TestSetupController<T extends Configuration> {
      *
      * @return A reflective transaction DAO factory.
      */
-    ReflectiveDAOFactory getTransactionalDAOFactory(SessionFactory sessionFactory, ValidatorFactory validatorFactory);
+    ReflectiveDAOFactory getTransactionalReflectiveDAOFactory(SessionFactory sessionFactory,
+        ValidatorFactory validatorFactory);
 
     /**
      * Provides a reflective factory for the service layer, that provides services than run locally, with the same
@@ -87,5 +88,14 @@ public interface TestSetupController<T extends Configuration> {
      *
      * @return A reflective service factory.
      */
-    ReflectiveServiceFactory getLocalServiceFactory(SessionFactory sessionFactory, ValidatorFactory validatorFactory);
+    ReflectiveServiceFactory getLocalReflectiveServiceFactory(SessionFactory sessionFactory,
+        ValidatorFactory validatorFactory);
+
+    /**
+     * Provides a local factory for the service layer, that provides services than run locally, with the same
+     * transactional properties as the application services (usually none - provided by the context).
+     *
+     * @return A local service factory.
+     */
+    Object getLocalServiceFactory(SessionFactory sessionFactory, ValidatorFactory validatorFactory);
 }

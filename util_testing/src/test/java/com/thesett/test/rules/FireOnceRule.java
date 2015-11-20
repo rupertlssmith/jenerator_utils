@@ -15,9 +15,6 @@ import org.junit.runners.model.Statement;
  * </table></pre>
  */
 public class FireOnceRule implements TestRule {
-    /** <tt>true</tt> iff the rule should be fired. */
-    private static boolean fireRule = true;
-
     /** The reset rule to reset on. */
     private final BeforeClassResetRule beforeClassResetRule;
 
@@ -36,14 +33,14 @@ public class FireOnceRule implements TestRule {
                 public void evaluate() throws Throwable {
                     // Here is BEFORE_CODE
                     if (beforeClassResetRule.checkAndConsumeReset()) {
-                        fireRule = true;
+                        beforeClassResetRule.setFireRule(true);
                     }
 
                     try {
                         statement.evaluate();
                     } finally {
-                        if (fireRule) {
-                            fireRule = false;
+                        if (beforeClassResetRule.isFireRule()) {
+                            beforeClassResetRule.setFireRule(false);
                         }
                     }
                 }
@@ -56,6 +53,6 @@ public class FireOnceRule implements TestRule {
      * @return <tt>true</tt> iff once-per-test-class rules should fire.
      */
     public boolean shouldFireRule() {
-        return fireRule;
+        return beforeClassResetRule.isFireRule();
     }
 }

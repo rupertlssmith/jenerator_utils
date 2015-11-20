@@ -84,6 +84,10 @@ public abstract class DatabaseValidationTestBase<E extends Entity<K>, K extends 
         if (dataSource != null) {
             ((BasicDataSource) dataSource).close();
         }
+
+        if (sessionFactory != null) {
+            sessionFactory.close();
+        }
     }
 
     @Before

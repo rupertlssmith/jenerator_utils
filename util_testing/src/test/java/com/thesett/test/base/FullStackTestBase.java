@@ -1,33 +1,28 @@
 package com.thesett.test.base;
 
-import java.io.Serializable;
-import java.util.List;
-
 import javax.sql.DataSource;
 import javax.validation.ValidatorFactory;
 
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.hibernate.SessionFactory;
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.Before;
+import org.junit.ClassRule;
+import org.junit.Rule;
 import com.thesett.test.controllers.DropwizardTestController;
+import com.thesett.test.controllers.ReflectiveServiceFactory;
 import com.thesett.test.controllers.TestSetupController;
-import com.thesett.test.stack.CRUDTestBase;
-import com.thesett.test.stack.CRUDTestDataSupplier;
-import com.thesett.test.stack.HibernateDetachTestController;
-import com.thesett.test.stack.HibernateTransactionalTestController;
-import com.thesett.test.stack.JsonSerDesTestController;
-import com.thesett.test.stack.PrerequisitesTestController;
-import com.thesett.test.stack.TestIdMaintainerTestController;
-import com.thesett.util.dao.BaseDAO;
-import com.thesett.util.entity.CRUD;
-import com.thesett.util.entity.Entity;
-import com.thesett.util.entity.EntityException;
+import com.thesett.test.rules.BeforeClassResetRule;
+import com.thesett.test.rules.FireOnceRule;
 
-import com.thesett.common.util.ReflectionUtils;
+/**
+ * FullStackTestBase provides a base class for full-stack testing of DropWizard applications.
+ */
+public abstract class FullStackTestBase {
+    /** The reset rule for the fire once rule. */
+    @ClassRule
+    public static BeforeClassResetRule resetRule = new BeforeClassResetRule();
 
-public abstract class DatabaseCRUDTestBase<E extends Entity<K>, K extends Serializable> extends CRUDTestBase<E, K> {
     /** The Hibernate session factory to test with. */
     protected static SessionFactory sessionFactory;
 
@@ -35,7 +30,7 @@ public abstract class DatabaseCRUDTestBase<E extends Entity<K>, K extends Serial
      * The data source used to create direct connections to the database, bypassing the application. For test data set
      * up and tear down.
      */
-    private static DataSource dataSource;
+    protected static DataSource dataSource;
 
     /** The configured bean validator factory. */
     protected static ValidatorFactory validatorFactory;
@@ -43,33 +38,27 @@ public abstract class DatabaseCRUDTestBase<E extends Entity<K>, K extends Serial
     /** An instance of the application to test. The database configuration is taken from this. */
     public static DropwizardTestController dropwizardTestController;
 
+    /** Fire once detector to permit non-static per-class setups. */
+    @Rule
+    public FireOnceRule fireOnceRule = new FireOnceRule(resetRule);
+
     /** The main class of the DropWizard application to test. */
-    private final Class starsApplicationClass;
+    protected final Class starsApplicationClass;
 
     /** The path to the DropWizard configuration. */
-    private final String configPath;
+    protected final String configPath;
 
     /** Holds the test setup controller. */
     protected final TestSetupController testSetupController;
 
-    /** The type of the entities being tested. */
-    private final Class<E> entityType;
-
     /**
      * Creates a database integration test, using the test data and DAO supplied.
      *
-     * @param testData            The test data supplier.
-     * @param entityType          The type of the entity being tested.
      * @param testSetupController The test setup controller.
      * @param dwApplicationClass  The main class of the DropWizard application to test.
      * @param configPath          The path to the DropWizard configuration.
      */
-    public DatabaseCRUDTestBase(CRUDTestDataSupplier<E, K> testData, Class<E> entityType,
-        TestSetupController testSetupController, Class dwApplicationClass, String configPath) {
-        super(testData.getEqualityChecker());
-
-        this.entityType = entityType;
-        this.testData = testData;
+    public FullStackTestBase(TestSetupController testSetupController, Class dwApplicationClass, String configPath) {
         this.testSetupController = testSetupController;
         this.starsApplicationClass = dwApplicationClass;
         this.configPath = configPath;
@@ -98,8 +87,6 @@ public abstract class DatabaseCRUDTestBase<E extends Entity<K>, K extends Serial
         insertReferenceData();
         loadReferenceData();
         loadBeanValidation();
-        clearDatabase();
-        buildTestStack();
     }
 
     /** Starts the DropWizard application running. */
@@ -156,58 +143,7 @@ public abstract class DatabaseCRUDTestBase<E extends Entity<K>, K extends Serial
         testSetupController.clearDatabase(dataSource);
     }
 
-    /** {@inheritDoc} */
-    public void buildTestStack() {
-        CRUD<E, K> dao = getDao();
-        CRUD<E, K> idMaintainer = new TestIdMaintainerTestController<E, K>(testData, dao);
-        CRUD<E, K> transactions = new HibernateTransactionalTestController<E, K>(idMaintainer, sessionFactory);
-        CRUD<E, K> detach = new HibernateDetachTestController(transactions);
-        CRUD<E, K> serdes = new JsonSerDesTestController<E, K>(detach);
-
-        testController = new PrerequisitesTestController<E, K>(testData, serdes);
-    }
-
-    /**
-     * Standardized test for find all, should return nothing when their is no test data present.
-     *
-     * @param findAllMethodName The name of the find all method to invoke.
-     */
-    public void testFindAllEmpty(String findAllMethodName) {
-        BaseDAO<E, K> txEntityDAO = getTransactionalDAO();
-
-        List<Entity> all = (List<Entity>) ReflectionUtils.callMethod(txEntityDAO, findAllMethodName, new Object[] {});
-
-        Assert.assertEquals("Find all should return nothing on empty data.", 0, all.size());
-    }
-
-    /**
-     * Standardized test for find all, should return 1 item, when a single test data item is present.
-     *
-     * @param findAllMethodName The name of the find all method to invoke.
-     */
-    public void testFindAllNotEmpty(String findAllMethodName) throws EntityException {
-        BaseDAO<E, K> txEntityDAO = getTransactionalDAO();
-
-        Entity created = txEntityDAO.create(testData.getInitialValue());
-        List<Entity> all = (List<Entity>) ReflectionUtils.callMethod(txEntityDAO, findAllMethodName, new Object[] {});
-
-        Assert.assertEquals("Find all should find one item.", 1, all.size());
-    }
-
-    /**
-     * Should supply a DAO instance to access the database through.
-     *
-     * @return A DAO instance to access the database through.
-     */
-    protected abstract CRUD<E, K> getDao();
-
-    /**
-     * Override to supply a DAO instance to access the database through, that runs all its methods in single
-     * transactions.
-     *
-     * @return A transactional DAO instance to access the database through.
-     */
-    protected BaseDAO getTransactionalDAO() {
-        return null;
+    protected ReflectiveServiceFactory getServiceFactory() {
+        return testSetupController.getLocalReflectiveServiceFactory(sessionFactory, validatorFactory);
     }
 }

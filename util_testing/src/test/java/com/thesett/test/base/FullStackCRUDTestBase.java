@@ -33,25 +33,25 @@ public abstract class FullStackCRUDTestBase<E extends Entity<K>, K extends Seria
      * The data source used to create direct connections to the database, bypassing the application. For test data set
      * up and tear down.
      */
-    private static DataSource dataSource;
+    protected static DataSource dataSource;
 
     /** The configured bean validator factory. */
     protected static ValidatorFactory validatorFactory;
 
     /** An instance of the application to test. The database configuration is taken from this. */
-    public static DropwizardTestController dropwizardTestController;
+    protected static DropwizardTestController dropwizardTestController;
 
     /** The main class of the DropWizard application to test. */
-    private final Class starsApplicationClass;
+    protected final Class starsApplicationClass;
 
     /** The path to the DropWizard configuration. */
-    private final String configPath;
+    protected final String configPath;
 
     /** Holds the test setup controller. */
     protected final TestSetupController testSetupController;
 
     /** The type of the entities being tested. */
-    private final Class<E> entityType;
+    protected final Class<E> entityType;
 
     /**
      * Creates a database integration test, using the test data and DAO supplied.
@@ -81,6 +81,10 @@ public abstract class FullStackCRUDTestBase<E extends Entity<K>, K extends Seria
 
         if (dataSource != null) {
             ((BasicDataSource) dataSource).close();
+        }
+
+        if (sessionFactory != null) {
+            sessionFactory.close();
         }
     }
 
@@ -183,7 +187,48 @@ public abstract class FullStackCRUDTestBase<E extends Entity<K>, K extends Seria
         Entity created = entityService.create(testData.getInitialValue());
         List<Entity> all = (List<Entity>) ReflectionUtils.callMethod(entityService, findAllMethodName, new Object[] {});
 
-        Assert.assertEquals("Find all should find one item.", 1, all.size());
+        Assert.assertTrue("Find all should find more than one item.", all.size() >= 1);
+    }
+
+    /**
+     * Standardized test for find by example, should return 1 item, when a single test data item is present.
+     *
+     * @param findByExampleMethodName The name of the find all method to invoke.
+     */
+    public void testFindByExampleNotEmpty(String findByExampleMethodName) throws EntityException {
+        CRUD<E, K> entityService = getServiceLayer();
+
+        Entity created = entityService.create(testData.getInitialValue());
+        List<Entity> all =
+            (List<Entity>) ReflectionUtils.callMethod(entityService, findByExampleMethodName, new Object[] { created });
+
+        Assert.assertTrue("Find by example should find the item just created.", all.size() >= 1);
+    }
+
+    /**
+     * Standardized test for requesting the json schema.
+     *
+     * @param schemaMethodName The name of the schema method.
+     */
+    public void testJsonSchema(String schemaMethodName) throws EntityException {
+        CRUD<E, K> entityService = getServiceLayer();
+
+        Object schema = ReflectionUtils.callMethod(entityService, schemaMethodName, new Object[] {});
+
+        Assert.assertNotNull("Should return a json-schema.", schema);
+    }
+
+    /**
+     * Standardized test for requesting the root hal.
+     *
+     * @param rootHalMethodName The name of the root hal method.
+     */
+    public void testRootHal(String rootHalMethodName) throws EntityException {
+        CRUD<E, K> entityService = getServiceLayer();
+
+        Object hal = ReflectionUtils.callMethod(entityService, rootHalMethodName, new Object[] {});
+
+        Assert.assertNotNull("Should return the root HAL.", hal);
     }
 
     /**
@@ -195,6 +240,6 @@ public abstract class FullStackCRUDTestBase<E extends Entity<K>, K extends Seria
     protected abstract CRUD<E, K> getServiceLayer();
 
     protected ReflectiveServiceFactory getServiceFactory() {
-        return testSetupController.getLocalServiceFactory(sessionFactory, validatorFactory);
+        return testSetupController.getLocalReflectiveServiceFactory(sessionFactory, validatorFactory);
     }
 }

@@ -1,5 +1,7 @@
 package com.thesett.test.controllers;
 
+import java.util.List;
+
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 
@@ -14,6 +16,7 @@ import net.sourceforge.argparse4j.inf.Namespace;
 
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.util.component.LifeCycle;
 
 /**
  * A controller for starting and stopping a DropWizard application under test.
@@ -40,6 +43,12 @@ public class DropwizardTestController<C extends Configuration> {
 
     public void stop() throws Exception {
         jettyServer.stop();
+
+        List<LifeCycle> managedObjects = environment.lifecycle().getManagedObjects();
+
+        for (LifeCycle lifeCycle : managedObjects) {
+            lifeCycle.stop();
+        }
     }
 
     public C getConfiguration() {
