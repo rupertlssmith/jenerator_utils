@@ -1,8 +1,9 @@
 package com.thesett.util.error.toplevelhandlers;
 
-import com.thesett.util.error.SystemError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.thesett.util.error.SystemError;
 
 /**
  * JULStrictTopLevelErrorHandler provides consistent top-level error handling, for unhandled exceptions. It makes use of

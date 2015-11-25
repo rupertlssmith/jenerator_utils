@@ -116,7 +116,7 @@ public class BeanMemento implements Memento, Serializable {
                                                                      "method 'set" + propName + "'.");
                 nsfe.initCause(e);
                 throw nsfe;
-                */
+                 */
             } catch (IllegalAccessException e) {
                 /*log.log(java.util.logging.Level.FINE, "IllegalAccessException during call to setter method.", e);*/
             } catch (InvocationTargetException e) {
@@ -225,8 +225,9 @@ public class BeanMemento implements Memento, Serializable {
                 String propName = Character.toLowerCase(methodName.charAt(3)) + methodName.substring(4);
 
                 // Ignore getClass().
-                if ("class".equals(propName))
+                if ("class".equals(propName)) {
                     continue;
+                }
 
                 /*log.fine(methodName + " is a valid getter method for the property " + propName + ".");*/
 

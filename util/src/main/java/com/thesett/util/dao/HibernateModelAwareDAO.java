@@ -20,9 +20,6 @@ import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.transform.ResultTransformer;
-import com.thesett.util.entity.Entity;
-import com.thesett.util.memento.BeanMemento;
-import com.thesett.util.reflection.ReflectionUtils;
 
 import com.thesett.aima.attribute.impl.HierarchyAttribute;
 import com.thesett.aima.attribute.impl.HierarchyAttributeFactory;
@@ -33,6 +30,9 @@ import com.thesett.catalogue.model.Catalogue;
 import com.thesett.catalogue.model.EntityType;
 import com.thesett.catalogue.model.PagingResult;
 import com.thesett.catalogue.model.ViewType;
+import com.thesett.util.entity.Entity;
+import com.thesett.util.memento.BeanMemento;
+import com.thesett.util.reflection.ReflectionUtils;
 
 /**
  * ModelAwareBaseDAO is a DAO that makes use of the runtime model ({@link Catalogue}) to provide more flexible queries

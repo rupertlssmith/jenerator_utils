@@ -39,7 +39,7 @@ public class SummaryList extends LazyPagingList<ViewInstance> implements Seriali
     Map<String, Criterion> joins = null;
 
     /** Holds a reference to the catalogue manager service to call to get more list elements. */
-    private transient HibernateModelAwareDAO service = null; 
+    private transient HibernateModelAwareDAO service = null;
 
     /**
      * Create a new summary list.

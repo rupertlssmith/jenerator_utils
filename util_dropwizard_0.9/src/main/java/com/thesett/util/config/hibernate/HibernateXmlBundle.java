@@ -13,6 +13,7 @@ import io.dropwizard.setup.Environment;
 import io.dropwizard.util.Duration;
 
 import org.hibernate.SessionFactory;
+
 import com.thesett.util.transaction.UnitOfWorkWithDetachApplicationListener;
 
 /**

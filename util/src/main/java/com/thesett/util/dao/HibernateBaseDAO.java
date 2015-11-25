@@ -14,14 +14,14 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Example;
 import org.hibernate.criterion.Restrictions;
+
+import com.thesett.aima.attribute.impl.EnumeratedStringAttribute;
 import com.thesett.util.entity.Entity;
 import com.thesett.util.entity.EntityAlreadyExistsException;
 import com.thesett.util.entity.EntityNotExistsException;
 import com.thesett.util.entity.EntityValidationException;
 import com.thesett.util.generics.Generics;
 import com.thesett.util.memento.BeanMemento;
-
-import com.thesett.aima.attribute.impl.EnumeratedStringAttribute;
 
 /**
  * HibernateBaseDAO is an implementation of the {@link BaseDAO} on top of a hibernate session factory.

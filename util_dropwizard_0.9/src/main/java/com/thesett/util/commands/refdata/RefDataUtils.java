@@ -11,10 +11,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import com.thesett.aima.attribute.impl.EnumeratedStringAttribute;
 import com.thesett.util.resource.ResourceUtils;
 import com.thesett.util.string.StringUtils;
-
-import com.thesett.aima.attribute.impl.EnumeratedStringAttribute;
 
 /**
  * <pre><p/><table id="crc"><caption>CRC Card</caption>
@@ -144,6 +143,14 @@ public class RefDataUtils {
         }
     }
 
+    public static Set<RefDataBundle> getRefDataBundles(String refdataPackage) throws RefDataLoadException {
+        // Find all the reference data.
+        List<String> resources = findRefData(refdataPackage);
+
+        // Load and extract all the reference data from the resources found.
+        return extractReferenceData(refdataPackage, resources);
+    }
+
     /**
      * Reads lines of CSV data using the supplied reader, and outputs (int, string) pairs of reference data items into
      * the supplied map.
@@ -177,13 +184,5 @@ public class RefDataUtils {
             throw new RefDataLoadException("There was an IO error whilst reading resource " +
                 resource + ".", "RDL", 8, e);
         }
-    }
-
-    public static Set<RefDataBundle> getRefDataBundles(String refdataPackage) throws RefDataLoadException {
-        // Find all the reference data.
-        List<String> resources = findRefData(refdataPackage);
-
-        // Load and extract all the reference data from the resources found.
-        return extractReferenceData(refdataPackage, resources);
     }
 }

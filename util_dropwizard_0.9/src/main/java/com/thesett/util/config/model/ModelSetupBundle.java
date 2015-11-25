@@ -18,8 +18,6 @@ import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 
 import org.apache.commons.dbcp2.BasicDataSource;
-import com.thesett.util.config.ConfigurationUtils;
-import com.thesett.util.jdbc.JDBCUtils;
 
 import com.thesett.aima.attribute.impl.EnumeratedStringAttribute;
 import com.thesett.aima.logic.fol.Clause;
@@ -30,6 +28,8 @@ import com.thesett.catalogue.core.CatalogueModelFactory;
 import com.thesett.catalogue.model.Catalogue;
 import com.thesett.catalogue.setup.CatalogueDefinition;
 import com.thesett.common.parsing.SourceCodeException;
+import com.thesett.util.config.ConfigurationUtils;
+import com.thesett.util.jdbc.JDBCUtils;
 
 /**
  * ModelSetupBundle performs application start-up time configurations to prepare a catalogue model for use. It loads and

@@ -22,7 +22,7 @@ public class TerminalProgressBar implements ProgressIndicator {
     public void initWorkToDo(String name, int amount) {
         workToDo = amount;
 
-        System.out.println("Processing " + amount + " rows from " + name + "."); 
+        System.out.println("Processing " + amount + " rows from " + name + ".");
     }
 
     /** {@inheritDoc} */
@@ -35,14 +35,14 @@ public class TerminalProgressBar implements ProgressIndicator {
             numStars = x - lastPrintPosition;
 
             for (int i = 0; i < numStars; i++) {
-                System.out.print("="); 
+                System.out.print("=");
             }
 
             lastPrintPosition = x;
         }
 
         if (amount == workToDo) {
-            System.out.println(); 
+            System.out.println();
             reset();
         }
     }

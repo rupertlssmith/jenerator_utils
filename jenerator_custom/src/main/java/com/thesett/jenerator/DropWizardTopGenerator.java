@@ -2,9 +2,7 @@ package com.thesett.jenerator;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
-import com.thesett.catalogue.model.impl.Relationship;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
@@ -18,6 +16,7 @@ import com.thesett.catalogue.generator.TypeDecoratorFactory;
 import com.thesett.catalogue.model.Catalogue;
 import com.thesett.catalogue.model.EntityType;
 import com.thesett.catalogue.model.EntityTypeVisitor;
+import com.thesett.catalogue.model.impl.Relationship;
 import com.thesett.common.util.FileUtils;
 
 /**
@@ -120,7 +119,7 @@ public class DropWizardTopGenerator extends BaseGenerator implements EntityTypeV
         ComponentTypeDecorator decoratedType = (ComponentTypeDecorator) TypeDecoratorFactory.decorateType(type);
         typesToGenerate.add(decoratedType);
 
-        for (Relationship relationship: type.getRelationships().values()) {
+        for (Relationship relationship : type.getRelationships().values()) {
             System.out.println("=============================");
             System.out.println(relationship.getName());
             System.out.println(relationship.getFrom());

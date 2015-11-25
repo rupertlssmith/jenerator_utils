@@ -9,6 +9,7 @@ import javax.ws.rs.ext.ExceptionMapper;
 
 import org.hibernate.ObjectNotFoundException;
 import org.hibernate.exception.ConstraintViolationException;
+
 import com.thesett.util.entity.EntityValidationException;
 
 /**

@@ -17,6 +17,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.context.internal.ManagedSessionContext;
+
 import com.thesett.util.config.hibernate.HibernateXmlBundle;
 import com.thesett.util.hibernate.HibernateDetachUtil;
 import com.thesett.util.jersey.UnitOfWorkWithDetach;
@@ -133,7 +134,8 @@ public class UnitOfWorkWithDetachApplicationListener implements ApplicationEvent
                         Object result = event.getContainerResponse().getEntity();
 
                         if (result != null) {
-                            HibernateDetachUtil.nullOutUninitializedFields(result, HibernateDetachUtil.FieldAccessType.Field);
+                            HibernateDetachUtil.nullOutUninitializedFields(result,
+                                HibernateDetachUtil.FieldAccessType.Field);
                         }
                     }
                 }

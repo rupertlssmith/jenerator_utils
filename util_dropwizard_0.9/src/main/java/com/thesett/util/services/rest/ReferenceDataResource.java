@@ -13,11 +13,9 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import com.codahale.metrics.annotation.Timed;
-
+import com.thesett.aima.attribute.impl.EnumeratedStringAttribute;
 import com.thesett.util.model.RefDataItem;
 import com.thesett.util.services.ReferenceDataService;
-
-import com.thesett.aima.attribute.impl.EnumeratedStringAttribute;
 
 @Path("/api/refdata/")
 @Produces(MediaType.APPLICATION_JSON)

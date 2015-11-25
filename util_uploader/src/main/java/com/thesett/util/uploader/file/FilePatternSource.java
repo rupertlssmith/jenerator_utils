@@ -4,11 +4,12 @@ import java.io.File;
 import java.io.FileFilter;
 
 import org.apache.commons.io.filefilter.WildcardFileFilter;
-import com.thesett.util.uploader.NamedReader;
+
 import com.thesett.util.queue.FifoLinkedQueue;
 import com.thesett.util.queue.MappedSource;
 import com.thesett.util.queue.Queue;
 import com.thesett.util.queue.Source;
+import com.thesett.util.uploader.NamedReader;
 
 /**
  * FilePatternETLSource provides a mechanism to scan a directory for files matching a pattern, and to initiate an ETL

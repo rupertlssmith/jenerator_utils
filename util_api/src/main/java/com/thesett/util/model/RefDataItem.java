@@ -62,6 +62,7 @@ public class RefDataItem implements Comparable<RefDataItem> {
      */
     public RefDataItem withName(String name) {
         this.name = name;
+
         return this;
     }
 

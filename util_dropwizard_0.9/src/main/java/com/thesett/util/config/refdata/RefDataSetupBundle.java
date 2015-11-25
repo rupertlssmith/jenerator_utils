@@ -16,14 +16,14 @@ import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 
 import org.apache.commons.dbcp2.BasicDataSource;
+
+import com.thesett.aima.attribute.impl.EnumeratedStringAttribute;
 import com.thesett.util.commands.refdata.RefDataBundle;
 import com.thesett.util.commands.refdata.RefDataLoadConfiguration;
 import com.thesett.util.commands.refdata.RefDataLoadException;
 import com.thesett.util.commands.refdata.RefDataUtils;
 import com.thesett.util.config.ConfigurationUtils;
 import com.thesett.util.jdbc.JDBCUtils;
-
-import com.thesett.aima.attribute.impl.EnumeratedStringAttribute;
 
 /**
  * RefDataSetupBundle performs checks on the reference data at application start up time.

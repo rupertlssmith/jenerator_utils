@@ -6,8 +6,8 @@ import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 
-import com.thesett.util.uploader.NamedReader;
 import com.thesett.util.function.Function;
+import com.thesett.util.uploader.NamedReader;
 
 /**
  * Maps a file to a named reader. The name of the reader is the file name without its ending.

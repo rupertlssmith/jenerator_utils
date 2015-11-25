@@ -5,11 +5,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.hibernate.criterion.Criterion;
-import com.thesett.util.entity.Entity;
 
 import com.thesett.aima.state.Attribute;
 import com.thesett.catalogue.model.EntityType;
 import com.thesett.catalogue.model.PagingResult;
+import com.thesett.util.entity.Entity;
 
 /**
  * ModelAwareDAO defines a DAO that makes use of the runtime model ({@link com.thesett.catalogue.model.Catalogue}) to

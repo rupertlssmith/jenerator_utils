@@ -14,11 +14,11 @@ import javax.persistence.NamedNativeQuery;
 import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
 import org.hibernate.transform.BasicTransformerAdapter;
+
+import com.thesett.common.util.TypeConverter;
 import com.thesett.util.function.Functions;
 import com.thesett.util.function.ToStringFunction;
 import com.thesett.util.model.Pair;
-
-import com.thesett.common.util.TypeConverter;
 
 /**
  * ViewsDAO is a cut-down read-only DAO for querying views in a simple manner.
