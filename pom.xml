@@ -15,7 +15,8 @@
         <topdir>${basedir}</topdir>
         <!-- Maven plugin versions. -->
         <maven.assembly.plugin.version>2.2-beta-5</maven.assembly.plugin.version>
-
+        <jalopy.maven.plugin.version>1.9.4-250</jalopy.maven.plugin.version>
+        
         <!-- Versions. -->
         <dropwizard.version>0.9.1</dropwizard.version>
         <handlebars.java.version>2.2.2</handlebars.java.version>
@@ -202,6 +203,20 @@
                     </configuration>
                 </plugin>
 
+                <!-- For source code beautification. -->
+                <plugin>
+                    <groupId>triemax</groupId>
+                    <artifactId>jalopy-maven</artifactId>
+                    <version>${jalopy.maven.plugin.version}</version>
+                    <configuration>
+                        <profile>sun</profile>
+                        <sources>
+                            <source>${basedir}/src/main</source>
+                            <source>${basedir}/src/unittests</source>
+                        </sources>
+                    </configuration>
+                </plugin>
+                
             </plugins>
         </pluginManagement>
     </build>
