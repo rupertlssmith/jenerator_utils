@@ -128,7 +128,7 @@ public abstract class JsonUserType implements UserType {
 
             return mapper.readValue(content, type);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
     }
 
@@ -146,7 +146,7 @@ public abstract class JsonUserType implements UserType {
 
             return mapper.writeValueAsString(object);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
     }
 }

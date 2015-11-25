@@ -110,7 +110,7 @@ public class DirectMemento implements Memento, Serializable {
                     } catch (IllegalAccessException e) {
                         // The field could not be accessed but all fields have been made accessible so this should
                         // not happen.
-                        throw new RuntimeException("Field '" + attr.getName() +
+                        throw new IllegalStateException("Field '" + attr.getName() +
                             "' could not be accessed but the 'setAccessible(true)' method was invoked on it.", e);
                     }
                 }
@@ -123,7 +123,7 @@ public class DirectMemento implements Memento, Serializable {
 
     /** {@inheritDoc} */
     public void captureNonNull() {
-        throw new RuntimeException("Not implemented.");
+        throw new IllegalStateException("Not implemented.");
     }
 
     /**
@@ -166,7 +166,7 @@ public class DirectMemento implements Memento, Serializable {
                 } catch (IllegalAccessException e) {
                     // The field could not be written to but all fields have been made accessible so this should
                     // not happen.
-                    throw new RuntimeException("Field '" + f.getName() +
+                    throw new IllegalStateException("Field '" + f.getName() +
                         "' could not be accessed but the 'setAccessible(true)' method was invoked on it.", e);
                 }
             }
@@ -254,6 +254,6 @@ public class DirectMemento implements Memento, Serializable {
 
     /** {@inheritDoc} */
     public void removeField(Class cls, String name) {
-        throw new RuntimeException("Not implemented.");
+        throw new IllegalStateException("Not implemented.");
     }
 }

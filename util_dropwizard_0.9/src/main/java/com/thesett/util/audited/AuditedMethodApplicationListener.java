@@ -110,7 +110,7 @@ public class AuditedMethodApplicationListener implements ApplicationEventListene
 
             if (requireRemoteIPAddressInformation &&
                     !request.getRequestHeaders().keySet().contains(HttpHeaders.X_FORWARDED_FOR)) {
-                throw new RuntimeException("Header " + HttpHeaders.X_FORWARDED_FOR +
+                throw new IllegalStateException("Header " + HttpHeaders.X_FORWARDED_FOR +
                     " is required but was not found in the request");
             }
 

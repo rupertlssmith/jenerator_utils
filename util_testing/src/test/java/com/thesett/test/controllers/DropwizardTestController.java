@@ -75,7 +75,7 @@ public class DropwizardTestController<C extends Configuration> {
         try {
             return applicationClass.newInstance();
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
     }
 
@@ -117,7 +117,7 @@ public class DropwizardTestController<C extends Configuration> {
 
             command.run(bootstrap, namespace);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
     }
 }
