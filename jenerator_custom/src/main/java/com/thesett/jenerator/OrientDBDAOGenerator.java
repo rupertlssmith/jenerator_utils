@@ -26,7 +26,7 @@ public class OrientDBDAOGenerator extends BaseGenerator implements EntityTypeVis
     private static final String DAO_IMPL_TEMPLATES_GROUP = "HibernateDAO";
 
     /** Holds the string template group to generate DAO implementations from. */
-    private STGroup daoImplTemplates;
+    private final STGroup daoImplTemplates;
 
     /** Holds a file output handler that overwrites files. */
     protected FileOutputRenderTemplateHandler fileOutputProcessedTemplateHandler =

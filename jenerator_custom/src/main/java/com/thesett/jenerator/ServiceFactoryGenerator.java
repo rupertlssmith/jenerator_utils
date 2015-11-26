@@ -59,16 +59,16 @@ public class ServiceFactoryGenerator extends BaseGenerator implements EntityType
     private static final String SF_LOCAL_CLASS_NAME = "LocalServiceFactory";
 
     /** Holds the string template group to generate service factory interfaces from. */
-    private STGroup sfInterfaceTemplates;
+    private final STGroup sfInterfaceTemplates;
 
     /** Holds the string template group to generate service factory clients from. */
-    private STGroup sfClientTemplates;
+    private final STGroup sfClientTemplates;
 
     /** Holds the string template group to generate service factory local implementations from. */
-    private STGroup sfLocalTemplates;
+    private final STGroup sfLocalTemplates;
 
     /** Holds the string template group to generate service client interfaces from. */
-    private STGroup clientInterfaceTemplates;
+    private final STGroup clientInterfaceTemplates;
 
     /** Holds the name of the file to output the service factory interface. */
     private String sfInterfaceFileName = "ServiceFactory";
@@ -80,16 +80,16 @@ public class ServiceFactoryGenerator extends BaseGenerator implements EntityType
     private String sfLocalFileName = "LocalServiceFactory";
 
     /** Output handler used to build up service factory interface methods in. */
-    private BufferingTemplateHandler sfInterfaceHandler = new BufferingTemplateHandler();
+    private final BufferingTemplateHandler sfInterfaceHandler = new BufferingTemplateHandler();
 
     /** Output handler used to build up service factory client methods in. */
-    private BufferingTemplateHandler sfClientHandler = new BufferingTemplateHandler();
+    private final BufferingTemplateHandler sfClientHandler = new BufferingTemplateHandler();
 
     /** Output handler used to build up service factory local methods in. */
-    private BufferingTemplateHandler sfLocalHandler = new BufferingTemplateHandler();
+    private final BufferingTemplateHandler sfLocalHandler = new BufferingTemplateHandler();
 
     /** Holds a list of entities to generate for. */
-    private List<Type> typesToGenerate = new LinkedList<>();
+    private final List<Type> typesToGenerate = new LinkedList<>();
 
     /** Holds a file output handler that overwrites files. */
     protected FileOutputRenderTemplateHandler fileOutputRenderTemplateHandler =

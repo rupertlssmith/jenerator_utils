@@ -24,8 +24,8 @@ import com.thesett.util.jersey.UnitOfWorkWithDetach;
 
 @Provider
 public class UnitOfWorkWithDetachApplicationListener implements ApplicationEventListener {
-    private Map<Method, UnitOfWorkWithDetach> methodMap = new HashMap<>();
-    private Map<String, SessionFactory> sessionFactories = new HashMap<>();
+    private final Map<Method, UnitOfWorkWithDetach> methodMap = new HashMap<>();
+    private final Map<String, SessionFactory> sessionFactories = new HashMap<>();
 
     public UnitOfWorkWithDetachApplicationListener() {
     }

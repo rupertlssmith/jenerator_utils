@@ -29,7 +29,7 @@ public class AuditedMethodApplicationListener implements ApplicationEventListene
 
     private static final Set<String> REDACTED_HEADERS = ImmutableSet.of(HttpHeaders.AUTHORIZATION);
 
-    private Map<Method, Audited> methodMap = new HashMap<>();
+    private final Map<Method, Audited> methodMap = new HashMap<>();
 
     public AuditedMethodApplicationListener() {
     }

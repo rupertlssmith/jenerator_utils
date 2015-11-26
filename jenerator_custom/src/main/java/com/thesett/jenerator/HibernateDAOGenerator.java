@@ -29,10 +29,10 @@ public class HibernateDAOGenerator extends BaseGenerator implements EntityTypeVi
     private static final String DAO_IMPL_TEMPLATES_GROUP = "HibernateDAO";
 
     /** Holds the string template group to generate DAO interfaces from. */
-    private STGroup daoInterfaceTemplates;
+    private final STGroup daoInterfaceTemplates;
 
     /** Holds the string template group to generate DAO implementations from. */
-    private STGroup daoImplTemplates;
+    private final STGroup daoImplTemplates;
 
     /** Holds a file output handler that overwrites files. */
     protected FileOutputRenderTemplateHandler fileOutputProcessedTemplateHandler =

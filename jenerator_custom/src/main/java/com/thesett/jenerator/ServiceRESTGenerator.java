@@ -26,7 +26,7 @@ public class ServiceRESTGenerator extends BaseGenerator implements EntityTypeVis
     private static final String REST_IMPL_TEMPLATES_GROUP = "ServiceRESTImpl";
 
     /** Holds the string template group to generate REST services. */
-    private STGroup restImplTemplates;
+    private final STGroup restImplTemplates;
 
     /** Holds a file output handler that overwrites files. */
     protected FileOutputRenderTemplateHandler fileOutputRenderTemplateHandler =

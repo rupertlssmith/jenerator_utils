@@ -26,7 +26,7 @@ public class ServiceIfaceGenerator extends BaseGenerator implements EntityTypeVi
     private static final String DAO_INTERFACE_TEMPLATES_GROUP = "ServiceInterface";
 
     /** Holds the string template group to generate service interfaces from. */
-    private STGroup daoInterfaceTemplates;
+    private final STGroup daoInterfaceTemplates;
 
     /** Holds a file output handler that overwrites files. */
     protected FileOutputRenderTemplateHandler fileOutputRenderTemplateHandler =

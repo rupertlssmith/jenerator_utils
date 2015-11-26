@@ -27,8 +27,8 @@ import io.dropwizard.setup.Environment;
  */
 public abstract class HandlebarsBundle implements ConfiguredBundle<HandlebarsBundleConfig> {
     /** Holds additional template paths. */
-    private Set<String> templatePaths = new LinkedHashSet<>();
-    private Map<String, String> overrides = new HashMap<>();
+    private final Set<String> templatePaths = new LinkedHashSet<>();
+    private final Map<String, String> overrides = new HashMap<>();
 
     public static <H> void registerHelperMissing(Helper<H> helper) {
         HandlebarsViewRenderer.handlebars.registerHelperMissing(helper);

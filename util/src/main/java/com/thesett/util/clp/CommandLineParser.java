@@ -80,7 +80,7 @@ public class CommandLineParser {
      * ensures that the options are easy to print in alphabetical order as a usage string. An alternative might be to
      * use a LinkedHashMap to print them in the order they are specified.
      */
-    private Map<String, CommandLineOption> optionMap = new TreeMap<String, CommandLineOption>();
+    private final Map<String, CommandLineOption> optionMap = new TreeMap<String, CommandLineOption>();
 
     /** Holds a list of parsing errors. */
     private List<String> parsingErrors = new ArrayList<String>();
@@ -550,7 +550,7 @@ public class CommandLineParser {
      */
     private class ArgParser {
         /** Used to store parsed options in. */
-        private Properties options;
+        private final Properties options;
 
         /** Used to keep count of the current 'free' argument. */
         private int free = 1;
@@ -562,7 +562,7 @@ public class CommandLineParser {
         private String optionExpectingArgs = null;
 
         /** The regular expression to match options with. */
-        private Pattern pattern;
+        private final Pattern pattern;
 
         /**
          * Creates a stateful argument parser.

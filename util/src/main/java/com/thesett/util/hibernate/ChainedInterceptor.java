@@ -22,7 +22,7 @@ import org.hibernate.type.Type;
  * </table></pre>
  */
 public class ChainedInterceptor extends EmptyInterceptor {
-    private List<Interceptor> chain = new LinkedList<>();
+    private final List<Interceptor> chain = new LinkedList<>();
 
     public void addInterceptor(Interceptor interceptor) {
         chain.add(interceptor);

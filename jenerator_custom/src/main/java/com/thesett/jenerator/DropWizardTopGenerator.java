@@ -44,16 +44,16 @@ public class DropWizardTopGenerator extends BaseGenerator implements EntityTypeV
     private static final String APPLICATION_CLASS_NAME = "Main";
 
     /** Holds the string template group to generate the application top from. */
-    private STGroup applicationTemplates;
+    private final STGroup applicationTemplates;
 
     /** Holds the name of the file to output the application top to. */
     private String applicationFileName = "Main";
 
     /** Output handler used to build up the application methods in. */
-    private BufferingTemplateHandler applicationHandler = new BufferingTemplateHandler();
+    private final BufferingTemplateHandler applicationHandler = new BufferingTemplateHandler();
 
     /** Holds a list of entities to generate for. */
-    private List<Type> typesToGenerate = new LinkedList<>();
+    private final List<Type> typesToGenerate = new LinkedList<>();
 
     /** Holds a file output handler that overwrites files. */
     protected FileOutputRenderTemplateHandler fileOutputRenderTemplateHandler =

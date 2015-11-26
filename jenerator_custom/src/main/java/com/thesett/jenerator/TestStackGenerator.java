@@ -91,37 +91,37 @@ public class TestStackGenerator extends BaseGenerator implements EntityTypeVisit
     private STGroup baselineCrudTestTemplates;
 
     /** Holds the string template group to generate the baseline test from. */
-    private STGroup jsonSerdesCrudTestTemplates;
+    private final STGroup jsonSerdesCrudTestTemplates;
 
     /** Holds the string template group to generate the baseline test from. */
-    private STGroup webServiceIsolationCrudTestTemplates;
+    private final STGroup webServiceIsolationCrudTestTemplates;
 
     /** Holds the string template group to generate the baseline test from. */
-    private STGroup webServiceIsolationValidationTestTemplates;
+    private final STGroup webServiceIsolationValidationTestTemplates;
 
     /** Holds the string template group to generate the baseline test from. */
-    private STGroup databaseCrudTestTemplates;
+    private final STGroup databaseCrudTestTemplates;
 
     /** Holds the string template group to generate the baseline test from. */
-    private STGroup databaseValidationTestTemplates;
+    private final STGroup databaseValidationTestTemplates;
 
     /** Holds the string template group to generate the baseline test from. */
-    private STGroup fullStackCrudTestTemplates;
+    private final STGroup fullStackCrudTestTemplates;
 
     /** Holds the string template group to generate the test data scaffolding from. */
-    private STGroup testDataTemplates;
+    private final STGroup testDataTemplates;
 
     /** Holds the string template group to generate the test setup controller from. */
-    private STGroup testSetupControllerTemplates;
+    private final STGroup testSetupControllerTemplates;
 
     /** Holds the name of the test setup controller file. */
     private String testSetupControllerFileName;
 
     /** Output handler for the test setup controller. */
-    private BufferingTemplateHandler testSetupControllerHandler = new BufferingTemplateHandler();
+    private final BufferingTemplateHandler testSetupControllerHandler = new BufferingTemplateHandler();
 
     /** Holds a list of entities to generate for. */
-    private List<Type> typesToGenerate = new LinkedList<>();
+    private final List<Type> typesToGenerate = new LinkedList<>();
 
     /** Holds a file output handler that overwrites files. */
     protected FileOutputRenderTemplateHandler fileOutputRenderTemplateHandler =

@@ -36,7 +36,7 @@ public class SundialManager implements Managed {
      * Holds the configuration properties. See {@link #SundialManager(java.util.Properties)} for a description of the
      * available configuration properties.
      */
-    private Properties configProperties;
+    private final Properties configProperties;
 
     /**
      * Creates the sundial lifecycle. The following properties may be set to configure sundial:
