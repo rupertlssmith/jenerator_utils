@@ -646,7 +646,7 @@ public class CommandLineParser {
          *
          * @param argToParse The next command line argument to parse.
          */
-        private void parseArgument(final String argToParse) {
+        private void parseArgument(String argToParse) {
             // The command line argument did not being with a '-' so it is an argument to the previous flag or it
             // is a free argument.
             // Check if a previous flag is expecting to swallow this next argument as its argument.
@@ -691,8 +691,8 @@ public class CommandLineParser {
          * @param matchedArg    The argument to the option that was matched.
          * @param optionInfo    The details on the option that was matched.
          */
-        private void parseFlagsOrArgs(final String arg, final String matchedOption, final String matchedArg,
-            final CommandLineOption optionInfo) {
+        private void parseFlagsOrArgs(String arg, String matchedOption, String matchedArg,
+            CommandLineOption optionInfo) {
             if (!optionInfo.isExpectsArgs()) {
                 // Set the first matched flag.
                 options.put(matchedOption, "true");

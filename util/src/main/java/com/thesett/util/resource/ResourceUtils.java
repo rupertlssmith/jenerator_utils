@@ -46,12 +46,12 @@ public class ResourceUtils {
      *
      * @return A list of matching resources.
      */
-    public static List<String> getResources(final String pattern, String packageName) {
-        final List<String> retval = new ArrayList<String>();
-        final String classPath = System.getProperty("java.class.path", ".");
-        final String[] classPathElements = classPath.split(":");
+    public static List<String> getResources(String pattern, String packageName) {
+        List<String> retval = new ArrayList<String>();
+        String classPath = System.getProperty("java.class.path", ".");
+        String[] classPathElements = classPath.split(":");
 
-        for (final String element : classPathElements) {
+        for (String element : classPathElements) {
             retval.addAll(getResources(element, pattern, packageName));
         }
 
@@ -138,26 +138,26 @@ public class ResourceUtils {
      *
      * @return A list of matching resources.
      */
-    private static Collection<String> getResourcesFromJarFile(final File file, final String pattern,
+    private static Collection<String> getResourcesFromJarFile(File file, String pattern,
         String packageName) {
         Pattern regexPattern = Pattern.compile(packageName + "/" + pattern);
-        final List<String> retval = new ArrayList<String>();
+        List<String> retval = new ArrayList<String>();
         ZipFile zf;
 
         try {
             zf = new ZipFile(file);
-        } catch (final ZipException e) {
+        } catch (ZipException e) {
             throw new IllegalStateException(e);
-        } catch (final IOException e) {
+        } catch (IOException e) {
             throw new IllegalStateException(e);
         }
 
-        final Enumeration e = zf.entries();
+        Enumeration e = zf.entries();
 
         while (e.hasMoreElements()) {
-            final ZipEntry ze = (ZipEntry) e.nextElement();
-            final String fileName = ze.getName();
-            final boolean accept = regexPattern.matcher(fileName).matches();
+            ZipEntry ze = (ZipEntry) e.nextElement();
+            String fileName = ze.getName();
+            boolean accept = regexPattern.matcher(fileName).matches();
 
             if (accept) {
                 retval.add(fileName);
@@ -166,7 +166,7 @@ public class ResourceUtils {
 
         try {
             zf.close();
-        } catch (final IOException e1) {
+        } catch (IOException e1) {
             throw new IllegalStateException(e1);
         }
 
@@ -186,7 +186,7 @@ public class ResourceUtils {
         List<String> retval = new ArrayList<String>();
         File[] fileList = directory.listFiles();
 
-        for (final File file : fileList) {
+        for (File file : fileList) {
             Pattern regexPattern = Pattern.compile(pattern);
             addFileToListIfMatches(regexPattern, file, retval, packageName);
         }
@@ -204,8 +204,8 @@ public class ResourceUtils {
      * @param packageName
      */
     private static void addFileToListIfMatches(Pattern pattern, File file, List<String> matches, String packageName) {
-        final String fileName = file.getName();
-        final boolean accept = pattern.matcher(fileName).matches();
+        String fileName = file.getName();
+        boolean accept = pattern.matcher(fileName).matches();
 
         if (accept) {
             matches.add(packageName + "/" + fileName);

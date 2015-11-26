@@ -129,7 +129,7 @@ public class XmlSessionFactoryFactory {
 
         // Add the connection provider to the Hibernate service registry, so it knows where to find it when it needs
         // to create connections.
-        final ServiceRegistry registry =
+        ServiceRegistry registry =
             new StandardServiceRegistryBuilder().addService(ConnectionProvider.class, connectionProvider)
             .applySettings(properties)
             .build();

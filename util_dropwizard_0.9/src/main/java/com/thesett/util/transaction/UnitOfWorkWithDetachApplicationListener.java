@@ -166,7 +166,7 @@ public class UnitOfWorkWithDetachApplicationListener implements ApplicationEvent
 
         private void rollbackTransaction() {
             if (this.UnitOfWorkWithDetach.transactional()) {
-                final Transaction txn = this.session.getTransaction();
+                Transaction txn = this.session.getTransaction();
 
                 if (txn != null && txn.isActive()) {
                     txn.rollback();
@@ -176,7 +176,7 @@ public class UnitOfWorkWithDetachApplicationListener implements ApplicationEvent
 
         private void commitTransaction() {
             if (this.UnitOfWorkWithDetach.transactional()) {
-                final Transaction txn = this.session.getTransaction();
+                Transaction txn = this.session.getTransaction();
 
                 if (txn != null && txn.isActive()) {
                     txn.commit();

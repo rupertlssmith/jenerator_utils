@@ -124,8 +124,8 @@ public class AuditedMethodApplicationListener implements ApplicationEventListene
             builder.append("  URI      : " + request.getRequestUri() + "\n");
 
             for (Map.Entry<String, List<String>> entry : request.getUriInfo().getQueryParameters(true).entrySet()) {
-                final String name = entry.getKey();
-                final List<String> value = entry.getValue();
+                String name = entry.getKey();
+                List<String> value = entry.getValue();
                 builder.append("  Param    : " + name + " = " + value + " \n");
             }
 

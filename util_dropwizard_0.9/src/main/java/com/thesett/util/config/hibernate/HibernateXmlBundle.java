@@ -56,7 +56,7 @@ public abstract class HibernateXmlBundle<T extends Configuration> implements Con
 
     /** {@inheritDoc} */
     public final void run(T configuration, Environment environment) throws ClassNotFoundException {
-        final PooledDataSourceFactory dbConfig = getDataSourceFactory(configuration);
+        PooledDataSourceFactory dbConfig = getDataSourceFactory(configuration);
         this.sessionFactory = sessionFactoryFactory.build(this, environment, dbConfig, hibernateXmlResourceName);
 
         // Register the annotations.
@@ -96,7 +96,7 @@ public abstract class HibernateXmlBundle<T extends Configuration> implements Con
             }
         }
 
-        final UnitOfWorkWithDetachApplicationListener listener = new UnitOfWorkWithDetachApplicationListener();
+        UnitOfWorkWithDetachApplicationListener listener = new UnitOfWorkWithDetachApplicationListener();
         environment.jersey().register(listener);
 
         return listener;
@@ -109,7 +109,7 @@ public abstract class HibernateXmlBundle<T extends Configuration> implements Con
             }
         }
 
-        final UnitOfWorkApplicationListener listener = new UnitOfWorkApplicationListener();
+        UnitOfWorkApplicationListener listener = new UnitOfWorkApplicationListener();
         environment.jersey().register(listener);
 
         return listener;

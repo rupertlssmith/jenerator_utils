@@ -17,7 +17,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class JodaTimeObjectMapperProvider implements ContextResolver<ObjectMapper> {
     /** {@inheritDoc} */
     public ObjectMapper getContext(Class<?> type) {
-        final ObjectMapper result = new ObjectMapper();
+        ObjectMapper result = new ObjectMapper();
         result.registerModule(new JodaTimeModule());
 
         return result;

@@ -51,7 +51,7 @@ public class Generics {
             // should typically have one of type parameters (first one) that matches:
             for (Type param : ((ParameterizedType) t).getActualTypeArguments()) {
                 if (param instanceof Class<?>) {
-                    final Class<T> cls = determineClass(bound, param);
+                    Class<T> cls = determineClass(bound, param);
 
                     if (cls != null) {
                         return cls;
@@ -59,7 +59,7 @@ public class Generics {
                 } else if (param instanceof TypeVariable) {
                     for (Type paramBound : ((TypeVariable<?>) param).getBounds()) {
                         if (paramBound instanceof Class<?>) {
-                            final Class<T> cls = determineClass(bound, paramBound);
+                            Class<T> cls = determineClass(bound, paramBound);
 
                             if (cls != null) {
                                 return cls;
@@ -75,7 +75,7 @@ public class Generics {
 
     private static <T> Class<T> determineClass(Class<? super T> bound, Type candidate) {
         if (candidate instanceof Class<?>) {
-            final Class<?> cls = (Class<?>) candidate;
+            Class<?> cls = (Class<?>) candidate;
 
             if (bound.isAssignableFrom(cls)) {
                 return (Class<T>) cls;

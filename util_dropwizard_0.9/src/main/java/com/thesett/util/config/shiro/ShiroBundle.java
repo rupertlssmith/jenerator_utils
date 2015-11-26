@@ -40,8 +40,8 @@ public abstract class ShiroBundle<T extends Configuration> implements Configured
     }
 
     /** {@inheritDoc} */
-    public void run(final T configuration, Environment environment) {
-        final ShiroConfiguration shiroConfig = getShiroConfiguration(configuration);
+    public void run(T configuration, Environment environment) {
+        ShiroConfiguration shiroConfig = getShiroConfiguration(configuration);
 
         initializeShiro(shiroConfig, environment);
     }
@@ -60,7 +60,7 @@ public abstract class ShiroBundle<T extends Configuration> implements Configured
 
             environment.servlets().addServletListeners(new EnvironmentLoaderListener());
 
-            final String filterUrlPattern = config.getSecuredUrlPattern();
+            String filterUrlPattern = config.getSecuredUrlPattern();
             environment.servlets()
                 .addFilter("shiro-filter", new ShiroFilter())
                 .addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), false, filterUrlPattern);

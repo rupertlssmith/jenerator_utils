@@ -48,7 +48,7 @@ public class Functions {
         return result;
     }
 
-    public static <X, Y, Z> Function<X, Y> chain(final Function<X, Z> first, final Function<Z, Y> second) {
+    public static <X, Y, Z> Function<X, Y> chain(Function<X, Z> first, Function<Z, Y> second) {
         return new ChainFunction<>(second, first);
     }
 
