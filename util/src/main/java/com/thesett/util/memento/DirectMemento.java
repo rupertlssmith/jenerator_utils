@@ -2,6 +2,7 @@ package com.thesett.util.memento;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
+import java.lang.reflect.Member;
 import java.lang.reflect.Modifier;
 import java.util.Collection;
 import java.util.HashMap;
@@ -71,7 +72,7 @@ public class DirectMemento implements Memento, Serializable {
      *
      * @return True if the field should be saved.
      */
-    public static boolean shouldBeSaved(Field f) {
+    public static boolean shouldBeSaved(Member f) {
         // Get the fields modifiers
         int mod = f.getModifiers();
 
@@ -143,7 +144,7 @@ public class DirectMemento implements Memento, Serializable {
             Class cls = (Class) key;
 
             // Get the cache of field values for the class.
-            HashMap vals = (HashMap) values.get(cls);
+            Map vals = (HashMap) values.get(cls);
 
             // Loop over all fields in the class.
             for (Object o : vals.keySet()) {

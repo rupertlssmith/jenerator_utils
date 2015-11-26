@@ -94,7 +94,7 @@ public class ResourceUtils {
      * @return A list of matching resources.
      */
     private static Collection<String> getResources(String element, String pattern, String packageName) {
-        List<String> retval = new ArrayList<String>();
+        Collection<String> retval = new ArrayList<String>();
         File file = new File(element);
 
         if (file.isDirectory()) {
@@ -141,7 +141,7 @@ public class ResourceUtils {
     private static Collection<String> getResourcesFromJarFile(File file, String pattern,
         String packageName) {
         Pattern regexPattern = Pattern.compile(packageName + "/" + pattern);
-        List<String> retval = new ArrayList<String>();
+        Collection<String> retval = new ArrayList<String>();
         ZipFile zf;
 
         try {
@@ -203,7 +203,7 @@ public class ResourceUtils {
      * @param matches     The list of matches files to add to.
      * @param packageName
      */
-    private static void addFileToListIfMatches(Pattern pattern, File file, List<String> matches, String packageName) {
+    private static void addFileToListIfMatches(Pattern pattern, File file, Collection<String> matches, String packageName) {
         String fileName = file.getName();
         boolean accept = pattern.matcher(fileName).matches();
 

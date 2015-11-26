@@ -288,7 +288,7 @@ public class HibernateModelAwareDAO<E extends Entity<K>, K extends Serializable>
      *
      * @return A projection onto a view plus the id.
      */
-    private ProjectionList projectToIdAndView(ViewType viewType) {
+    private ProjectionList projectToIdAndView(ComponentType viewType) {
         // Project the id property and the remaining properties that are required to project
         // the results onto the specified view type.
         ProjectionList properties = Projections.projectionList().add(Projections.id());
@@ -314,7 +314,7 @@ public class HibernateModelAwareDAO<E extends Entity<K>, K extends Serializable>
      *
      * @return A map from entity types to matching entities.
      */
-    private List browse(EntityType entityType, Map<String, Attribute> matchings, String viewTypeName) {
+    private List browse(ComponentType entityType, Map<String, Attribute> matchings, String viewTypeName) {
         // Ensure that a view type has been specified.
         if (viewTypeName == null) {
             throw new IllegalArgumentException("The 'viewTypeName' parameter must not be null.");
@@ -415,10 +415,10 @@ public class HibernateModelAwareDAO<E extends Entity<K>, K extends Serializable>
      *
      * @return A collection of entities from the original set that match the specified fields.
      */
-    private Collection<EntityType> filterEntitiesMatchingFields(Collection<EntityType> entities,
+    private Collection<EntityType> filterEntitiesMatchingFields(Iterable<EntityType> entities,
         Map<String, Attribute> matchings) {
         // Build a list of all entity types that contain the named attributes as field with matching name and type.
-        List<EntityType> results = new ArrayList<EntityType>();
+        Collection<EntityType> results = new ArrayList<EntityType>();
 
         for (EntityType entityType : entities) {
             // Loop over all the properties and their attributes. An entity must match all before it is added to
@@ -471,9 +471,9 @@ public class HibernateModelAwareDAO<E extends Entity<K>, K extends Serializable>
      *
      * @return A collection of entities from the original set that conform to the specified view type.
      */
-    private Collection<EntityType> filterEntitiesMatchingViews(Collection<EntityType> entities, ViewType view) {
+    private Collection<EntityType> filterEntitiesMatchingViews(Iterable<EntityType> entities, ComponentType view) {
         // Build a list of all entity types that conform to the specified view type.
-        List<EntityType> results = new ArrayList<EntityType>();
+        Collection<EntityType> results = new ArrayList<EntityType>();
 
         for (EntityType entityType : entities) {
             Set<ComponentType> ancestors = entityType.getImmediateAncestors();

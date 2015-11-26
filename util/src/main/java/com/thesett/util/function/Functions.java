@@ -1,5 +1,6 @@
 package com.thesett.util.function;
 
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -24,7 +25,7 @@ public class Functions {
      *
      * @return A list consisting of the function applied to each element of the input list.
      */
-    public static <X, Y> void map(List<X> list, Function<X, Y> f, List<Y> outList) {
+    public static <X, Y> void map(Iterable<X> list, Function<X, Y> f, Collection<Y> outList) {
         for (X x : list) {
             outList.add(f.apply(x));
         }

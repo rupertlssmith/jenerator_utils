@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.core.FormatSchema;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.MappingIterator;
@@ -41,7 +42,7 @@ public class CSVHandlerUtils {
      *
      * @throws com.thesett.util.uploader.UploadException Iff there is an error reading the data.
      */
-    public static List<Map<String, Object>> extractCSVFromReader(Reader reader, CsvSchema schema)
+    public static List<Map<String, Object>> extractCSVFromReader(Reader reader, FormatSchema schema)
         throws UploadException {
         try {
             CsvMapper csvMapper = new CsvMapper();
@@ -64,7 +65,7 @@ public class CSVHandlerUtils {
      *
      * @throws UploadException Iff there is an error writing the data.
      */
-    public static void outputCSVToWriter(Writer writer, List<Map<String, Object>> table, CsvSchema schema)
+    public static void outputCSVToWriter(Writer writer, Iterable<Map<String, Object>> table, FormatSchema schema)
         throws UploadException {
         CsvMapper csvMapper = new CsvMapper();
 
@@ -93,8 +94,8 @@ public class CSVHandlerUtils {
      *
      * @throws UploadException Iff there is an error writing the data.
      */
-    public static void outputCSVWithErrorsToWriter(Writer writer, List<Map<String, Object>> table,
-        List<String> messages, CsvSchema schema) throws UploadException {
+    public static void outputCSVWithErrorsToWriter(Writer writer, Iterable<Map<String, Object>> table,
+        List<String> messages, FormatSchema schema) throws UploadException {
         CsvMapper csvMapper = new CsvMapper();
 
         // This is done to prevent the mapper being auto-closed on writeValue.

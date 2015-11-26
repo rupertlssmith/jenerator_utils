@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import com.thesett.aima.state.ComponentType;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
@@ -92,11 +93,11 @@ public class ServiceFactoryGenerator extends BaseGenerator implements EntityType
     private final List<Type> typesToGenerate = new LinkedList<>();
 
     /** Holds a file output handler that overwrites files. */
-    protected FileOutputRenderTemplateHandler fileOutputRenderTemplateHandler =
+    protected RenderTemplateHandler fileOutputRenderTemplateHandler =
         new FileOutputRenderTemplateHandler(false);
 
     /** Holds a file output handler that appends to files. */
-    protected FileOutputRenderTemplateHandler fileOutputRenderTemplateHandlerAppend =
+    protected RenderTemplateHandler fileOutputRenderTemplateHandlerAppend =
         new FileOutputRenderTemplateHandler(true);
 
     private String modelPackage;
@@ -176,7 +177,7 @@ public class ServiceFactoryGenerator extends BaseGenerator implements EntityType
      */
     public void visit(EntityType type) {
         // Add the type to be generated in the service factory interface and implementations.
-        ComponentTypeDecorator decoratedType = (ComponentTypeDecorator) TypeDecoratorFactory.decorateType(type);
+        ComponentType decoratedType = (ComponentTypeDecorator) TypeDecoratorFactory.decorateType(type);
         typesToGenerate.add(decoratedType);
 
         // Generate the client service interfaces.

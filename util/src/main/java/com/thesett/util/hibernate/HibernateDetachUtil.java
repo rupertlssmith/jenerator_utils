@@ -7,6 +7,7 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -427,7 +428,7 @@ public class HibernateDetachUtil {
      * @param fieldAccessType The type of field access to use.
      * @param packageName     The name of the package to recursively detach within.
      */
-    private static void nullOutFieldsByFieldAccess(Object object, List<Field> classFields,
+    private static void nullOutFieldsByFieldAccess(Object object, Iterable<Field> classFields,
         Map<Integer, Object> alreadySeen, Map<Integer, List<Object>> collisionMap, int depth,
         FieldAccessType fieldAccessType, String packageName) {
         for (Field field : classFields) {
@@ -555,7 +556,7 @@ public class HibernateDetachUtil {
      * @return The deproxied object, or <tt>null</tt> if it could not be deproxied.
      */
     private static Object nullOutHibernateProxyByDeproxying(Object object, Map<Integer, Object> alreadySeen,
-        Map<Integer, List<Object>> collisionMap, int depth, FieldAccessType fieldAccessType, Field field,
+        Map<Integer, List<Object>> collisionMap, int depth, FieldAccessType fieldAccessType, Member field,
         Object fieldValue, String packageName) {
         try {
             Object replacement;
@@ -587,7 +588,7 @@ public class HibernateDetachUtil {
      * @param field      The field to null out if not initialized.
      * @param fieldValue The value that the field currently has.
      */
-    private static void nullOutHibernateProxyByObjectConstruction(Object object, Field field,
+    private static void nullOutHibernateProxyByObjectConstruction(Object object, Member field,
         HibernateProxy fieldValue) {
         try {
             String className = fieldValue.getHibernateLazyInitializer().getEntityName();
@@ -657,7 +658,7 @@ public class HibernateDetachUtil {
      * @param packageName     The name of the package to recursively detach within.
      */
     private static void nullOutPersistentCollection(Object object, Map<Integer, Object> alreadySeen,
-        Map<Integer, List<Object>> collisionMap, int depth, FieldAccessType fieldAccessType, Field field,
+        Map<Integer, List<Object>> collisionMap, int depth, FieldAccessType fieldAccessType, Member field,
         Object fieldValue, String packageName) {
         if (!((org.hibernate.collection.spi.PersistentCollection) fieldValue).wasInitialized()) {
             nullOutFieldDirect(object, field.getName());

@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import com.thesett.aima.state.ComponentType;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
@@ -124,11 +125,11 @@ public class TestStackGenerator extends BaseGenerator implements EntityTypeVisit
     private final List<Type> typesToGenerate = new LinkedList<>();
 
     /** Holds a file output handler that overwrites files. */
-    protected FileOutputRenderTemplateHandler fileOutputRenderTemplateHandler =
+    protected RenderTemplateHandler fileOutputRenderTemplateHandler =
         new FileOutputRenderTemplateHandler(false);
 
     /** Holds a file output handler that appends to files. */
-    protected FileOutputRenderTemplateHandler fileOutputRenderTemplateHandlerAppend =
+    protected RenderTemplateHandler fileOutputRenderTemplateHandlerAppend =
         new FileOutputRenderTemplateHandler(true);
 
     private String modelPackage;
@@ -221,7 +222,7 @@ public class TestStackGenerator extends BaseGenerator implements EntityTypeVisit
      */
     public void visit(EntityType type) {
         // Add all entities to the list of types to generate in the many entities -> one file templates.
-        ComponentTypeDecorator decoratedType = (ComponentTypeDecorator) TypeDecoratorFactory.decorateType(type);
+        ComponentType decoratedType = (ComponentTypeDecorator) TypeDecoratorFactory.decorateType(type);
         typesToGenerate.add(decoratedType);
 
         // Generate the entities for the one entity -> one file templates.

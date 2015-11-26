@@ -3,6 +3,7 @@ package com.thesett.util.jdbc;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
  * JDBCUtils provides some helper methods for working with JDBC.
@@ -23,7 +24,7 @@ public class JDBCUtils {
      * @param connection The connection to close, if not <tt>null</tt>.
      * @param sql        The prepared statement to close, if not <tt>null</tt>.
      */
-    public static void closeConnection(Connection connection, PreparedStatement sql) {
+    public static void closeConnection(Connection connection, Statement sql) {
         try {
             if (sql != null) {
                 sql.close();

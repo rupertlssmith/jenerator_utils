@@ -85,7 +85,7 @@ public class ViewsDAO extends ViewsBaseDAO<Object[]> {
         // Ensure that only the views exposed by this DAO can be accessed.
         viewIsAccessable(name);
 
-        LinkedHashSet<String> result = new LinkedHashSet<>();
+        Set<String> result = new LinkedHashSet<>();
         result.addAll(currentSession().createSQLQuery(
                     "SELECT column_name FROM information_schema.columns WHERE table_schema = 'public' AND table_name = :name")
             .addScalar("column_name")
@@ -226,7 +226,7 @@ public class ViewsDAO extends ViewsBaseDAO<Object[]> {
          * @return A map containing (alias, data) items.
          */
         public Object transformTuple(Object[] tuple, String[] aliases) {
-            HashMap<String, Object> result = new HashMap<>();
+            Map<String, Object> result = new HashMap<>();
 
             for (int i = 0; i < tuple.length; i++) {
                 result.put(aliases[i], tuple[i]);

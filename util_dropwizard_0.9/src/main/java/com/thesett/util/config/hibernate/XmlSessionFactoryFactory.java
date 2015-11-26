@@ -7,6 +7,7 @@ import javax.sql.DataSource;
 import io.dropwizard.db.ManagedDataSource;
 import io.dropwizard.db.PooledDataSourceFactory;
 import io.dropwizard.hibernate.SessionFactoryManager;
+import io.dropwizard.lifecycle.Managed;
 import io.dropwizard.setup.Environment;
 
 import org.hibernate.SessionFactory;
@@ -15,6 +16,7 @@ import org.hibernate.cfg.AvailableSettings;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.engine.jdbc.connections.internal.DatasourceConnectionProviderImpl;
 import org.hibernate.engine.jdbc.connections.spi.ConnectionProvider;
+import org.hibernate.service.Service;
 import org.hibernate.service.ServiceRegistry;
 
 /**
@@ -64,7 +66,7 @@ public class XmlSessionFactoryFactory {
         SessionFactory factory =
             buildSessionFactory(bundle, PooledDataSourceFactory, provider, PooledDataSourceFactory.getProperties(),
                 hibernateXmlResourceName);
-        SessionFactoryManager managedFactory = new SessionFactoryManager(factory, dataSource);
+        Managed managedFactory = new SessionFactoryManager(factory, dataSource);
 
         environment.lifecycle().manage(managedFactory);
 
@@ -99,7 +101,7 @@ public class XmlSessionFactoryFactory {
      * @return A Hibernate session factory.
      */
     private SessionFactory buildSessionFactory(HibernateXmlBundle<?> bundle,
-        PooledDataSourceFactory PooledDataSourceFactory, ConnectionProvider connectionProvider,
+        PooledDataSourceFactory PooledDataSourceFactory, Service connectionProvider,
         Map<String, String> properties, String hibernateXmlResourceName) {
         Configuration configuration = new Configuration();
 

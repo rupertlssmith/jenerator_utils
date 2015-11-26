@@ -56,11 +56,11 @@ public class DropWizardTopGenerator extends BaseGenerator implements EntityTypeV
     private final List<Type> typesToGenerate = new LinkedList<>();
 
     /** Holds a file output handler that overwrites files. */
-    protected FileOutputRenderTemplateHandler fileOutputRenderTemplateHandler =
+    protected RenderTemplateHandler fileOutputRenderTemplateHandler =
         new FileOutputRenderTemplateHandler(false);
 
     /** Holds a file output handler that appends to files. */
-    protected FileOutputRenderTemplateHandler fileOutputRenderTemplateHandlerAppend =
+    protected RenderTemplateHandler fileOutputRenderTemplateHandlerAppend =
         new FileOutputRenderTemplateHandler(true);
 
     private String modelPackage;
@@ -116,7 +116,7 @@ public class DropWizardTopGenerator extends BaseGenerator implements EntityTypeV
      * @param type The component type to create a bean for.
      */
     public void visit(EntityType type) {
-        ComponentTypeDecorator decoratedType = (ComponentTypeDecorator) TypeDecoratorFactory.decorateType(type);
+        Type decoratedType = (ComponentTypeDecorator) TypeDecoratorFactory.decorateType(type);
         typesToGenerate.add(decoratedType);
 
         for (Relationship relationship : type.getRelationships().values()) {

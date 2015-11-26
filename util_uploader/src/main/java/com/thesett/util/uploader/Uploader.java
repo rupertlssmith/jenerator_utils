@@ -1,5 +1,6 @@
 package com.thesett.util.uploader;
 
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -55,7 +56,7 @@ public class Uploader {
         // Create a unique id for the job.
         UUID jobId = UUID.randomUUID();
 
-        List<UploadException> uploadErrors = new LinkedList<>();
+        Collection<UploadException> uploadErrors = new LinkedList<>();
 
         ETLTable table = source.poll();
 

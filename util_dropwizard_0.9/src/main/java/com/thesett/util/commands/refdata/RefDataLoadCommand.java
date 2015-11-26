@@ -116,7 +116,7 @@ public abstract class RefDataLoadCommand<T extends Configuration> extends Config
      *
      * @throws RefDataLoadException If there is a failure during the database insertion.
      */
-    private void upsertReferenceData(Set<RefDataBundle> refDataBundles, Connection connection)
+    private void upsertReferenceData(Iterable<RefDataBundle> refDataBundles, Connection connection)
         throws RefDataLoadException {
         // Insert all of the reference data.
         LOG.fine("Inserting the reference data.");

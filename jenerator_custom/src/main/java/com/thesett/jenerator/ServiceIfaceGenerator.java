@@ -2,6 +2,7 @@ package com.thesett.jenerator;
 
 import java.util.Map;
 
+import com.thesett.aima.state.ComponentType;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
 
@@ -29,7 +30,7 @@ public class ServiceIfaceGenerator extends BaseGenerator implements EntityTypeVi
     private final STGroup daoInterfaceTemplates;
 
     /** Holds a file output handler that overwrites files. */
-    protected FileOutputRenderTemplateHandler fileOutputRenderTemplateHandler =
+    protected RenderTemplateHandler fileOutputRenderTemplateHandler =
         new FileOutputRenderTemplateHandler(false);
 
     private String modelPackage;
@@ -52,7 +53,7 @@ public class ServiceIfaceGenerator extends BaseGenerator implements EntityTypeVi
      * @param type The component type to create a bean for.
      */
     public void visit(EntityType type) {
-        ComponentTypeDecorator decoratedType = (ComponentTypeDecorator) TypeDecoratorFactory.decorateType(type);
+        ComponentType decoratedType = (ComponentTypeDecorator) TypeDecoratorFactory.decorateType(type);
 
         STGroup[] templates;
         String[] names;

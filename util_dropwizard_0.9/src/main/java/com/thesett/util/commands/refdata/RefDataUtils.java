@@ -58,7 +58,7 @@ public class RefDataUtils {
      *
      * @throws RefDataLoadException If there is a problem reading or parsing the data.
      */
-    public static Set<RefDataBundle> extractReferenceData(String refdataPackage, List<String> resources)
+    public static Set<RefDataBundle> extractReferenceData(String refdataPackage, Iterable<String> resources)
         throws RefDataLoadException {
         Set<RefDataBundle> refDataBundles = new LinkedHashSet<>();
 

@@ -26,7 +26,7 @@ public class FileUtils {
      *
      * @param fileList A list of files to delete.
      */
-    public static void deleteFiles(List<File> fileList) {
+    public static void deleteFiles(Iterable<File> fileList) {
         for (File file : fileList) {
             if (!file.delete()) {
                 LOG.warning("Unable to delete: " + file.getName());

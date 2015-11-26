@@ -1,6 +1,7 @@
 package com.thesett.util.hibernate;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -22,7 +23,7 @@ import org.hibernate.type.Type;
  * </table></pre>
  */
 public class ChainedInterceptor extends EmptyInterceptor {
-    private final List<Interceptor> chain = new LinkedList<>();
+    private final Collection<Interceptor> chain = new LinkedList<>();
 
     public void addInterceptor(Interceptor interceptor) {
         chain.add(interceptor);

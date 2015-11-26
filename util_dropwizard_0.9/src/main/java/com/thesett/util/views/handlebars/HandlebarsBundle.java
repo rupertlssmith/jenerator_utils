@@ -1,5 +1,6 @@
 package com.thesett.util.views.handlebars;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -27,7 +28,7 @@ import io.dropwizard.setup.Environment;
  */
 public abstract class HandlebarsBundle implements ConfiguredBundle<HandlebarsBundleConfig> {
     /** Holds additional template paths. */
-    private final Set<String> templatePaths = new LinkedHashSet<>();
+    private final Collection<String> templatePaths = new LinkedHashSet<>();
     private final Map<String, String> overrides = new HashMap<>();
 
     public static <H> void registerHelperMissing(Helper<H> helper) {
