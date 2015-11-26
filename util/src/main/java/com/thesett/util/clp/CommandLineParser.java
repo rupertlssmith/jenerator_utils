@@ -87,10 +87,10 @@ public class CommandLineParser {
     private Collection<String> parsingErrors = new ArrayList<String>();
 
     /** Holds the parsed command line properties after parsing. */
-    private Properties parsedProperties = null;
+    private Properties parsedProperties;
 
     /** Flag used to indicate that errors should be created for unknown options. False by default. */
-    private boolean errorsOnUnknowns = false;
+    private boolean errorsOnUnknowns;
 
     /**
      * Creates a command line options parser from a command line specification. This is passed to this constructor as an
@@ -428,22 +428,22 @@ public class CommandLineParser {
      */
     protected static class CommandLineOption {
         /** Holds the text for the flag to match this argument with. */
-        private String option = null;
+        private String option;
 
         /** Holds a string describing how to use this command line argument. */
-        private String argument = null;
+        private String argument;
 
         /** Flag that determines whether or not this command line argument can take arguments. */
-        private boolean expectsArgs = false;
+        private boolean expectsArgs;
 
         /** Holds a short comment describing what this command line argument is for. */
-        private String comment = null;
+        private String comment;
 
         /** Flag that determines whether or not this is an mandatory command line argument. */
-        private boolean mandatory = false;
+        private boolean mandatory;
 
         /** A regular expression describing what format the argument to this option muist have. */
-        private String argumentFormatRegexp = null;
+        private String argumentFormatRegexp;
 
         /**
          * Create a command line option object that holds specific information about a command line option.
@@ -557,10 +557,10 @@ public class CommandLineParser {
         private int free = 1;
 
         /** Indicates whether the next item to parse is coming after an option that is expecting arguments. */
-        private boolean expectingArgs = false;
+        private boolean expectingArgs;
 
         /** The option that is expecting an argument, when one has just previously been parsed. */
-        private String optionExpectingArgs = null;
+        private String optionExpectingArgs;
 
         /** The regular expression to match options with. */
         private final Pattern pattern;

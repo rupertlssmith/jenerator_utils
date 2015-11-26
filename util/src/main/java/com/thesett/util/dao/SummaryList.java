@@ -33,13 +33,13 @@ public class SummaryList extends LazyPagingList<ViewInstance> implements Seriali
     String viewTypeName;
 
     /** Holds the optional criterion to apply to the entity. */
-    Criterion criterion = null;
+    Criterion criterion;
 
     /** Holds the optional map of related entities to apply criterions to to restrict the results. */
-    Map<String, Criterion> joins = null;
+    Map<String, Criterion> joins;
 
     /** Holds a reference to the catalogue manager service to call to get more list elements. */
-    private transient HibernateModelAwareDAO service = null;
+    private transient HibernateModelAwareDAO service;
 
     /**
      * Create a new summary list.

@@ -16,7 +16,7 @@ public class TerminalProgressBar implements ProgressIndicator {
     int workToDo;
 
     /** Holds the last position that a progress character was printed to. */
-    int lastPrintPosition = 0;
+    int lastPrintPosition;
 
     /** {@inheritDoc} */
     public void initWorkToDo(String name, int amount) {
