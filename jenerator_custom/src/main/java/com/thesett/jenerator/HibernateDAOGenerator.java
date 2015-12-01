@@ -37,7 +37,7 @@ public class HibernateDAOGenerator extends BaseGenerator implements EntityTypeVi
 
     /** Holds a file output handler that overwrites files. */
     protected RenderTemplateHandler fileOutputProcessedTemplateHandler =
-        new FileOutputRenderTemplateHandler(false);
+        new FileOutputRenderTemplateHandler(false, true);
 
     private String modelPackage;
 

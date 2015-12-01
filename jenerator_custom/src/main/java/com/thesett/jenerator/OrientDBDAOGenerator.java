@@ -31,7 +31,7 @@ public class OrientDBDAOGenerator extends BaseGenerator implements EntityTypeVis
 
     /** Holds a file output handler that overwrites files. */
     protected RenderTemplateHandler fileOutputProcessedTemplateHandler =
-        new FileOutputRenderTemplateHandler(false);
+        new FileOutputRenderTemplateHandler(false, true);
 
     private String modelPackage;
 

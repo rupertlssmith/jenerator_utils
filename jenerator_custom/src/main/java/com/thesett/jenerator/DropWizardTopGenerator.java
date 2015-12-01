@@ -57,11 +57,11 @@ public class DropWizardTopGenerator extends BaseGenerator implements EntityTypeV
 
     /** Holds a file output handler that overwrites files. */
     protected RenderTemplateHandler fileOutputRenderTemplateHandler =
-        new FileOutputRenderTemplateHandler(false);
+        new FileOutputRenderTemplateHandler(false, true);
 
     /** Holds a file output handler that appends to files. */
     protected RenderTemplateHandler fileOutputRenderTemplateHandlerAppend =
-        new FileOutputRenderTemplateHandler(true);
+        new FileOutputRenderTemplateHandler(true, true);
 
     private String modelPackage;
     private String clientOutputDir;

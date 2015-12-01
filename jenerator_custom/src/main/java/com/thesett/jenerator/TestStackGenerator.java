@@ -126,11 +126,15 @@ public class TestStackGenerator extends BaseGenerator implements EntityTypeVisit
 
     /** Holds a file output handler that overwrites files. */
     protected RenderTemplateHandler fileOutputRenderTemplateHandler =
-        new FileOutputRenderTemplateHandler(false);
+        new FileOutputRenderTemplateHandler(false, true);
 
     /** Holds a file output handler that appends to files. */
     protected RenderTemplateHandler fileOutputRenderTemplateHandlerAppend =
-        new FileOutputRenderTemplateHandler(true);
+        new FileOutputRenderTemplateHandler(true, true);
+
+    /** Holds a file output handler that leaves existing files alone. */
+    protected RenderTemplateHandler fileOutputRenderTemplateHandlerNoOverwrite =
+            new FileOutputRenderTemplateHandler(false, false);
 
     private String modelPackage;
     private String unitTestOutputDir;
@@ -234,7 +238,7 @@ public class TestStackGenerator extends BaseGenerator implements EntityTypeVisit
             new RenderTemplateHandler[] {
                 fileOutputRenderTemplateHandler, fileOutputRenderTemplateHandler, fileOutputRenderTemplateHandler,
                 fileOutputRenderTemplateHandler, fileOutputRenderTemplateHandler, fileOutputRenderTemplateHandler,
-                fileOutputRenderTemplateHandler, fileOutputRenderTemplateHandler
+                fileOutputRenderTemplateHandler, fileOutputRenderTemplateHandlerNoOverwrite
             };
 
         templates =
