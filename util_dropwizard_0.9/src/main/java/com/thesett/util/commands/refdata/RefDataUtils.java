@@ -40,11 +40,6 @@ public class RefDataUtils {
 
         List<String> resources = ResourceUtils.getResources(".*\\.csv", refdataPackage);
 
-        if (resources.isEmpty()) {
-            throw new RefDataLoadException("Could not find any .csv files to load from the classpath at '" +
-                refdataPackage + "'.", "RDL", 1, null);
-        }
-
         return resources;
     }
 
