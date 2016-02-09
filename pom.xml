@@ -50,6 +50,19 @@
         <snakeyaml.version>1.15</snakeyaml.version>
     </properties>
 
+    <distributionManagement>
+        <repository>
+            <id>releases</id>
+            <name>Releases</name>
+            <url>http://localhost:9005/nexus/content/repositories/releases</url>
+        </repository>
+        <snapshotRepository>
+            <id>snapshots</id>
+            <name>Snapshots</name>
+            <url>http://localhost:9005/nexus/content/repositories/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
+
     <dependencyManagement>
         <dependencies>
             
@@ -182,6 +195,16 @@
     <build>
         <pluginManagement>
             <plugins>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>versions-maven-plugin</artifactId>
+                    <configuration>
+                        <includes>
+                            <include>com.thesett:*</include>
+                        </includes>
+                    </configuration>
+                </plugin>
+                
                 <!-- Fix the version of the assembly plugin. -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
