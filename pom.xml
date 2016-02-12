@@ -146,7 +146,7 @@
             <dependency>
                 <groupId>com.thesett</groupId>
                 <artifactId>power_model_validation</artifactId>
-                <version>${jenerator.version}</version>
+                <version>${lojix.version}</version>
             </dependency>
 
             <dependency>
