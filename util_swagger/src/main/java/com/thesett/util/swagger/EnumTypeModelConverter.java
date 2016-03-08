@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.type.SimpleType;
 
 import com.thesett.util.archetype.EnumType;
 
+import com.thesett.util.model.RefDataItem;
 import io.swagger.converter.ModelConverter;
 import io.swagger.converter.ModelConverterContext;
 
@@ -35,7 +36,9 @@ public class EnumTypeModelConverter extends DefaultModelConverter {
             Class<?> rawClass = simpleType.getRawClass();
 
             if (EnumType.class.isAssignableFrom(rawClass)) {
-                System.out.println(rawClass);
+                SimpleType refDataType = SimpleType.construct(RefDataItem.class);
+
+                return super.resolve(refDataType, modelConverterContext, iterator);
             }
         }
 
