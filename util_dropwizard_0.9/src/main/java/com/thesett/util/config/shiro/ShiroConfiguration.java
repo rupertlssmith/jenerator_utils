@@ -6,13 +6,13 @@ public class ShiroConfiguration {
     static final String DEFAULT_SECURED_URL_PATTERN = "/*";
 
     @JsonProperty
-    private final boolean enabled = false;
+    private boolean enabled = false;
 
     @JsonProperty("url_pattern")
-    private final String securedUrlPattern = DEFAULT_SECURED_URL_PATTERN;
+    private String securedUrlPattern = DEFAULT_SECURED_URL_PATTERN;
 
     @JsonProperty("session_handler")
-    private final boolean dropwizardSessionHandler = false;
+    private boolean dropwizardSessionHandler = false;
 
     public boolean isEnabled() {
         return enabled;
