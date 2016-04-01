@@ -101,8 +101,8 @@ public class HandlebarsViewRenderer implements ViewRenderer
                 viewTemplate.apply(view, buffer);
 
                 Map<String, String> vals = new HashMap<>();
-                vals.put("body", buffer.toString());
-                layoutTemplate.apply(vals, writer);
+                layout.setBody(buffer.toString());
+                layoutTemplate.apply(layout, writer);
             }
             else
             {
