@@ -6,11 +6,7 @@ import java.util.List;
 import com.thesett.util.dao.BaseDAO;
 import com.thesett.util.entity.CRUD;
 import com.thesett.util.entity.Entity;
-import com.thesett.util.entity.EntityAlreadyExistsException;
-import com.thesett.util.entity.EntityDeletionException;
 import com.thesett.util.entity.EntityException;
-import com.thesett.util.entity.EntityNotExistsException;
-import com.thesett.util.entity.EntityValidationException;
 
 /**
  * CRUDTestController allows a standard set of tests to be run against entities in a data model, in order to check the
@@ -140,12 +136,12 @@ public abstract class CRUDTestController<E extends Entity<K>, K extends Serializ
     }
 
     /** {@inheritDoc} */
-    public List<E> browse(String entityTypeName) {
+    public List<E> browse() {
         throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */
-    public List<E> findByExample(E example, String entityTypeName) {
+    public List<E> findByExample(E example) {
         throw new UnsupportedOperationException();
     }
 

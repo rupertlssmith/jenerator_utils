@@ -32,11 +32,9 @@ public interface BaseDAO<E extends Entity<K>, K extends Serializable> extends CR
     /**
      * Lists all values of an entity.
      *
-     * @param  entityTypeName The name of the entity type to query.
-     *
      * @return A list of matching entities (all of a particular type).
      */
-    List<E> browse(String entityTypeName);
+    List<E> browse();
 
     /**
      * Lists all values that have fields that match the non-null fields in the example. Id fields are ignored.
@@ -44,11 +42,9 @@ public interface BaseDAO<E extends Entity<K>, K extends Serializable> extends CR
      * to supported associated examples goes deeper than the default behaviour of Hibernate for example.
      *
      * @param  example        The example to query by.
-     * @param  entityTypeName The name of the entity type to query.
-     *
      * @return A list of all matching values.
      */
-    List<E> findByExample(E example, String entityTypeName);
+    List<E> findByExample(E example);
 
     /**
      * Detaches the entity from the current session. Further changes to it will not be saved back to the database.

@@ -125,7 +125,7 @@ public abstract class HibernateBaseDAO<E extends Entity<K>, K extends Serializab
     }
 
     /** {@inheritDoc} */
-    public List<E> browse(String entityTypeName) {
+    public List<E> browse() {
         Session session = currentSession();
 
         // Create the selection criteria for the block.
@@ -138,7 +138,7 @@ public abstract class HibernateBaseDAO<E extends Entity<K>, K extends Serializab
     }
 
     /** {@inheritDoc} */
-    public List<E> findByExample(E example, String entityTypeName) {
+    public List<E> findByExample(E example) {
         // Create the basic example criteria.
         Criteria exampleCriteria = currentSession().createCriteria(example.getClass()).add(Example.create(example));
 
