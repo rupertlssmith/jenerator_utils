@@ -192,6 +192,7 @@
         <module>util_uploader</module>
         <module>util_swagger</module>
         <module>util_shiro_db_realm</module>
+        <module>util_shiro_jwt_realm</module>
         <module>jenerator_custom</module>
     </modules>
 
