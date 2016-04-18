@@ -15,14 +15,21 @@
  */
 package com.thesett.util.security.realm;
 
+import java.security.PublicKey;
 import java.util.logging.Logger;
+
+import com.thesett.util.security.jwt.JwtUtils;
+import com.thesett.util.security.model.JWTAuthenticationToken;
 
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
+import org.apache.shiro.authc.SimpleAuthenticationInfo;
 import org.apache.shiro.authz.AuthorizationInfo;
+import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
+import org.apache.shiro.subject.SimplePrincipalCollection;
 
 /**
  * ShiroJWTRealm implements a Shiro realm that looks verifies users and their roles and permissions from a JWT token.
@@ -38,14 +45,18 @@ public class ShiroJWTRealm extends AuthorizingRealm
     /** Used for debugging purposes. */
     private static final Logger LOG = Logger.getLogger(ShiroJWTRealm.class.getName());
 
+    /** The public key for checking access tokens against. */
+    private PublicKey publicKey;
+
     /** Creates an uninitialized Shiro DB realm. */
     public ShiroJWTRealm()
     {
     }
 
-    /**  */
-    public void intialize()
+    /** @param publicKey */
+    public void intialize(PublicKey publicKey)
     {
+        this.publicKey = publicKey;
     }
 
     /** Closes and cleans up this DB realm. */
@@ -56,20 +67,44 @@ public class ShiroJWTRealm extends AuthorizingRealm
     /**
      * {@inheritDoc}
      *
-     * <p/>Looks up a user by username in the database, and supplies the user id and password for authentication.
+     * <p/>This realm supports {@link JWTAuthenticationToken}s only.
      */
-    protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authNToken) throws AuthenticationException
+    public boolean supports(AuthenticationToken token)
     {
-        return null;
+        return (token != null) && (token instanceof JWTAuthenticationToken);
     }
 
     /**
      * {@inheritDoc}
      *
-     * <p/>Given an authenticated principal (user id), looks up the roles and permissions for that user.
+     * <p/>Verifies the JWT token.
+     */
+    protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authToken) throws AuthenticationException
+    {
+        JWTAuthenticationToken jwtAuthToken = (JWTAuthenticationToken) authToken;
+        String token = jwtAuthToken.getToken();
+
+        boolean isValidToken = JwtUtils.checkToken(token, publicKey);
+
+        if (!isValidToken)
+        {
+            throw new AuthenticationException();
+        }
+
+        PrincipalCollection principals = new SimplePrincipalCollection(authToken, getName());
+
+        return new SimpleAuthenticationInfo(principals, token);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * <p/>Extracts the roles and permissions set in a JWT token.
      */
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals)
     {
-        return null;
+        SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
+
+        return info;
     }
 }

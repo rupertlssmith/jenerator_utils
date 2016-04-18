@@ -49,6 +49,7 @@
         <javax.servlet.version>3.0.1</javax.servlet.version>
         <snakeyaml.version>1.15</snakeyaml.version>
         <swagger.version>1.5.4</swagger.version>
+        <jjwt.version>0.6.0</jjwt.version>        
     </properties>
 
     <distributionManagement>
@@ -167,7 +168,13 @@
                 <artifactId>jackson-dataformat-csv</artifactId>
                 <version>${jackson.version}</version>
             </dependency>
-            
+
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt</artifactId>
+                <version>${jjwt.version}</version>
+            </dependency>
+
             <!-- Test dependencies. -->
             
             <dependency>

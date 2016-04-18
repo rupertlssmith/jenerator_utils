@@ -37,32 +37,52 @@ import org.apache.shiro.web.util.WebUtils;
  */
 public class ShiroJWTAuthenticatingFilter extends AuthenticatingFilter
 {
-    protected static final String AUTHORIZATION_HEADER = "Authorization";
-
-    /** {@inheritDoc} */
-    protected AuthenticationToken createToken(ServletRequest servletRequest, ServletResponse servletResponse)
-        throws Exception
+    public void setLoginUrl(String loginUrl)
     {
-        String jwtToken = getAuthzHeader(servletRequest);
+        String previous = getLoginUrl();
 
-        if (jwtToken != null)
+        if (previous != null)
         {
-            return new JWTAuthenticationToken(null, jwtToken);
+            this.appliedPaths.remove(previous);
         }
 
-        return null;
+        super.setLoginUrl(loginUrl);
+        this.appliedPaths.put(getLoginUrl(), null);
     }
 
     /** {@inheritDoc} */
-    protected boolean onAccessDenied(ServletRequest servletRequest, ServletResponse servletResponse) throws Exception
+    protected AuthenticationToken createToken(ServletRequest request, ServletResponse response) throws Exception
     {
-        HttpServletResponse httpResponse = WebUtils.toHttp(servletResponse);
-        httpResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        String jwtToken = getJWTTokenFromCookie(request);
 
-        return false;
+        return new JWTAuthenticationToken(null, jwtToken);
     }
 
-    private String getAuthzHeader(ServletRequest request)
+    /** {@inheritDoc} */
+    protected boolean onAccessDenied(ServletRequest request, ServletResponse response) throws Exception
+    {
+        boolean loggedIn = false;
+
+        if (isJWTCookieRequest(request, response))
+        {
+            loggedIn = executeLogin(request, response);
+        }
+
+        if (!loggedIn)
+        {
+            HttpServletResponse httpResponse = WebUtils.toHttp(response);
+            httpResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        }
+
+        return loggedIn;
+    }
+
+    private boolean isJWTCookieRequest(ServletRequest request, ServletResponse response)
+    {
+        return getJWTTokenFromCookie(request) != null;
+    }
+
+    private String getJWTTokenFromCookie(ServletRequest request)
     {
         HttpServletRequest httpRequest = WebUtils.toHttp(request);
 
@@ -70,9 +90,12 @@ public class ShiroJWTAuthenticatingFilter extends AuthenticatingFilter
 
         for (Cookie cookie : cookies)
         {
-            cookie.getName();
+            if ("jwt".equals(cookie.getName()))
+            {
+                return cookie.getValue();
+            }
         }
 
-        return httpRequest.getHeader(AUTHORIZATION_HEADER);
+        return null;
     }
 }

@@ -15,6 +15,7 @@
  */
 package com.thesett.util.security.web;
 
+import java.security.PublicKey;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletContextEvent;
@@ -46,10 +47,13 @@ public class ShiroJWTRealmSetupListener implements ServletContextListener
     /** <tt>true</tt> iff only the first configured realm should be initialized and destroyed. */
     private final boolean initFirstRealmOnly;
 
+    /** The public key for checking access tokens against. */
+    private final PublicKey publicKey;
+
     /** Creates a Shiro DB relam Web lifecycle controller. */
-    public ShiroJWTRealmSetupListener()
+    public ShiroJWTRealmSetupListener(PublicKey publicKey)
     {
-        this(false);
+        this(publicKey, false);
     }
 
     /**
@@ -57,9 +61,10 @@ public class ShiroJWTRealmSetupListener implements ServletContextListener
      *
      * @param initFirstRealmOnly <tt>true</tt> iff only the first configured realm should be initialized and destroyed.
      */
-    public ShiroJWTRealmSetupListener(boolean initFirstRealmOnly)
+    public ShiroJWTRealmSetupListener(PublicKey publicKey, boolean initFirstRealmOnly)
     {
         this.initFirstRealmOnly = initFirstRealmOnly;
+        this.publicKey = publicKey;
     }
 
     /**
@@ -137,7 +142,7 @@ public class ShiroJWTRealmSetupListener implements ServletContextListener
     {
         LOG.fine("protected void initializeRealm(ShiroJWTRealm realm): called");
 
-        realm.intialize();
+        realm.intialize(publicKey);
     }
 
     /**
