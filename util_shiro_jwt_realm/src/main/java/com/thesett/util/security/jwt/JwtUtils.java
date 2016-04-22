@@ -17,6 +17,7 @@ package com.thesett.util.security.jwt;
 
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.util.Iterator;
 import java.util.Set;
 
 import io.jsonwebtoken.ExpiredJwtException;
@@ -54,10 +55,20 @@ public class JwtUtils
         JwtBuilder builder = Jwts.builder();
         builder.setSubject(subject);
 
-        for (String permission : permissions)
+        StringBuilder permissionsCSV = new StringBuilder();
+
+        for (Iterator<String> i = permissions.iterator(); i.hasNext();)
         {
-            builder.claim(permission, true);
+            String permission = i.next();
+            permissionsCSV.append(permission);
+
+            if (i.hasNext())
+            {
+                permissionsCSV.append(", ");
+            }
         }
+
+        builder.claim("permissions", permissionsCSV);
 
         builder.signWith(SignatureAlgorithm.RS512, secretKey);
 
