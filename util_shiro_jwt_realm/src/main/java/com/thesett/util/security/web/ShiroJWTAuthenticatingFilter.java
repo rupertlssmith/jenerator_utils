@@ -88,11 +88,14 @@ public class ShiroJWTAuthenticatingFilter extends AuthenticatingFilter
 
         Cookie[] cookies = httpRequest.getCookies();
 
-        for (Cookie cookie : cookies)
+        if (cookies != null)
         {
-            if ("jwt".equals(cookie.getName()))
+            for (Cookie cookie : cookies)
             {
-                return cookie.getValue();
+                if ("jwt".equals(cookie.getName()))
+                {
+                    return cookie.getValue();
+                }
             }
         }
 
