@@ -1,14 +1,12 @@
+/* Copyright Rupert Smith, 2005 to 2008, all rights reserved. */
 package com.thesett.jenerator;
 
+import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import com.thesett.aima.state.ComponentType;
-import org.stringtemplate.v4.ST;
-import org.stringtemplate.v4.STGroup;
-import org.stringtemplate.v4.STGroupFile;
-
 import com.thesett.aima.state.Type;
 import com.thesett.catalogue.generator.BaseGenerator;
 import com.thesett.catalogue.generator.BufferingTemplateHandler;
@@ -20,6 +18,10 @@ import com.thesett.catalogue.model.EntityType;
 import com.thesett.catalogue.model.EntityTypeVisitor;
 import com.thesett.common.util.FileUtils;
 
+import org.stringtemplate.v4.ST;
+import org.stringtemplate.v4.STGroup;
+import org.stringtemplate.v4.STGroupFile;
+
 /**
  * TestStackGenerator generates a test suite for the generated code.
  *
@@ -28,7 +30,8 @@ import com.thesett.common.util.FileUtils;
  * <tr><td>  </td></tr>
  * </table></pre>
  */
-public class TestStackGenerator extends BaseGenerator implements EntityTypeVisitor {
+public class TestStackGenerator extends BaseGenerator implements EntityTypeVisitor
+{
     /** Defines the name of the template group for creating the baseline test. */
     private static final String BASELINE_CRUD_TEST_TEMPLATES_GROUP = "BaselineCRUDTest";
 
@@ -125,8 +128,7 @@ public class TestStackGenerator extends BaseGenerator implements EntityTypeVisit
     private final List<Type> typesToGenerate = new LinkedList<>();
 
     /** Holds a file output handler that overwrites files. */
-    protected RenderTemplateHandler fileOutputRenderTemplateHandler =
-        new FileOutputRenderTemplateHandler(false, true);
+    protected RenderTemplateHandler fileOutputRenderTemplateHandler = new FileOutputRenderTemplateHandler(false, true);
 
     /** Holds a file output handler that appends to files. */
     protected RenderTemplateHandler fileOutputRenderTemplateHandlerAppend =
@@ -134,7 +136,7 @@ public class TestStackGenerator extends BaseGenerator implements EntityTypeVisit
 
     /** Holds a file output handler that leaves existing files alone. */
     protected RenderTemplateHandler fileOutputRenderTemplateHandlerNoOverwrite =
-            new FileOutputRenderTemplateHandler(false, false);
+        new FileOutputRenderTemplateHandler(false, false);
 
     private String modelPackage;
     private String unitTestOutputDir;
@@ -145,7 +147,8 @@ public class TestStackGenerator extends BaseGenerator implements EntityTypeVisit
      *
      * @param templateDir An alternative directory to load templates from, may be <tt>null</tt> to use defaults.
      */
-    public TestStackGenerator(String templateDir) {
+    public TestStackGenerator(String templateDir)
+    {
         super(templateDir);
 
         baselineCrudTestTemplates = new STGroupFile(templateGroupToFileName(BASELINE_CRUD_TEST_TEMPLATES_GROUP));
@@ -193,13 +196,14 @@ public class TestStackGenerator extends BaseGenerator implements EntityTypeVisit
      *
      * <p/>Generates the opening sections of the many entities -> one file templates.
      */
-    public void preApply(Catalogue catalogue) {
+    public void preApply(Catalogue catalogue)
+    {
         // Generate the opening section of the many entities -> one file templates.
         testSetupControllerFileName =
             nameToJavaFileName(unitTestOutputDir, outputPackage, "", TEST_SETUP_CONTROLLER_CLASS_NAME, "");
 
-        generateTemplateOpenToFile(testSetupControllerFileName, testSetupControllerTemplates, outputPackage,
-            FILE_OPEN_TEMPLATE, false);
+        generateTemplateOpenToHandler(testSetupControllerFileName, testSetupControllerHandler,
+            testSetupControllerTemplates, outputPackage, FILE_OPEN_TEMPLATE, false);
     }
 
     /**
@@ -207,16 +211,18 @@ public class TestStackGenerator extends BaseGenerator implements EntityTypeVisit
      *
      * <p/>Generates the body and closing sections of the many entities -> one file templates.
      */
-    public void postApply(Catalogue catalogue) {
+    public void postApply(Catalogue catalogue)
+    {
         RenderTemplateHandler[] handlers = new RenderTemplateHandler[] { testSetupControllerHandler };
         STGroup[] templates = new STGroup[] { testSetupControllerTemplates };
         String[] names = new String[] { testSetupControllerFileName };
 
         generate(model, typesToGenerate, templates, names, handlers, FOR_BEANS_TEMPLATE);
 
-        flushHandlerToFile(testSetupControllerFileName, testSetupControllerHandler, true);
+        generateTemplateCloseToHandler(testSetupControllerFileName, testSetupControllerHandler,
+            testSetupControllerTemplates, FILE_CLOSE_TEMPLATE);
 
-        generateTemplateCloseToFile(testSetupControllerFileName, testSetupControllerTemplates, FILE_CLOSE_TEMPLATE);
+        flushHandlerToFile(testSetupControllerFileName, testSetupControllerHandler, false, false);
     }
 
     /**
@@ -224,7 +230,8 @@ public class TestStackGenerator extends BaseGenerator implements EntityTypeVisit
      *
      * @param type The component type to create a bean for.
      */
-    public void visit(EntityType type) {
+    public void visit(EntityType type)
+    {
         // Add all entities to the list of types to generate in the many entities -> one file templates.
         ComponentType decoratedType = (ComponentTypeDecorator) TypeDecoratorFactory.decorateType(type);
         typesToGenerate.add(decoratedType);
@@ -235,14 +242,16 @@ public class TestStackGenerator extends BaseGenerator implements EntityTypeVisit
         Map<String, Type> fields = decoratedType.getAllPropertyTypes();
         Map<String, Type> extraFields = null;
         RenderTemplateHandler[] handlers =
-            new RenderTemplateHandler[] {
+            new RenderTemplateHandler[]
+            {
                 fileOutputRenderTemplateHandler, fileOutputRenderTemplateHandler, fileOutputRenderTemplateHandler,
                 fileOutputRenderTemplateHandler, fileOutputRenderTemplateHandler, fileOutputRenderTemplateHandler,
                 fileOutputRenderTemplateHandler, fileOutputRenderTemplateHandlerNoOverwrite
             };
 
         templates =
-            new STGroup[] {
+            new STGroup[]
+            {
                 baselineCrudTestTemplates, jsonSerdesCrudTestTemplates, webServiceIsolationCrudTestTemplates,
                 webServiceIsolationValidationTestTemplates, databaseCrudTestTemplates, databaseValidationTestTemplates,
                 fullStackCrudTestTemplates, testDataTemplates
@@ -252,7 +261,8 @@ public class TestStackGenerator extends BaseGenerator implements EntityTypeVisit
         outputPackage = outputPackage + "." + type.getName();
 
         names =
-            new String[] {
+            new String[]
+            {
                 nameToJavaFileName(unitTestOutputDir, "", type.getName(), BASELINE_CRUD_TEST_CLASS_NAME),
                 nameToJavaFileName(unitTestOutputDir, "", type.getName(), JSON_SERDES_CRUD_TEST_CLASS_NAME),
                 nameToJavaFileName(unitTestOutputDir, "", type.getName(), WEB_SERVICE_ISOLATION_CRUD_TEST_CLASS_NAME),
@@ -268,19 +278,23 @@ public class TestStackGenerator extends BaseGenerator implements EntityTypeVisit
         outputPackage = prevOutputPackage;
     }
 
-    public void setModelPackage(String modelPackage) {
+    public void setModelPackage(String modelPackage)
+    {
         this.modelPackage = modelPackage;
     }
 
-    public void setUnitTestOutputDir(String unitTestOutputDir) {
+    public void setUnitTestOutputDir(String unitTestOutputDir)
+    {
         this.unitTestOutputDir = unitTestOutputDir;
     }
 
-    public String getIntegrationTestOutputDir() {
+    public String getIntegrationTestOutputDir()
+    {
         return integrationTestOutputDir;
     }
 
-    public void setIntegrationTestOutputDir(String integrationTestOutputDir) {
+    public void setIntegrationTestOutputDir(String integrationTestOutputDir)
+    {
         this.integrationTestOutputDir = integrationTestOutputDir;
     }
 
@@ -297,8 +311,10 @@ public class TestStackGenerator extends BaseGenerator implements EntityTypeVisit
      * @param templateName The name of the template to apply.
      */
     protected void generate(Catalogue model, List<Type> types, STGroup[] templates, String[] outputName,
-        RenderTemplateHandler[] handler, String templateName) {
-        for (int i = 0; i < templates.length; i++) {
+        RenderTemplateHandler[] handler, String templateName)
+    {
+        for (int i = 0; i < templates.length; i++)
+        {
             // Instantiate the template to generate from.
             ST stringTemplate = templates[i].getInstanceOf(templateName);
 
@@ -310,25 +326,52 @@ public class TestStackGenerator extends BaseGenerator implements EntityTypeVisit
         }
     }
 
-    private void flushHandlerToFile(String fileName, BufferingTemplateHandler templateHandler, boolean append) {
+    /**
+     * Flushes the contents of a buffer into a file.
+     *
+     * @param fileName        The name of the file to write to.
+     * @param templateHandler The buffer to flush.
+     * @param append          <tt>true</tt> if the file should be appended to.
+     * @param replace         <tt>true</tt> if the file can be replaced when not appending, if it already exists.
+     */
+    private void flushHandlerToFile(String fileName, BufferingTemplateHandler templateHandler, boolean append,
+        boolean replace)
+    {
+        // Check if files should not be replaced, and this is not an append, but the file already exists, in which
+        // case ignore it.
+        if (!replace && !append)
+        {
+            File file = new File(fileName);
+
+            if (file.exists())
+            {
+                templateHandler.clear();
+
+                return;
+            }
+        }
+
         FileUtils.writeObjectToFile(fileName, templateHandler, append);
         templateHandler.clear();
     }
 
-    private void generateTemplateOpenToFile(String fileName, STGroup templateGroup, String packageName,
-        String fileOpenTemplate, boolean append) {
+    private void generateTemplateOpenToHandler(String fileName, BufferingTemplateHandler templateHandler,
+        STGroup templateGroup, String packageName, String fileOpenTemplate, boolean append)
+    {
         // Instantiate the template to generate from.
         ST stringTemplate = templateGroup.getInstanceOf(fileOpenTemplate);
         stringTemplate.add("package", packageName);
         stringTemplate.add("catalogue", model);
 
-        fileOutputRenderTemplateHandler.render(stringTemplate, fileName);
+        templateHandler.render(stringTemplate, fileName);
     }
 
-    private void generateTemplateCloseToFile(String fileName, STGroup templateGroup, String fileCloseTemplate) {
+    private void generateTemplateCloseToHandler(String fileName, BufferingTemplateHandler templateHandler,
+        STGroup templateGroup, String fileCloseTemplate)
+    {
         // Instantiate the template to generate from.
         ST stringTemplate = templateGroup.getInstanceOf(fileCloseTemplate);
 
-        fileOutputRenderTemplateHandlerAppend.render(stringTemplate, fileName);
+        templateHandler.render(stringTemplate, fileName);
     }
 }
