@@ -62,8 +62,10 @@ public abstract class HandlebarsBundle implements ConfiguredBundle<HandlebarsBun
 
         List<Map<String, String>> configOverrides = handlebarsConfig.getOverrides();
 
-        for (Map<String, String> override : configOverrides) {
-            overrides.putAll(override);
+        if (configOverrides != null) {
+            for (Map<String, String> override : configOverrides) {
+                overrides.putAll(override);
+            }
         }
 
         // Set up templates to be loaded from the classpath or filesystem for overrides.
