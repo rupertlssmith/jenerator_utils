@@ -1,3 +1,18 @@
+/*
+ * Copyright The Sett Ltd.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.thesett.util.errors;
 
 import java.util.logging.Level;
@@ -7,10 +22,11 @@ import javax.ws.rs.NotFoundException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 
+import com.thesett.util.entity.EntityValidationException;
+
+import org.apache.shiro.authz.UnauthorizedException;
 import org.hibernate.ObjectNotFoundException;
 import org.hibernate.exception.ConstraintViolationException;
-
-import com.thesett.util.entity.EntityValidationException;
 
 /**
  * StarsExceptionMapper maps unhandled runtime exceptions to appropriate HTTP responses.
@@ -21,7 +37,8 @@ import com.thesett.util.entity.EntityValidationException;
  * <tr><td> Map Jersey not found to an HTTP No Content. </td></tr>
  * </table></pre>
  */
-public class StandardExceptionMapper implements ExceptionMapper<Exception> {
+public class StandardExceptionMapper implements ExceptionMapper<Exception>
+{
     /** Used for debugging purposes. */
     private static final Logger LOG = Logger.getLogger(StandardExceptionMapper.class.getName());
 
@@ -30,16 +47,30 @@ public class StandardExceptionMapper implements ExceptionMapper<Exception> {
     /** http://greenbytes.de/tech/webdav/rfc4918.html#rfc.section.11.2 */
     public static final int UNPROCESSABLE_ENTITY = 422;
 
+    public static final int FORBIDDEN = 403;
+
     /** {@inheritDoc} */
-    public Response toResponse(Exception runtime) {
-        if (runtime instanceof ConstraintViolationException) {
+    public Response toResponse(Exception runtime)
+    {
+        if (runtime instanceof ConstraintViolationException)
+        {
             return Response.status(UNPROCESSABLE_ENTITY).entity(runtime.getMessage()).type(TEXT_PLAIN).build();
-        } else if (runtime instanceof ObjectNotFoundException) {
+        }
+        else if (runtime instanceof ObjectNotFoundException)
+        {
             return Response.status(UNPROCESSABLE_ENTITY).entity(runtime.getMessage()).type(TEXT_PLAIN).build();
-        } else if (runtime instanceof NotFoundException) {
+        }
+        else if (runtime instanceof NotFoundException)
+        {
             return Response.status(Response.Status.NO_CONTENT).entity(runtime.getMessage()).type(TEXT_PLAIN).build();
-        } else if (runtime instanceof EntityValidationException) {
+        }
+        else if (runtime instanceof EntityValidationException)
+        {
             return Response.status(UNPROCESSABLE_ENTITY).entity(runtime.getMessage()).type(TEXT_PLAIN).build();
+        }
+        else if (runtime instanceof UnauthorizedException)
+        {
+            return Response.status(FORBIDDEN).entity(runtime.getMessage()).type(TEXT_PLAIN).build();
         }
 
         return defaultResponse(runtime);
@@ -52,7 +83,8 @@ public class StandardExceptionMapper implements ExceptionMapper<Exception> {
      *
      * @return A server 500 error code.
      */
-    private Response defaultResponse(Exception runtime) {
+    private Response defaultResponse(Exception runtime)
+    {
         // Ensure all unhandled exceptions are logged.
         log(runtime);
 
@@ -64,7 +96,8 @@ public class StandardExceptionMapper implements ExceptionMapper<Exception> {
      *
      * @param runtime An unhanlded exception to log.
      */
-    private void log(Exception runtime) {
+    private void log(Exception runtime)
+    {
         LOG.log(Level.SEVERE, runtime.getMessage(), runtime);
     }
 }
