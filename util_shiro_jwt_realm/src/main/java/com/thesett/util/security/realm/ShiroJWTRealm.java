@@ -1,3 +1,4 @@
+/* Copyright Rupert Smith, 2005 to 2008, all rights reserved. */
 /*
  * Copyright The Sett Ltd.
  *
@@ -20,6 +21,10 @@ import java.util.logging.Logger;
 
 import com.thesett.util.security.jwt.JwtUtils;
 import com.thesett.util.security.model.JWTAuthenticationToken;
+import com.thesett.util.string.StringUtils;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
 
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
@@ -84,12 +89,7 @@ public class ShiroJWTRealm extends AuthorizingRealm
         JWTAuthenticationToken jwtAuthToken = (JWTAuthenticationToken) authToken;
         String token = jwtAuthToken.getToken();
 
-        boolean isValidToken = JwtUtils.checkToken(token, publicKey);
-
-        if (!isValidToken)
-        {
-            throw new AuthenticationException();
-        }
+        assertValidToken(token);
 
         PrincipalCollection principals = new SimplePrincipalCollection(authToken, getName());
 
@@ -105,6 +105,51 @@ public class ShiroJWTRealm extends AuthorizingRealm
     {
         SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
 
+        JWTAuthenticationToken jwtAuthToken = (JWTAuthenticationToken) principals.getPrimaryPrincipal();
+        String token = jwtAuthToken.getToken();
+
+        assertValidToken(token);
+
+        Claims claims = Jwts.parser().setSigningKey(publicKey).parseClaimsJws(token).getBody();
+
+        String permissionsCSV = claims.get("permissions", String.class);
+        String rolesCSV = claims.get("roles", String.class);
+
+        if (!StringUtils.nullOrEmpty(permissionsCSV))
+        {
+            for (String permission : permissionsCSV.split(","))
+            {
+                permission = permission.trim();
+
+                info.addStringPermission(permission);
+            }
+        }
+
+        if (!StringUtils.nullOrEmpty(rolesCSV))
+        {
+            for (String role : rolesCSV.split(","))
+            {
+                role = role.trim();
+
+                info.addRole(role);
+            }
+        }
+
         return info;
+    }
+
+    /**
+     * Checks that a JWT token is valid wrt the public key, and wrt its timestamp.
+     *
+     * @param token The token to validate.
+     */
+    private void assertValidToken(String token)
+    {
+        boolean isValidToken = JwtUtils.checkToken(token, publicKey);
+
+        if (!isValidToken)
+        {
+            throw new AuthenticationException();
+        }
     }
 }
