@@ -31,7 +31,7 @@ public class ServiceRESTGenerator extends BaseGenerator implements EntityTypeVis
 
     /** Holds a file output handler that overwrites files. */
     protected RenderTemplateHandler fileOutputRenderTemplateHandler =
-        new FileOutputRenderTemplateHandler(false, true);
+        new FileOutputRenderTemplateHandler(false, false);
 
     private String modelPackage;
 
