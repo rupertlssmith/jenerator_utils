@@ -253,6 +253,6 @@ public class JwtUtils
     {
         String jwtToken = (String) request.getAttribute(attributeName);
 
-        return new JWTAuthenticationToken(null, jwtToken);
+        return new JWTAuthenticationToken(jwtToken);
     }
 }

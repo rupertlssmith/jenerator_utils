@@ -1,4 +1,3 @@
-/* Copyright Rupert Smith, 2005 to 2008, all rights reserved. */
 /*
  * Copyright The Sett Ltd.
  *
@@ -19,12 +18,7 @@ package com.thesett.util.security.realm;
 import java.security.PublicKey;
 import java.util.logging.Logger;
 
-import com.thesett.util.security.jwt.JwtUtils;
 import com.thesett.util.security.model.JWTAuthenticationToken;
-import com.thesett.util.string.StringUtils;
-
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
 
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
@@ -87,13 +81,15 @@ public class ShiroJWTRealm extends AuthorizingRealm
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authToken) throws AuthenticationException
     {
         JWTAuthenticationToken jwtAuthToken = (JWTAuthenticationToken) authToken;
-        String token = jwtAuthToken.getToken();
 
-        assertValidToken(token);
+        // Ensure that the token is validate and extract its claims.
+        jwtAuthToken.setPublicKey(publicKey);
+        jwtAuthToken.assertValid();
+        jwtAuthToken.extractClaims();
 
-        PrincipalCollection principals = new SimplePrincipalCollection(authToken, getName());
+        PrincipalCollection principals = new SimplePrincipalCollection(jwtAuthToken, getName());
 
-        return new SimpleAuthenticationInfo(principals, token);
+        return new SimpleAuthenticationInfo(principals, jwtAuthToken.getToken());
     }
 
     /**
@@ -103,53 +99,14 @@ public class ShiroJWTRealm extends AuthorizingRealm
      */
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals)
     {
+        JWTAuthenticationToken jwtAuthToken = (JWTAuthenticationToken) principals.getPrimaryPrincipal();
+
+        // Extract the roles and permissions.
         SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
 
-        JWTAuthenticationToken jwtAuthToken = (JWTAuthenticationToken) principals.getPrimaryPrincipal();
-        String token = jwtAuthToken.getToken();
-
-        assertValidToken(token);
-
-        Claims claims = Jwts.parser().setSigningKey(publicKey).parseClaimsJws(token).getBody();
-
-        String permissionsCSV = claims.get("permissions", String.class);
-        String rolesCSV = claims.get("roles", String.class);
-
-        if (!StringUtils.nullOrEmpty(permissionsCSV))
-        {
-            for (String permission : permissionsCSV.split(","))
-            {
-                permission = permission.trim();
-
-                info.addStringPermission(permission);
-            }
-        }
-
-        if (!StringUtils.nullOrEmpty(rolesCSV))
-        {
-            for (String role : rolesCSV.split(","))
-            {
-                role = role.trim();
-
-                info.addRole(role);
-            }
-        }
+        jwtAuthToken.getPermissions().forEach(info::addStringPermission);
+        jwtAuthToken.getRoles().forEach(info::addRole);
 
         return info;
-    }
-
-    /**
-     * Checks that a JWT token is valid wrt the public key, and wrt its timestamp.
-     *
-     * @param token The token to validate.
-     */
-    private void assertValidToken(String token)
-    {
-        boolean isValidToken = JwtUtils.checkToken(token, publicKey);
-
-        if (!isValidToken)
-        {
-            throw new AuthenticationException();
-        }
     }
 }
