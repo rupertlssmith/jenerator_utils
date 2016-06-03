@@ -20,6 +20,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.thesett.util.security.jwt.JwtUtils;
+import com.thesett.util.security.shiro.LocalSubject;
 import com.thesett.util.string.StringUtils;
 
 import io.jsonwebtoken.Claims;
@@ -27,6 +28,7 @@ import io.jsonwebtoken.Jwts;
 
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationToken;
+import org.apache.shiro.subject.Subject;
 
 /**
  * JWTAuthenticationToken wraps a JWT token as a Shiro {@link AuthenticationToken}. The logic to check the token is
@@ -121,6 +123,22 @@ public class JWTAuthenticationToken implements AuthenticationToken
     public List<String> getPermissions()
     {
         return permissions;
+    }
+
+    /**
+     * Provides a {@link LocalSubject} that matches the subject, roles and permissions on this token.
+     *
+     * @return A Shiro subject matching this JWT token.
+     */
+    public Subject asLocalSubject()
+    {
+        LocalSubject subject = new LocalSubject();
+
+        subject.withPrimaryPrincipal(subject);
+        permissions.forEach(subject::withPermission);
+        roles.forEach(subject::withRole);
+
+        return subject;
     }
 
     /**

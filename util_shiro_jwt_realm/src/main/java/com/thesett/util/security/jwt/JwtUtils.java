@@ -35,7 +35,6 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.SignatureException;
 import io.jsonwebtoken.UnsupportedJwtException;
 
-import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.web.util.WebUtils;
 
 /**
@@ -242,14 +241,14 @@ public class JwtUtils
     }
 
     /**
-     * Extracts a JWT token from an attribute on a request, and returns it as an {@link AuthenticationToken}.
+     * Extracts a JWT token from an attribute on a request, and returns it as a {@link JWTAuthenticationToken}.
      *
      * @param  request       The request to get the token from.
      * @param  attributeName The name of the attribute to get the token from.
      *
      * @return The token as a {@link JWTAuthenticationToken}.
      */
-    public static AuthenticationToken getAuthenticationToken(ServletRequest request, String attributeName)
+    public static JWTAuthenticationToken getAuthenticationToken(ServletRequest request, String attributeName)
     {
         String jwtToken = (String) request.getAttribute(attributeName);
 

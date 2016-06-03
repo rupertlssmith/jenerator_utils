@@ -29,6 +29,7 @@ import org.apache.shiro.authz.Permission;
 import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.ExecutionException;
 import org.apache.shiro.subject.PrincipalCollection;
+import org.apache.shiro.subject.SimplePrincipalCollection;
 import org.apache.shiro.subject.Subject;
 
 /**
@@ -44,6 +45,9 @@ import org.apache.shiro.subject.Subject;
  */
 public class LocalSubject implements Subject
 {
+    /** Holds the principals associated with this subject. */
+    SimplePrincipalCollection principalCollection;
+
     /** Holds the permissions of this subject. */
     Set<String> permissions = new HashSet<>();
 
@@ -78,16 +82,37 @@ public class LocalSubject implements Subject
         return this;
     }
 
+    /**
+     * Sets the primary principal on this subject.
+     *
+     * @param  principal The primary principal.
+     *
+     * @return <tt>this</tt>, fluent style.
+     */
+    public LocalSubject withPrimaryPrincipal(Object principal)
+    {
+        principalCollection = new SimplePrincipalCollection(principal, "localRealm");
+
+        return this;
+    }
+
     /** {@inheritDoc} */
     public Object getPrincipal()
     {
-        return null;
+        if (principalCollection != null)
+        {
+            return principalCollection.getPrimaryPrincipal();
+        }
+        else
+        {
+            return null;
+        }
     }
 
     /** {@inheritDoc} */
     public PrincipalCollection getPrincipals()
     {
-        return null;
+        return principalCollection;
     }
 
     /** {@inheritDoc} */
@@ -275,5 +300,4 @@ public class LocalSubject implements Subject
     {
         return null;
     }
-
 }
