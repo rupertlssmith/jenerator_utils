@@ -20,6 +20,13 @@ import java.security.PublicKey;
 import java.util.Iterator;
 import java.util.Set;
 
+import javax.servlet.ServletRequest;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+
+import com.thesett.util.security.model.JWTAuthenticationToken;
+import com.thesett.util.string.StringUtils;
+
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
@@ -28,6 +35,9 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.SignatureException;
 import io.jsonwebtoken.UnsupportedJwtException;
 
+import org.apache.shiro.authc.AuthenticationToken;
+import org.apache.shiro.web.util.WebUtils;
+
 /**
  * JWTUtils provides some helper functions for working with JWT tokens.
  *
@@ -35,6 +45,8 @@ import io.jsonwebtoken.UnsupportedJwtException;
  * <tr><th> Responsibilities <th> Collaborations
  * <tr><td> Create a JWT token. </td></tr>
  * <tr><td> Check a JWT token. </td></tr>
+ * <tr><td> Extract JWT tokens from HTTP requests. </td></tr>
+ * <tr><td> Present JWT tokens as Shiro access tokens. </td></tr>
  * </table></pre>
  *
  * @author Rupert Smith
@@ -95,5 +107,152 @@ public class JwtUtils
         {
             return false;
         }
+    }
+
+    /**
+     * Tries to extract a JWT token from an HTTP request, from a session cookie called 'jwt' or from the Authorization
+     * header as a bearer token, in that order. The extracted token is stored against the request as an attribute called
+     * 'jwt'.
+     *
+     * @param  request       The request to extract and set the jwt token against.
+     * @param  cookieName    The name of the cookie to get the JWT token from.
+     * @param  attributeName The name of the request attribute to store the JWT token in.
+     *
+     * @return <tt>true</tt> iff a JWT token was found.
+     */
+    public static boolean extractJWTtoRequestAttribute(ServletRequest request, String cookieName, String attributeName)
+    {
+        return extractJWTCookieToRequestAttribute(request, cookieName, attributeName) ||
+            extractJWTAuthHeaderToRequestAttribute(request);
+    }
+
+    /**
+     * Tries to extract a JWT token from an HTTP request, from a session cookie called 'jwt'. The extracted token is
+     * stored against the request as an attribute called 'jwt'.
+     *
+     * @param  request       The request to extract and set the jwt token against.
+     * @param  cookieName    The name of the cookie to get the JWT token from.
+     * @param  attributeName The name of the request attribute to store the JWT token in.
+     *
+     * @return <tt>true</tt> iff a JWT token was found.
+     */
+    public static boolean extractJWTCookieToRequestAttribute(ServletRequest request, String cookieName,
+        String attributeName)
+    {
+        String token = getJWTTokenFromCookie(request, cookieName);
+
+        if (token != null)
+        {
+            request.setAttribute(attributeName, token);
+
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    /**
+     * Tries to extract a JWT token from an HTTP request, from the Authorization header as a bearer token, in that
+     * order. The extracted token is stored against the request as an attribute called 'jwt'.
+     *
+     * @param  request The request to extract and set the jwt token against.
+     *
+     * @return <tt>true</tt> iff a JWT token was found.
+     */
+    public static boolean extractJWTAuthHeaderToRequestAttribute(ServletRequest request)
+    {
+        String token = getJWTTokenFromAuthHeader(request);
+
+        if (token != null)
+        {
+            request.setAttribute("jwt", token);
+
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    /**
+     * Tries to extract a JWT token from the name cookie.
+     *
+     * @param  request    The request get the cookie from.
+     * @param  cookieName The name of the cookie to get the JWT token from.
+     *
+     * @return The JWT token, or <tt>null</tt> if no matching cookie is found.
+     */
+    public static String getJWTTokenFromCookie(ServletRequest request, String cookieName)
+    {
+        HttpServletRequest httpRequest = WebUtils.toHttp(request);
+
+        Cookie[] cookies = httpRequest.getCookies();
+
+        if (cookies != null)
+        {
+            for (Cookie cookie : cookies)
+            {
+                if (cookieName.equals(cookie.getName()))
+                {
+                    return cookie.getValue();
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Tries to extract a JWT token from the 'Authorization' header. The value of this header should have the format :
+     * 'Bearer &lt;token&gt;'.
+     *
+     * @param  request The request to get the Authorization header from.
+     *
+     * @return The JWT token, or <tt>null</tt> if header field value is found.
+     */
+    public static String getJWTTokenFromAuthHeader(ServletRequest request)
+    {
+        HttpServletRequest httpRequest = WebUtils.toHttp(request);
+
+        String authorization = httpRequest.getHeader("Authorization");
+
+        if (StringUtils.nullOrEmpty(authorization))
+        {
+            return null;
+        }
+
+        authorization = authorization.trim();
+
+        if (!authorization.startsWith("Bearer "))
+        {
+            return null;
+        }
+
+        authorization = authorization.substring(7);
+
+        if (StringUtils.nullOrEmpty(authorization))
+        {
+            return null;
+        }
+
+        return authorization;
+    }
+
+    /**
+     * Extracts a JWT token from an attribute on a request, and returns it as an {@link AuthenticationToken}.
+     *
+     * @param  request       The request to get the token from.
+     * @param  attributeName The name of the attribute to get the token from.
+     *
+     * @return The token as a {@link JWTAuthenticationToken}.
+     */
+    public static AuthenticationToken getAuthenticationToken(ServletRequest request, String attributeName)
+    {
+        String jwtToken = (String) request.getAttribute(attributeName);
+
+        return new JWTAuthenticationToken(null, jwtToken);
     }
 }

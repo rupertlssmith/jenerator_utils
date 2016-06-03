@@ -17,10 +17,9 @@ package com.thesett.util.security.web;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.thesett.util.security.jwt.JwtUtils;
 import com.thesett.util.security.model.JWTAuthenticationToken;
 
 import org.apache.shiro.authc.AuthenticationToken;
@@ -28,15 +27,33 @@ import org.apache.shiro.web.filter.authc.AuthenticatingFilter;
 import org.apache.shiro.web.util.WebUtils;
 
 /**
+ * ShiroJWTAuthenticatingFilter is a Shiro AuthenticatingFilter that looks for the presence of a JWT token in the HTTP
+ * request. If a JWT token is found, it is extracted as a {@link JWTAuthenticationToken} and used as the access token
+ * for the downstream Shiro realm.
+ *
+ * <p/>The JWT token may be passed as a bearer token in the authorization header (Authorization: Bearer ...), or as a
+ * session cookie. If both are present, the cookie is given preference and the authorization header field ignored.
+ *
+ * <p/>This filter only extracts the JWT token as a Shiro AuthenticationToken. It does not validate it in any way, that
+ * is left up to the Shiro security realm.
+ *
  * <pre><p/><table id="crc"><caption>CRC Card</caption>
  * <tr><th> Responsibilities <th> Collaborations
- * <tr><td>
+ * <tr><td> Extract JWT tokens from HTTP requests.
+ * <tr><td> Reject requests without a JWT token as unauthorized.
  * </table></pre>
  *
  * @author Rupert Smith
  */
 public class ShiroJWTAuthenticatingFilter extends AuthenticatingFilter
 {
+    /** The name of the cookie used to present JWT tokens with requests. */
+    public static final String COOKIE_NAME = "jwt";
+
+    /** The name of the request attribute used to hold JWT tokens in. */
+    public static final String ATTRIBUTE_NAME = COOKIE_NAME;
+
+    /** {@inheritDoc} */
     public void setLoginUrl(String loginUrl)
     {
         String previous = getLoginUrl();
@@ -53,9 +70,7 @@ public class ShiroJWTAuthenticatingFilter extends AuthenticatingFilter
     /** {@inheritDoc} */
     protected AuthenticationToken createToken(ServletRequest request, ServletResponse response) throws Exception
     {
-        String jwtToken = getJWTTokenFromCookie(request);
-
-        return new JWTAuthenticationToken(null, jwtToken);
+        return JwtUtils.getAuthenticationToken(request, ATTRIBUTE_NAME);
     }
 
     /** {@inheritDoc} */
@@ -63,7 +78,7 @@ public class ShiroJWTAuthenticatingFilter extends AuthenticatingFilter
     {
         boolean loggedIn = false;
 
-        if (isJWTCookieRequest(request, response))
+        if (JwtUtils.extractJWTtoRequestAttribute(request, COOKIE_NAME, ATTRIBUTE_NAME))
         {
             loggedIn = executeLogin(request, response);
         }
@@ -75,30 +90,5 @@ public class ShiroJWTAuthenticatingFilter extends AuthenticatingFilter
         }
 
         return loggedIn;
-    }
-
-    private boolean isJWTCookieRequest(ServletRequest request, ServletResponse response)
-    {
-        return getJWTTokenFromCookie(request) != null;
-    }
-
-    private String getJWTTokenFromCookie(ServletRequest request)
-    {
-        HttpServletRequest httpRequest = WebUtils.toHttp(request);
-
-        Cookie[] cookies = httpRequest.getCookies();
-
-        if (cookies != null)
-        {
-            for (Cookie cookie : cookies)
-            {
-                if ("jwt".equals(cookie.getName()))
-                {
-                    return cookie.getValue();
-                }
-            }
-        }
-
-        return null;
     }
 }
