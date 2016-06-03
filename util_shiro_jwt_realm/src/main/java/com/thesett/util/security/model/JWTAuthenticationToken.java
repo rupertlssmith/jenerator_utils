@@ -161,12 +161,25 @@ public class JWTAuthenticationToken implements AuthenticationToken
      */
     public void assertValid()
     {
-        boolean isValidToken = JwtUtils.checkToken(token, publicKey);
+        boolean isValidToken = checkValid();
 
         if (!isValidToken)
         {
             throw new AuthenticationException();
         }
+    }
+
+    /**
+     * Parses the token and checks that its signature is valid.
+     *
+     * <p/>The {@link #setPublicKey(PublicKey)} method needs to the invoked with the correct verification key, prior to
+     * calling this.
+     *
+     * @return <tt>true</tt> iff the token is valid.
+     */
+    public boolean checkValid()
+    {
+        return JwtUtils.checkToken(token, publicKey);
     }
 
     /**
