@@ -40,6 +40,7 @@
         <!-- Maven plugin versions. -->
         <maven.assembly.plugin.version>2.2-beta-5</maven.assembly.plugin.version>
         <jalopy.maven.plugin.version>1.9.4-250</jalopy.maven.plugin.version>
+        <maven.javadoc.plugin.version>2.10.4</maven.javadoc.plugin.version>
         
         <!-- Versions. -->
         <dropwizard.version>0.9.1</dropwizard.version>
@@ -240,6 +241,12 @@
                         </includes>
                     </configuration>
                 </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>${maven.javadoc.plugin.version}</version>
+                </plugin>
                 
                 <!-- Fix the version of the assembly plugin. -->
                 <plugin>
@@ -317,6 +324,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>${maven.javadoc.plugin.version}</version>                        
                         <executions>
                             <execution>
                                 <id>attach-javadocs</id>
