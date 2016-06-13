@@ -9,8 +9,32 @@
     <packaging>pom</packaging>
 
     <name>Jenerator Utils</name>
-    <description>Utility libraries</description>
+    <description>Utility libraries for Jenerator</description>
+    <url>https://github.com/rupertlssmith/jenerator_utils</url>
 
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>Rupert Smith</name>
+            <id>rupert</id>
+            <email>rupertgithub@badgerhouse.freeserve.co.uk</email>
+            <organization>The Sett Ltd.</organization>
+            <organizationUrl>http://www.thesett.com/</organizationUrl>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:https://github.com/rupertlssmith/jenerator_utils.git</connection>
+        <url>https://github.com/rupertlssmith/jenerator_utils.git</url>
+    </scm>
+    
     <properties>
         <topdir>${basedir}</topdir>
         <!-- Maven plugin versions. -->
