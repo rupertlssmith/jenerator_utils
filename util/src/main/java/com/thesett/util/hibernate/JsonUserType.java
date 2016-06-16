@@ -1,3 +1,18 @@
+/*
+ * Copyright The Sett Ltd.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.thesett.util.hibernate;
 
 import java.io.IOException;
@@ -17,58 +32,76 @@ import org.hibernate.engine.spi.SessionImplementor;
 import org.hibernate.usertype.UserType;
 
 /**
- * JsonUserType is a custom Hibernate type that transforms any object into JSON and stores it as a long varchar.
- *
- * <p/>This is an abstract class and needs to be extended to implement the {@link #returnedClass()} method, which
- * specified which class this works with.
+ * JsonUserType is a custom Hibernate type that transforms any object into Json for storage.
  *
  * <pre><p/><table id="crc"><caption>CRC Card</caption>
  * <tr><th> Responsibilities </th><th> Collaborations </th>
  * <tr><td> Store object graphs as JSON in a database column. </td></tr>
  * </table></pre>
  */
-public abstract class JsonUserType implements UserType {
+public class JsonUserType implements UserType
+{
     /** Map the JSON as long varchar type. */
     private static final int[] SQL_TYPES = { Types.LONGVARCHAR };
 
+    public Class returnedClass()
+    {
+        return Object.class;
+    }
+
     /** {@inheritDoc} */
-    public boolean equals(Object x, Object y) throws HibernateException {
-        if (x == y) {
+    public boolean equals(Object x, Object y) throws HibernateException
+    {
+        if (x == y)
+        {
             return true;
-        } else if (x == null || y == null) {
+        }
+        else if ((x == null) || (y == null))
+        {
             return false;
-        } else {
+        }
+        else
+        {
             return x.equals(y);
         }
     }
 
     /** {@inheritDoc} */
-    public int hashCode(Object x) throws HibernateException {
-        return null == x ? 0 : x.hashCode();
+    public int hashCode(Object x) throws HibernateException
+    {
+        return (null == x) ? 0 : x.hashCode();
     }
 
     /** {@inheritDoc} */
-    public boolean isMutable() {
+    public boolean isMutable()
+    {
         return true;
     }
 
     /** {@inheritDoc} */
     public void nullSafeSet(PreparedStatement st, Object value, int index, SessionImplementor session)
-        throws HibernateException, SQLException {
-        if (value == null) {
+        throws HibernateException, SQLException
+    {
+        if (value == null)
+        {
             st.setString(index, null);
-        } else {
+        }
+        else
+        {
             st.setString(index, convertObjectToJson(value));
         }
     }
 
     /** {@inheritDoc} */
     public Object nullSafeGet(ResultSet rs, String[] names, SessionImplementor session, Object owner)
-        throws HibernateException, SQLException {
-        if (!rs.wasNull()) {
+        throws HibernateException, SQLException
+    {
+        if (!rs.wasNull())
+        {
             String content = rs.getString(names[0]);
 
-            if (content != null) {
+            if (content != null)
+            {
                 return convertJsonToObject(content);
             }
         }
@@ -77,24 +110,28 @@ public abstract class JsonUserType implements UserType {
     }
 
     /** {@inheritDoc} */
-    public Object deepCopy(Object value) throws HibernateException {
+    public Object deepCopy(Object value) throws HibernateException
+    {
         String json = convertObjectToJson(value);
 
         return convertJsonToObject(json);
     }
 
     /** {@inheritDoc} */
-    public Object replace(Object original, Object target, Object owner) throws HibernateException {
+    public Object replace(Object original, Object target, Object owner) throws HibernateException
+    {
         return deepCopy(original);
     }
 
     /** {@inheritDoc} */
-    public Serializable disassemble(Object value) throws HibernateException {
+    public Serializable disassemble(Object value) throws HibernateException
+    {
         return (Serializable) deepCopy(value);
     }
 
     /** {@inheritDoc} */
-    public Object assemble(Serializable cached, Object owner) throws HibernateException {
+    public Object assemble(Serializable cached, Object owner) throws HibernateException
+    {
         return deepCopy(cached);
     }
 
@@ -105,12 +142,14 @@ public abstract class JsonUserType implements UserType {
      *
      * @return A Jackson Java type mapping for the type of class returned by {@link #returnedClass()}.
      */
-    public JavaType createJavaType(ObjectMapper mapper) {
+    public JavaType createJavaType(ObjectMapper mapper)
+    {
         return SimpleType.construct(returnedClass());
     }
 
     /** {@inheritDoc} */
-    public int[] sqlTypes() {
+    public int[] sqlTypes()
+    {
         return SQL_TYPES;
     }
 
@@ -121,13 +160,17 @@ public abstract class JsonUserType implements UserType {
      *
      * @return The JSON as an object.
      */
-    Object convertJsonToObject(String content) {
-        try {
+    Object convertJsonToObject(String content)
+    {
+        try
+        {
             ObjectMapper mapper = new ObjectMapper();
             JavaType type = createJavaType(mapper);
 
             return mapper.readValue(content, type);
-        } catch (IOException e) {
+        }
+        catch (IOException e)
+        {
             throw new IllegalStateException(e);
         }
     }
@@ -139,13 +182,17 @@ public abstract class JsonUserType implements UserType {
      *
      * @return The object as a JSON string.
      */
-    String convertObjectToJson(Object object) {
-        try {
+    String convertObjectToJson(Object object)
+    {
+        try
+        {
             ObjectMapper mapper = new ObjectMapper();
             mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
             return mapper.writeValueAsString(object);
-        } catch (IOException e) {
+        }
+        catch (IOException e)
+        {
             throw new IllegalStateException(e);
         }
     }
