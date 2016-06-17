@@ -127,6 +127,11 @@ public class JsonUserType implements UserType
     /** {@inheritDoc} */
     public Object deepCopy(Object value) throws HibernateException
     {
+        if (value == null)
+        {
+            return null;
+        }
+
         String json = convertObjectToJson(value);
 
         return convertJsonToObject(json, value.getClass());
