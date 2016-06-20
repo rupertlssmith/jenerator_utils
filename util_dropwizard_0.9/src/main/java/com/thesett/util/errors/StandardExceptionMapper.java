@@ -62,7 +62,7 @@ public class StandardExceptionMapper implements ExceptionMapper<Exception>
         }
         else if (runtime instanceof NotFoundException)
         {
-            return Response.status(Response.Status.NO_CONTENT).entity(runtime.getMessage()).type(TEXT_PLAIN).build();
+            return Response.status(Response.Status.NOT_FOUND).entity(runtime.getMessage()).type(TEXT_PLAIN).build();
         }
         else if (runtime instanceof EntityValidationException)
         {
