@@ -46,7 +46,7 @@ public abstract class DatabaseValidationTestBase<E extends Entity<K>, K extends 
     private final String configPath;
 
     /** Holds the test setup controller. */
-    private final TestSetupController testSetupController;
+    protected final TestSetupController testSetupController;
 
     /** The type of the entities being tested. */
     private final Class<E> entityType;
