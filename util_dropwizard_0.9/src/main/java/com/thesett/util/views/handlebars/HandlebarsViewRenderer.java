@@ -52,6 +52,8 @@ import io.dropwizard.views.ViewRenderer;
  */
 public class HandlebarsViewRenderer implements ViewRenderer
 {
+    private static final Logger LOG = Logger.getLogger(HandlebarsViewRenderer.class.getName());
+
     /** Caches template files. */
     private static final Cache<TemplateSource, Template> templateCache = CacheBuilder.newBuilder().build();
 
