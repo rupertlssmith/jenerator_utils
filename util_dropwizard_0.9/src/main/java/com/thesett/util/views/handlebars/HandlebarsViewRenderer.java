@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import java.util.logging.Logger;
 
 import javax.ws.rs.WebApplicationException;
 
@@ -100,7 +101,6 @@ public class HandlebarsViewRenderer implements ViewRenderer
 
                 viewTemplate.apply(view, buffer);
 
-                Map<String, String> vals = new HashMap<>();
                 layout.setBody(buffer.toString());
                 layoutTemplate.apply(layout, writer);
             }
