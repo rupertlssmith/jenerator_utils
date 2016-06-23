@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import java.util.logging.Logger;
 
 import javax.ws.rs.WebApplicationException;
 
@@ -51,6 +52,8 @@ import io.dropwizard.views.ViewRenderer;
  */
 public class HandlebarsViewRenderer implements ViewRenderer
 {
+    private static final Logger LOG = Logger.getLogger(HandlebarsViewRenderer.class.getName());
+
     /** Caches template files. */
     private static final Cache<TemplateSource, Template> templateCache = CacheBuilder.newBuilder().build();
 
@@ -100,9 +103,15 @@ public class HandlebarsViewRenderer implements ViewRenderer
 
                 viewTemplate.apply(view, buffer);
 
-                Map<String, String> vals = new HashMap<>();
+                LOG.info("Applied the view template ok.");
+                LOG.info("viewTemplate.text = " + viewTemplate.text());
+                LOG.info("viewTemplate output = " + buffer.toString());
+
                 layout.setBody(buffer.toString());
                 layoutTemplate.apply(layout, writer);
+
+                LOG.info("Applied the layout template ok.");
+                LOG.info("layoutTemplate.text = " + layoutTemplate.text());
             }
             else
             {
