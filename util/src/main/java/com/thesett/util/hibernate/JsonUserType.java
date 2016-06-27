@@ -99,29 +99,31 @@ public class JsonUserType implements UserType
     public Object nullSafeGet(ResultSet rs, String[] names, SessionImplementor session, Object owner)
         throws HibernateException, SQLException
     {
-        if (!rs.wasNull())
+        Class clazz = null;
+        String className = rs.getString(names[0]);
+
+        if (rs.wasNull())
         {
-            Class clazz = null;
-            String className = rs.getString(names[0]);
-
-            try
-            {
-                clazz = ReflectHelper.classForName(className, this.getClass());
-            }
-            catch (ClassNotFoundException e)
-            {
-                throw new HibernateException("Class " + className + " not found", e);
-            }
-
-            String content = rs.getString(names[1]);
-
-            if (content != null)
-            {
-                return convertJsonToObject(content, clazz);
-            }
+            return null;
         }
 
-        return null;
+        try
+        {
+            clazz = ReflectHelper.classForName(className, this.getClass());
+        }
+        catch (ClassNotFoundException e)
+        {
+            throw new HibernateException("Class " + className + " not found", e);
+        }
+
+        String content = rs.getString(names[1]);
+
+        if (rs.wasNull())
+        {
+            return null;
+        }
+
+        return convertJsonToObject(content, clazz);
     }
 
     /** {@inheritDoc} */
