@@ -29,7 +29,6 @@ import com.fasterxml.jackson.databind.type.SimpleType;
 
 import org.hibernate.HibernateException;
 import org.hibernate.engine.spi.SessionImplementor;
-import org.hibernate.internal.util.ReflectHelper;
 import org.hibernate.usertype.UserType;
 
 /**
@@ -43,7 +42,7 @@ import org.hibernate.usertype.UserType;
 public class JsonUserType implements UserType
 {
     /** Map the JSON as long varchar type. */
-    private static final int[] SQL_TYPES = { Types.LONGVARCHAR, Types.LONGVARCHAR };
+    private static final int[] SQL_TYPES = { Types.LONGVARCHAR };
 
     public Class returnedClass()
     {
@@ -85,13 +84,11 @@ public class JsonUserType implements UserType
     {
         if (value == null)
         {
-            st.setString(index, Object.class.getName());
-            st.setString(index + 1, null);
+            st.setString(index, null);
         }
         else
         {
-            st.setString(index, value.getClass().getName());
-            st.setString(index + 1, convertObjectToJson(value));
+            st.setString(index, convertObjectToJson(value));
         }
     }
 
@@ -99,31 +96,14 @@ public class JsonUserType implements UserType
     public Object nullSafeGet(ResultSet rs, String[] names, SessionImplementor session, Object owner)
         throws HibernateException, SQLException
     {
-        Class clazz = null;
-        String className = rs.getString(names[0]);
+        String content = rs.getString(names[0]);
 
         if (rs.wasNull())
         {
             return null;
         }
 
-        try
-        {
-            clazz = ReflectHelper.classForName(className, this.getClass());
-        }
-        catch (ClassNotFoundException e)
-        {
-            throw new HibernateException("Class " + className + " not found", e);
-        }
-
-        String content = rs.getString(names[1]);
-
-        if (rs.wasNull())
-        {
-            return null;
-        }
-
-        return convertJsonToObject(content, clazz);
+        return convertJsonToObject(content);
     }
 
     /** {@inheritDoc} */
@@ -136,7 +116,7 @@ public class JsonUserType implements UserType
 
         String json = convertObjectToJson(value);
 
-        return convertJsonToObject(json, value.getClass());
+        return convertJsonToObject(json);
     }
 
     /** {@inheritDoc} */
@@ -179,17 +159,17 @@ public class JsonUserType implements UserType
      * Transforms a JSON string into an object.
      *
      * @param  content The JSON string to parse.
-     * @param  clazz   The class to parse into.
      *
      * @return The JSON as an object.
      */
-    Object convertJsonToObject(String content, Class clazz)
+    Object convertJsonToObject(String content)
     {
         try
         {
             ObjectMapper mapper = new ObjectMapper();
+            mapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);
 
-            return mapper.readValue(content, clazz);
+            return mapper.readValue(content, Object.class);
         }
         catch (IOException e)
         {
@@ -209,6 +189,7 @@ public class JsonUserType implements UserType
         try
         {
             ObjectMapper mapper = new ObjectMapper();
+            mapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);
             mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
             return mapper.writeValueAsString(object);
