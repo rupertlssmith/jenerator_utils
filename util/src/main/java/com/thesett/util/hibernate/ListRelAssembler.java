@@ -59,19 +59,21 @@ public abstract class ListRelAssembler<E> implements ResultTransformer
     {
         Object parent = objects[2];
         Object child = objects[0];
-        int index = (Integer) objects[1];
 
-        session.evict(parent);
-        session.evict(child);
+        if (child!=null) {
+            int index = (Integer) objects[1];
 
-        if (index == 0)
-        {
-            newList((E) parent);
+            session.evict(parent);
+            session.evict(child);
+
+            if (index == 0) {
+                newList((E) parent);
+            }
+
+            getList((E) parent).add(child);
         }
 
-        getList((E) parent).add(child);
-
-        return objects[2];
+        return parent;
     }
 
     /** {@inheritDoc} */
