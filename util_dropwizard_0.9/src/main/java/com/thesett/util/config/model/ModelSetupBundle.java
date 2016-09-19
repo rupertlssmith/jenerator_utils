@@ -12,6 +12,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
+import com.thesett.catalogue.core.CatalogueLoaderUtil;
 import io.dropwizard.Configuration;
 import io.dropwizard.ConfiguredBundle;
 import io.dropwizard.setup.Bootstrap;
@@ -65,25 +66,7 @@ public abstract class ModelSetupBundle<T extends Configuration> implements Confi
         }
 
         try {
-            // Open the specified resource and un-marshal the catalogue model from it.
-            JAXBContext jc = JAXBContext.newInstance("com.thesett.catalogue.setup");
-            Unmarshaller u = jc.createUnmarshaller();
-
-            InputStream resource = ModelSetupBundle.class.getClassLoader().getResourceAsStream(modelResource);
-
-            if (resource == null) {
-                throw new IllegalStateException("The resource 'modelResource' could not be found on the classpath.");
-            }
-
-            CatalogueDefinition catalogueDefinition = (CatalogueDefinition) u.unmarshal(resource);
-
-            // Create a first order logic resolution engine to perform the type checking with.
-            ResolutionEngine<Clause, PrologCompiledClause, PrologCompiledClause> engine = new PrologEngine();
-            engine.reset();
-
-            // Create the catalogue logical model from the raw model and run its type checker.
-            CatalogueModelFactory modelFactory = new CatalogueModelFactory(engine, catalogueDefinition, null);
-            model = modelFactory.initializeModel();
+            model = CatalogueLoaderUtil.loadModel(modelResource);
 
             return model;
         } catch (JAXBException e) {
