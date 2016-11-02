@@ -66,20 +66,7 @@ public class JwtUtils
         JwtBuilder builder = Jwts.builder();
         builder.setSubject(subject);
 
-        StringBuilder permissionsCSV = new StringBuilder();
-
-        for (Iterator<String> i = permissions.iterator(); i.hasNext();)
-        {
-            String permission = i.next();
-            permissionsCSV.append(permission);
-
-            if (i.hasNext())
-            {
-                permissionsCSV.append(", ");
-            }
-        }
-
-        builder.claim("permissions", permissionsCSV);
+        builder.claim("permissions", permissions);
 
         builder.signWith(SignatureAlgorithm.RS512, secretKey);
 

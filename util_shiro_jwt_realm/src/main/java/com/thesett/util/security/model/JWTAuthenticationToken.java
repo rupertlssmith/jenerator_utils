@@ -1,3 +1,4 @@
+/* Copyright Rupert Smith, 2005 to 2008, all rights reserved. */
 /*
  * Copyright The Sett Ltd.
  *
@@ -21,7 +22,6 @@ import java.util.List;
 
 import com.thesett.util.security.jwt.JwtUtils;
 import com.thesett.util.security.shiro.LocalSubject;
-import com.thesett.util.string.StringUtils;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -190,34 +190,22 @@ public class JWTAuthenticationToken implements AuthenticationToken
      */
     public void extractClaims()
     {
-        roles = new LinkedList<>();
-        permissions = new LinkedList<>();
-
         Claims claims = Jwts.parser().setSigningKey(publicKey).parseClaimsJws(token).getBody();
 
         subject = claims.get("sub", String.class);
 
-        String rolesCSV = claims.get("roles", String.class);
-        String permissionsCSV = claims.get("permissions", String.class);
+        roles = claims.get("roles", List.class);
 
-        if (!StringUtils.nullOrEmpty(rolesCSV))
+        if (roles == null)
         {
-            for (String role : rolesCSV.split(","))
-            {
-                role = role.trim();
-
-                roles.add(role);
-            }
+            roles = new LinkedList<>();
         }
 
-        if (!StringUtils.nullOrEmpty(permissionsCSV))
-        {
-            for (String permission : permissionsCSV.split(","))
-            {
-                permission = permission.trim();
+        permissions = claims.get("permissions", List.class);
 
-                permissions.add(permission);
-            }
+        if (permissions == null)
+        {
+            permissions = new LinkedList<>();
         }
     }
 }
