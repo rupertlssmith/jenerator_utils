@@ -1,4 +1,3 @@
-/* Copyright Rupert Smith, 2005 to 2008, all rights reserved. */
 /*
  * Copyright The Sett Ltd.
  *
@@ -193,15 +192,9 @@ public class JWTAuthenticationToken implements AuthenticationToken
         Claims claims = Jwts.parser().setSigningKey(publicKey).parseClaimsJws(token).getBody();
 
         subject = claims.get("sub", String.class);
+        roles = new LinkedList<>();
 
-        roles = claims.get("roles", List.class);
-
-        if (roles == null)
-        {
-            roles = new LinkedList<>();
-        }
-
-        permissions = claims.get("permissions", List.class);
+        permissions = claims.get("scopes", List.class);
 
         if (permissions == null)
         {

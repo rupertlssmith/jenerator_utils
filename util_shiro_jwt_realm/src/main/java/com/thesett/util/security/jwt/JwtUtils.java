@@ -66,7 +66,7 @@ public class JwtUtils
         JwtBuilder builder = Jwts.builder();
         builder.setSubject(subject);
 
-        builder.claim("permissions", permissions);
+        builder.claim("scopes", permissions);
 
         builder.signWith(SignatureAlgorithm.RS512, secretKey);
 
