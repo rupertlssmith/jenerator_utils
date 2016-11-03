@@ -117,7 +117,7 @@ public abstract class HibernateBaseDAO<E extends Entity<K>, K extends Serializab
     }
 
     /** {@inheritDoc} */
-    public E detach(E e) {
+    public <T> T detach(T e) {
         currentSession().flush(); // Sometimes needed because new objects cannot be evicted without flushing first.
         currentSession().evict(e);
 

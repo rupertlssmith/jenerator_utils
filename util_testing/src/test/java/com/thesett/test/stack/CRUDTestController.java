@@ -131,7 +131,7 @@ public abstract class CRUDTestController<E extends Entity<K>, K extends Serializ
      *
      * <p/>Default implementation of detach which does nothing, simple returns its argument.
      */
-    public E detach(E e) {
+    public <T> T detach(T e) {
         return e;
     }
 

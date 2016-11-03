@@ -1,3 +1,18 @@
+/*
+ * Copyright The Sett Ltd.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.thesett.util.dao;
 
 import java.io.Serializable;
@@ -28,7 +43,8 @@ import com.thesett.util.entity.Entity;
  * @param <E> The type of entities that this DAO manages.
  * @param <K> The type of database K that the entity uses.
  */
-public interface BaseDAO<E extends Entity<K>, K extends Serializable> extends CRUD<E, K> {
+public interface BaseDAO<E extends Entity<K>, K extends Serializable> extends CRUD<E, K>
+{
     /**
      * Lists all values of an entity.
      *
@@ -41,17 +57,20 @@ public interface BaseDAO<E extends Entity<K>, K extends Serializable> extends CR
      * Associations are expanded into join criteria recursively, treating the associated values as examples. The ability
      * to supported associated examples goes deeper than the default behaviour of Hibernate for example.
      *
-     * @param  example        The example to query by.
+     * @param  example The example to query by.
+     *
      * @return A list of all matching values.
      */
     List<E> findByExample(E example);
 
     /**
-     * Detaches the entity from the current session. Further changes to it will not be saved back to the database.
+     * Detaches an entity from the current session. Further changes to it will not be saved back to the database.
+     *
+     * <p/>This can be used for any entity type, not just the entities managed by this DAO.
      *
      * @param  e The entity to detach.
      *
      * @return The detached entity.
      */
-    E detach(E e);
+    <T> T detach(T e);
 }
