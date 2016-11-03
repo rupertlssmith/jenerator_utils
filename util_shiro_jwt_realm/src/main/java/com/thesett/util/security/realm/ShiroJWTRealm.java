@@ -105,7 +105,6 @@ public class ShiroJWTRealm extends AuthorizingRealm
         SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
 
         jwtAuthToken.getPermissions().forEach(info::addStringPermission);
-        jwtAuthToken.getRoles().forEach(info::addRole);
 
         return info;
     }

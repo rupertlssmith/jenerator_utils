@@ -53,9 +53,6 @@ public class JWTAuthenticationToken implements AuthenticationToken
     /** The extracted subject claim. */
     private String subject;
 
-    /** The extracted roles claims. */
-    private List<String> roles;
-
     /** The extracted permissions claims. */
     private List<String> permissions;
 
@@ -105,16 +102,6 @@ public class JWTAuthenticationToken implements AuthenticationToken
     }
 
     /**
-     * Provides a list of roles of the authenticated user.
-     *
-     * @return A list of roles of the authenticated user.
-     */
-    public List<String> getRoles()
-    {
-        return roles;
-    }
-
-    /**
      * Provides a list of permissions of the authenticated user.
      *
      * @return A list of permissions of the authenticated user.
@@ -125,7 +112,7 @@ public class JWTAuthenticationToken implements AuthenticationToken
     }
 
     /**
-     * Provides a {@link LocalSubject} that matches the subject, roles and permissions on this token.
+     * Provides a {@link LocalSubject} that matches the subject, and permissions on this token.
      *
      * @return A Shiro subject matching this JWT token.
      */
@@ -135,7 +122,6 @@ public class JWTAuthenticationToken implements AuthenticationToken
 
         subject.withPrimaryPrincipal(subject);
         permissions.forEach(subject::withPermission);
-        roles.forEach(subject::withRole);
 
         return subject;
     }
@@ -192,7 +178,6 @@ public class JWTAuthenticationToken implements AuthenticationToken
         Claims claims = Jwts.parser().setSigningKey(publicKey).parseClaimsJws(token).getBody();
 
         subject = claims.get("sub", String.class);
-        roles = new LinkedList<>();
 
         permissions = claims.get("scopes", List.class);
 
