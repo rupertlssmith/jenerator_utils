@@ -60,17 +60,26 @@ public class JwtUtils
     /**
      * Builds a JWT token with claims matching the users account and permissions.
      *
-     * @param  subject     The name of the authenticated subject.
-     * @param  permissions The users permissions.
-     * @param  secretKey   The secret key for signing the token.
+     * @param  subject      The name of the authenticated subject.
+     * @param  permissions  The users permissions.
+     * @param  secretKey    The secret key for signing the token.
+     * @param  expiryMillis The number of milliseconds from now that the token is to be valid for. Optional, may be <tt>
+     *                      null</tt>.
      *
      * @return A signed JWT token.
      */
-    public static String createToken(String subject, Set<String> permissions, PrivateKey secretKey)
+    public static String createToken(String subject, Set<String> permissions, PrivateKey secretKey, Long expiryMillis)
     {
         JwtBuilder builder = Jwts.builder();
         builder.setSubject(subject);
         builder.setIssuedAt(new Date());
+
+        if (expiryMillis != null)
+        {
+            Date expiry = new Date();
+            expiry.setTime(expiry.getTime() + expiryMillis);
+            builder.setExpiration(expiry);
+        }
 
         byte[] bytes = new byte[8];
         RANDOM.nextBytes(bytes);
@@ -80,7 +89,6 @@ public class JwtUtils
         builder.setId(id);
 
         builder.claim("scopes", permissions);
-
         builder.signWith(SignatureAlgorithm.RS512, secretKey);
 
         return builder.compact();

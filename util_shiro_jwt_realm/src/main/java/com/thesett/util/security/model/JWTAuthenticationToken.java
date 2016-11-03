@@ -16,6 +16,7 @@
 package com.thesett.util.security.model;
 
 import java.security.PublicKey;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -23,6 +24,7 @@ import com.thesett.util.security.jwt.JwtUtils;
 import com.thesett.util.security.shiro.LocalSubject;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 
 import org.apache.shiro.authc.AuthenticationException;
@@ -58,6 +60,12 @@ public class JWTAuthenticationToken implements AuthenticationToken
 
     /** The public key for checking access tokens against. */
     private PublicKey publicKey;
+
+    /** Optional issuing time of the token. May be <tt>null</tt>. */
+    private Date issuedAt;
+
+    /** Optional expiry time of the token. May be <tt>null</tt>. */
+    private Date expiresAt;
 
     /**
      * Creates an encapsulated JWT token from its raw representation.
@@ -137,7 +145,7 @@ public class JWTAuthenticationToken implements AuthenticationToken
     }
 
     /**
-     * Parses the token and checks that its signature is valid.
+     * Parses the token and checks that it, is well-formed, has a valid signature and has nto expired.
      *
      * <p/>The {@link #setPublicKey(PublicKey)} method needs to the invoked with the correct verification key, prior to
      * calling this.
@@ -155,7 +163,7 @@ public class JWTAuthenticationToken implements AuthenticationToken
     }
 
     /**
-     * Parses the token and checks that its signature is valid.
+     * Parses the token and checks that it, is well-formed, has a valid signature and has nto expired.
      *
      * <p/>The {@link #setPublicKey(PublicKey)} method needs to the invoked with the correct verification key, prior to
      * calling this.
@@ -168,14 +176,29 @@ public class JWTAuthenticationToken implements AuthenticationToken
     }
 
     /**
-     * Extracts the subject, roles and permissions from the token.
+     * Extracts the subject, roles and permissions from the token. {@link #assertValid()} or {@link #checkValid()}
+     * should be called prior to this to check that the token can be decoded.
+     *
+     * <p/>Token expiry is re-checked for when extracting the tokens claims. If the token has expired, an authentication
+     * exception will be raised.
      *
      * <p/>The {@link #setPublicKey(PublicKey)} method needs to the invoked with the correct verification key, prior to
      * calling this.
+     *
+     * @throws AuthenticationException If the token has expired.
      */
     public void extractClaims()
     {
-        Claims claims = Jwts.parser().setSigningKey(publicKey).parseClaimsJws(token).getBody();
+        Claims claims = null;
+
+        try
+        {
+            claims = Jwts.parser().setSigningKey(publicKey).parseClaimsJws(token).getBody();
+        }
+        catch (ExpiredJwtException e)
+        {
+            throw new AuthenticationException();
+        }
 
         subject = claims.get("sub", String.class);
 
@@ -185,5 +208,28 @@ public class JWTAuthenticationToken implements AuthenticationToken
         {
             permissions = new LinkedList<>();
         }
+
+        expiresAt = claims.getExpiration();
+        issuedAt = claims.getIssuedAt();
+    }
+
+    /**
+     * Optional issuing time of the token. May be <tt>null</tt>.
+     *
+     * @return Issuing time of the token. May be <tt>null</tt> if not set.
+     */
+    public Date getIssuedAt()
+    {
+        return issuedAt;
+    }
+
+    /**
+     * Optional expiry time of the token. May be <tt>null</tt>.
+     *
+     * @return Expiry time of the token. May be <tt>null</tt> if not set.
+     */
+    public Date getExpiresAt()
+    {
+        return expiresAt;
     }
 }
