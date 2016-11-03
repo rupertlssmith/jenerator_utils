@@ -17,7 +17,9 @@ package com.thesett.util.security.jwt;
 
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.util.Iterator;
+import java.security.SecureRandom;
+import java.util.Base64;
+import java.util.Date;
 import java.util.Set;
 
 import javax.servlet.ServletRequest;
@@ -52,6 +54,9 @@ import org.apache.shiro.web.util.WebUtils;
  */
 public class JwtUtils
 {
+    /** For generating random token ids. */
+    public static final SecureRandom RANDOM = new SecureRandom();
+
     /**
      * Builds a JWT token with claims matching the users account and permissions.
      *
@@ -65,6 +70,14 @@ public class JwtUtils
     {
         JwtBuilder builder = Jwts.builder();
         builder.setSubject(subject);
+        builder.setIssuedAt(new Date());
+
+        byte[] bytes = new byte[8];
+        RANDOM.nextBytes(bytes);
+
+        String id = Base64.getEncoder().encodeToString(bytes);
+
+        builder.setId(id);
 
         builder.claim("scopes", permissions);
 
