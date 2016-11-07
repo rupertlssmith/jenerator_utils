@@ -16,9 +16,7 @@
 package com.thesett.util.security.model;
 
 import java.security.PublicKey;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import com.thesett.util.security.jwt.JwtUtils;
 import com.thesett.util.security.shiro.LocalSubject;
@@ -56,7 +54,7 @@ public class JWTAuthenticationToken implements AuthenticationToken
     private String subject;
 
     /** The extracted permissions claims. */
-    private List<String> permissions;
+    private Set<String> permissions;
 
     /** The public key for checking access tokens against. */
     private PublicKey publicKey;
@@ -114,7 +112,7 @@ public class JWTAuthenticationToken implements AuthenticationToken
      *
      * @return A list of permissions of the authenticated user.
      */
-    public List<String> getPermissions()
+    public Set<String> getPermissions()
     {
         return permissions;
     }
@@ -202,11 +200,11 @@ public class JWTAuthenticationToken implements AuthenticationToken
 
         subject = claims.get("sub", String.class);
 
-        permissions = claims.get("scopes", List.class);
+        permissions = new LinkedHashSet<>(claims.get("scopes", List.class));
 
         if (permissions == null)
         {
-            permissions = new LinkedList<>();
+            permissions = new HashSet<>();
         }
 
         expiresAt = claims.getExpiration();
