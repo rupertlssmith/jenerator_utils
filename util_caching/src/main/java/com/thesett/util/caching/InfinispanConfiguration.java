@@ -21,11 +21,18 @@ import javax.validation.constraints.NotNull;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Optional;
 
+/**
+ * InfinispanConfiguration defines the configuration setting for an infinispan cache.
+ */
 public class InfinispanConfiguration
 {
     public enum CacheType
     {
-        Standalone, Clustered
+        /** Standalone cache for one JVM only. */
+        Standalone,
+
+        /** Clustered cache to span multiple JVMs. */
+        Clustered
     }
 
     @JsonProperty

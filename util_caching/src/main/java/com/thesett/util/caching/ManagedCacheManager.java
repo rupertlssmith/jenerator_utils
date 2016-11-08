@@ -19,20 +19,37 @@ import io.dropwizard.lifecycle.Managed;
 
 import org.infinispan.manager.EmbeddedCacheManager;
 
+/**
+ * ManagedCacheManager wraps the infinispan cache manager as a DropWizard managed lifecycle. This only requires that the
+ * {@link #start()} and {@link #stop()} methods are forwarded.
+ *
+ * <pre><p/><table id="crc"><caption>CRC Card</caption>
+ * <tr><th> Responsibilities </th><th> Collaborations </th>
+ * <tr><td> Present infinispan lifecycle as a DropWiazrd lifecycle. </td></tr>
+ * </table></pre>
+ */
 public class ManagedCacheManager implements Managed
 {
-    private EmbeddedCacheManager defaultCacheManager;
+    /** The infinispan cache manager. */
+    private final EmbeddedCacheManager defaultCacheManager;
 
+    /**
+     * Creates a DropWizard managed lifecycle from the infinispan cache manager.
+     *
+     * @param defaultCacheManager The infinispan cache manager.
+     */
     public ManagedCacheManager(EmbeddedCacheManager defaultCacheManager)
     {
         this.defaultCacheManager = defaultCacheManager;
     }
 
+    /** {@inheritDoc} */
     public void start() throws Exception
     {
         defaultCacheManager.start();
     }
 
+    /** {@inheritDoc} */
     public void stop() throws Exception
     {
         defaultCacheManager.stop();

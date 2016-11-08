@@ -25,14 +25,34 @@ import org.infinispan.configuration.global.GlobalConfigurationBuilder;
 import org.infinispan.manager.DefaultCacheManager;
 import org.infinispan.manager.EmbeddedCacheManager;
 
+/**
+ * InfinispanBundle defines a DropWizard bundle for using an infinispan cache.
+ *
+ * <pre><p/><table id="crc"><caption>CRC Card</caption>
+ * <tr><th> Responsibilities </th><th> Collaborations </th>
+ * <tr><td> Create single JVM caches. </td></tr>
+ * <tr><td> Create clustered caches. </td></tr>
+ * </table></pre>
+ */
 public class InfinispanBundle implements ConfiguredBundle<InfinispanServiceConfiguration>
 {
+    /** The infinispan cache manager. */
     private EmbeddedCacheManager defaultCacheManager;
 
+    /**
+     * {@inheritDoc}
+     *
+     * <p/>Does nothing.
+     */
     public void initialize(Bootstrap<?> bootstrap)
     {
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * <p/>Starts the infinispan cache.
+     */
     public void run(InfinispanServiceConfiguration configuration, Environment environment)
     {
         InfinispanConfiguration infinispanConfiguration = configuration.getInfinispanConfiguration();
@@ -47,16 +67,28 @@ public class InfinispanBundle implements ConfiguredBundle<InfinispanServiceConfi
         }
     }
 
+    /**
+     * Supplies a configured infinispan cache manager.
+     *
+     * @return A configured infinispan cache manager.
+     */
     public EmbeddedCacheManager getCacheManager()
     {
         return defaultCacheManager;
     }
 
+    /** Sets up a standalone cache for one JVM only. */
     private void configureStandaloneCache()
     {
         defaultCacheManager = new DefaultCacheManager();
     }
 
+    /**
+     * Sets up a clustered cache to span multiple JVMs.
+     *
+     * @param environment             The DropWizard environment.
+     * @param infinispanConfiguration The infinispan configuration.
+     */
     private void configureClusteredCache(Environment environment, InfinispanConfiguration infinispanConfiguration)
     {
         System.setProperty("jgroups.tcp.bind_addr", infinispanConfiguration.getBindAddress());

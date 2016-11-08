@@ -15,7 +15,16 @@
  */
 package com.thesett.util.caching;
 
+/**
+ * Defines an interface that any configuration providing settings for an infinispan cache can implement, to provide
+ * those settings.
+ */
 public interface InfinispanServiceConfiguration
 {
+    /**
+     * Provides the infinispan configuration settings.
+     *
+     * @return The infinispan configuration settings.
+     */
     InfinispanConfiguration getInfinispanConfiguration();
 }
