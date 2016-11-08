@@ -215,6 +215,7 @@
     <modules>
         <module>util</module>
         <module>util_api</module>
+        <module>util_caching</module>
         <module>util_servlet</module>
         <module>util_errors</module>
         <module>util_rest</module>
