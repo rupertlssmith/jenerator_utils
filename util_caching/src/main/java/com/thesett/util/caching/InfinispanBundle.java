@@ -54,11 +54,11 @@ public abstract class InfinispanBundle<T extends Configuration> implements Confi
      *
      * <p/>Starts the infinispan cache.
      */
-    public void run(InfinispanConfiguration configuration, Environment environment)
+    public void run(T configuration, Environment environment)
     {
-        InfinispanConfigurationImpl infinispanConfiguration = configuration.getInfinispanConfiguration();
+        InfinispanConfiguration infinispanConfiguration = getInfinispanConfiguration(configuration);
 
-        if (infinispanConfiguration.getType() == InfinispanConfigurationImpl.CacheType.Clustered)
+        if (infinispanConfiguration.getType() == InfinispanConfiguration.CacheType.Clustered)
         {
             configureClusteredCache(environment, infinispanConfiguration);
         }
@@ -100,7 +100,7 @@ public abstract class InfinispanBundle<T extends Configuration> implements Confi
      * @param environment             The DropWizard environment.
      * @param infinispanConfiguration The infinispan configuration.
      */
-    private void configureClusteredCache(Environment environment, InfinispanConfigurationImpl infinispanConfiguration)
+    private void configureClusteredCache(Environment environment, InfinispanConfiguration infinispanConfiguration)
     {
         System.setProperty("jgroups.tcp.bind_addr", infinispanConfiguration.getBindAddress());
         System.setProperty("jgroups.tcp.port", String.valueOf(infinispanConfiguration.getPort()));
