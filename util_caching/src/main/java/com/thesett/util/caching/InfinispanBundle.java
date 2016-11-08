@@ -15,6 +15,7 @@
  */
 package com.thesett.util.caching;
 
+import io.dropwizard.Configuration;
 import io.dropwizard.ConfiguredBundle;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
@@ -34,7 +35,7 @@ import org.infinispan.manager.EmbeddedCacheManager;
  * <tr><td> Create clustered caches. </td></tr>
  * </table></pre>
  */
-public class InfinispanBundle implements ConfiguredBundle<InfinispanConfiguration>
+public abstract class InfinispanBundle<T extends Configuration> implements ConfiguredBundle<T>
 {
     /** The infinispan cache manager. */
     private EmbeddedCacheManager defaultCacheManager;
@@ -76,6 +77,16 @@ public class InfinispanBundle implements ConfiguredBundle<InfinispanConfiguratio
     {
         return defaultCacheManager;
     }
+
+    /**
+     * Should be implemented to extract the infinispan config from whatever configuration the application using this
+     * bundle is using.
+     *
+     * @param  config The application configuration.
+     *
+     * @return The infinispan configuration.
+     */
+    protected abstract InfinispanConfiguration getInfinispanConfiguration(T config);
 
     /** Sets up a standalone cache for one JVM only. */
     private void configureStandaloneCache()
