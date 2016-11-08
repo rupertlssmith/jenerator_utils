@@ -15,81 +15,16 @@
  */
 package com.thesett.util.caching;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.google.common.base.Optional;
-
 /**
- * InfinispanConfiguration defines the configuration setting for an infinispan cache.
+ * Defines an interface that any configuration providing settings for an infinispan cache can implement, to provide
+ * those settings.
  */
-public class InfinispanConfiguration
+public interface InfinispanConfiguration
 {
-    public enum CacheType
-    {
-        /** Standalone cache for one JVM only. */
-        Standalone,
-
-        /** Clustered cache to span multiple JVMs. */
-        Clustered
-    }
-
-    @JsonProperty
-    @Valid
-    private Optional<String> bindAddress;
-
-    @JsonProperty
-    private int port = 7800;
-
-    @JsonProperty
-    @Valid
-    private Optional<String> initialHosts;
-
-    @JsonProperty
-    @Valid
-    private Optional<String> clusterName;
-
-    @JsonProperty
-    @NotNull
-    private CacheType type;
-
-    public String getBindAddress()
-    {
-        return bindAddress.get();
-    }
-
-    public int getPort()
-    {
-        return port;
-    }
-
-    public String getInitialHosts()
-    {
-        return initialHosts.get();
-    }
-
-    public String getClusterName()
-    {
-        return clusterName.get();
-    }
-
-    public CacheType getType()
-    {
-        return type;
-    }
-
-    public boolean isValid()
-    {
-        switch (getType())
-        {
-        case Clustered:
-            return clusterName.isPresent() && bindAddress.isPresent() && initialHosts.isPresent();
-
-        case Standalone:
-            return true;
-        }
-
-        return false;
-    }
+    /**
+     * Provides the infinispan configuration settings.
+     *
+     * @return The infinispan configuration settings.
+     */
+    InfinispanConfigurationImpl getInfinispanConfiguration();
 }

@@ -34,7 +34,7 @@ import org.infinispan.manager.EmbeddedCacheManager;
  * <tr><td> Create clustered caches. </td></tr>
  * </table></pre>
  */
-public class InfinispanBundle implements ConfiguredBundle<InfinispanServiceConfiguration>
+public class InfinispanBundle implements ConfiguredBundle<InfinispanConfiguration>
 {
     /** The infinispan cache manager. */
     private EmbeddedCacheManager defaultCacheManager;
@@ -53,11 +53,11 @@ public class InfinispanBundle implements ConfiguredBundle<InfinispanServiceConfi
      *
      * <p/>Starts the infinispan cache.
      */
-    public void run(InfinispanServiceConfiguration configuration, Environment environment)
+    public void run(InfinispanConfiguration configuration, Environment environment)
     {
-        InfinispanConfiguration infinispanConfiguration = configuration.getInfinispanConfiguration();
+        InfinispanConfigurationImpl infinispanConfiguration = configuration.getInfinispanConfiguration();
 
-        if (infinispanConfiguration.getType() == InfinispanConfiguration.CacheType.Clustered)
+        if (infinispanConfiguration.getType() == InfinispanConfigurationImpl.CacheType.Clustered)
         {
             configureClusteredCache(environment, infinispanConfiguration);
         }
@@ -89,7 +89,7 @@ public class InfinispanBundle implements ConfiguredBundle<InfinispanServiceConfi
      * @param environment             The DropWizard environment.
      * @param infinispanConfiguration The infinispan configuration.
      */
-    private void configureClusteredCache(Environment environment, InfinispanConfiguration infinispanConfiguration)
+    private void configureClusteredCache(Environment environment, InfinispanConfigurationImpl infinispanConfiguration)
     {
         System.setProperty("jgroups.tcp.bind_addr", infinispanConfiguration.getBindAddress());
         System.setProperty("jgroups.tcp.port", String.valueOf(infinispanConfiguration.getPort()));
@@ -100,7 +100,7 @@ public class InfinispanBundle implements ConfiguredBundle<InfinispanServiceConfi
                 .clusterName(infinispanConfiguration.getClusterName()).addProperty("configurationFile", "jgroups.xml")
                 .build(), new ConfigurationBuilder().clustering().cacheMode(CacheMode.REPL_SYNC).build());
 
-        ManagedCacheManager managed = new ManagedCacheManager(defaultCacheManager);
+        InfinispanManager managed = new InfinispanManager(defaultCacheManager);
         environment.lifecycle().manage(managed);
     }
 }
