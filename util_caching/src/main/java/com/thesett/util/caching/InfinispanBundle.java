@@ -38,7 +38,7 @@ import org.infinispan.manager.EmbeddedCacheManager;
 public abstract class InfinispanBundle<T extends Configuration> implements ConfiguredBundle<T>
 {
     /** The infinispan cache manager. */
-    private EmbeddedCacheManager defaultCacheManager;
+    private EmbeddedCacheManager cacheManager;
 
     /**
      * {@inheritDoc}
@@ -75,7 +75,7 @@ public abstract class InfinispanBundle<T extends Configuration> implements Confi
      */
     public EmbeddedCacheManager getCacheManager()
     {
-        return defaultCacheManager;
+        return cacheManager;
     }
 
     /**
@@ -91,7 +91,7 @@ public abstract class InfinispanBundle<T extends Configuration> implements Confi
     /** Sets up a standalone cache for one JVM only. */
     private void configureStandaloneCache()
     {
-        defaultCacheManager = new DefaultCacheManager();
+        cacheManager = new DefaultCacheManager();
     }
 
     /**
@@ -106,12 +106,12 @@ public abstract class InfinispanBundle<T extends Configuration> implements Confi
         System.setProperty("jgroups.tcp.port", String.valueOf(infinispanConfiguration.getPort()));
         System.setProperty("jgroups.tcpping.initial_hosts", infinispanConfiguration.getInitialHosts());
 
-        defaultCacheManager =
+        cacheManager =
             new DefaultCacheManager(GlobalConfigurationBuilder.defaultClusteredBuilder().transport().defaultTransport()
                 .clusterName(infinispanConfiguration.getClusterName()).addProperty("configurationFile", "jgroups.xml")
                 .build(), new ConfigurationBuilder().clustering().cacheMode(CacheMode.REPL_SYNC).build());
 
-        InfinispanManager managed = new InfinispanManager(defaultCacheManager);
+        InfinispanManager managed = new InfinispanManager(cacheManager);
         environment.lifecycle().manage(managed);
     }
 }
