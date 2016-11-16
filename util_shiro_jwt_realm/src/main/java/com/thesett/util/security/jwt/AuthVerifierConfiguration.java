@@ -21,11 +21,45 @@ package com.thesett.util.security.jwt;
  *
  * <pre><p/><table id="crc"><caption>CRC Card</caption>
  * <tr><th> Responsibilities <th> Collaborations
- * <tr><td> Define the retry rate and timeout for obtaining the verification details.
+ * <tr><td> Define the retry rate and timeout for obtaining the verification details. </td></tr>
+ * <tr><td> Specify the location of the auth service to use. </td></tr>
  * </table></pre>
  *
  * @author Rupert Smith
  */
 public class AuthVerifierConfiguration
 {
+    private int retryDelayMillis;
+    private int timeoutSeconds;
+    private String authServiceUrl;
+
+    public int getRetryDelayMillis()
+    {
+        return retryDelayMillis;
+    }
+
+    public void setRetryDelayMillis(int retryDelayMillis)
+    {
+        this.retryDelayMillis = retryDelayMillis;
+    }
+
+    public int getTimeoutSeconds()
+    {
+        return timeoutSeconds;
+    }
+
+    public void setTimeoutSeconds(int timeoutSeconds)
+    {
+        this.timeoutSeconds = timeoutSeconds;
+    }
+
+    public String getAuthServiceUrl()
+    {
+        return authServiceUrl;
+    }
+
+    public void setAuthServiceUrl(String authServiceUrl)
+    {
+        this.authServiceUrl = authServiceUrl;
+    }
 }
