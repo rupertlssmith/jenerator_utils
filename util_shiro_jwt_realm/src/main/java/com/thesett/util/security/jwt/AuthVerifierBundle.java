@@ -15,6 +15,9 @@
  */
 package com.thesett.util.security.jwt;
 
+import java.security.PublicKey;
+import java.util.Base64;
+
 import com.thesett.common.throttle.SleepThrottle;
 import com.thesett.common.throttle.Throttle;
 
@@ -22,6 +25,8 @@ import io.dropwizard.Configuration;
 import io.dropwizard.ConfiguredBundle;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
+
+import sun.security.rsa.RSAPublicKeyImpl;
 
 /**
  * AuthVerifierBundle is a DropWizard bundle that will attempt to obtain the token verification details from an auth
@@ -39,6 +44,9 @@ public abstract class AuthVerifierBundle<T extends Configuration> implements Con
 {
     /** Holds the auth verification key details. */
     private Verifier verifier;
+
+    /** Holds the verification key. */
+    private PublicKey verifierKey;
 
     /** {@inheritDoc} */
     public void initialize(Bootstrap<?> bootstrap)
@@ -62,7 +70,30 @@ public abstract class AuthVerifierBundle<T extends Configuration> implements Con
 
         System.out.println("Trying to get auth verification keys from: " + authServiceUrl);
 
-        verifier = verificationClient.retrieve();
+        Verifier verifier = verificationClient.retrieve();
+
+        // Check the result is valid.
+        if (verifier == null)
+        {
+            throw new IllegalStateException("The verification details were 'null'.");
+        }
+
+        if (!"RSA512".equals(verifier.getAlg()))
+        {
+            throw new IllegalStateException("Only the RSA512 algorithm is currently supported. Got : " +
+                verifier.getAlg());
+        }
+
+        if (verifier.getKey() == null)
+        {
+            throw new IllegalStateException("The verification details contain a 'null' key.");
+        }
+
+        byte[] keyBytes = Base64.getDecoder().decode(verifier.getKey());
+        PublicKey verifierKey = new RSAPublicKeyImpl(keyBytes);
+
+        this.verifier = verifier;
+        this.verifierKey = verifierKey;
     }
 
     /**
@@ -73,6 +104,16 @@ public abstract class AuthVerifierBundle<T extends Configuration> implements Con
     public Verifier getVerifier()
     {
         return verifier;
+    }
+
+    /**
+     * Provides the auth verification key.
+     *
+     * @return The auth verification key.
+     */
+    public PublicKey getVerifierKey()
+    {
+        return verifierKey;
     }
 
     /**
