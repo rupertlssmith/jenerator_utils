@@ -15,6 +15,12 @@
  */
 package com.thesett.util.security.jwt;
 
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+
 /**
  * VerificationService provides information about the verification key and algorithm that can be used to verify tokens
  * issues by the auth server.
@@ -26,6 +32,9 @@ package com.thesett.util.security.jwt;
  *
  * @author Rupert Smith
  */
+@Path("/auth/verification-key")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(value = MediaType.APPLICATION_JSON)
 public interface VerificationService
 {
     /**
@@ -34,5 +43,6 @@ public interface VerificationService
      *
      * @return Information about the verification algorithm and key.
      */
+    @GET
     Verifier retrieve();
 }
