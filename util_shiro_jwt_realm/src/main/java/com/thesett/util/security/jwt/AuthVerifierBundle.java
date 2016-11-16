@@ -18,6 +18,8 @@ package com.thesett.util.security.jwt;
 import java.security.PublicKey;
 import java.util.Base64;
 
+import javax.ws.rs.ProcessingException;
+
 import com.thesett.common.throttle.SleepThrottle;
 import com.thesett.common.throttle.Throttle;
 
@@ -60,6 +62,9 @@ public abstract class AuthVerifierBundle<T extends Configuration> implements Con
         String authServiceUrl = authVerifierConfiguration.getAuthServiceUrl();
         float delay = authVerifierConfiguration.getRetryDelayMillis();
         int timeout = authVerifierConfiguration.getTimeoutSeconds();
+        long start = System.currentTimeMillis();
+        long now = start;
+        long end = start + (timeout * 1000);
 
         // Create a throttle to control the retry rate.
         Throttle throttle = new SleepThrottle();
@@ -67,10 +72,31 @@ public abstract class AuthVerifierBundle<T extends Configuration> implements Con
 
         // Build a client to query the auth server with.
         VerificationClient verificationClient = new VerificationClient(authServiceUrl);
+        Verifier verifier = null;
 
-        System.out.println("Trying to get auth verification keys from: " + authServiceUrl);
+        do
+        {
+            try
+            {
+                System.out.println("Trying to get auth verification keys from: " + authServiceUrl);
 
-        Verifier verifier = verificationClient.retrieve();
+                throttle.throttle();
+
+                verifier = verificationClient.retrieve();
+            }
+            catch (ProcessingException e)
+            {
+                System.out.println("Failed to get verification keys.... ");
+            }
+
+            now = System.currentTimeMillis();
+        }
+        while ((verifier == null) && (end >= now));
+
+        if (end < now)
+        {
+            throw new IllegalStateException("Timed out waiting for verification key after " + timeout + " seconds.");
+        }
 
         // Check the result is valid.
         if (verifier == null)
