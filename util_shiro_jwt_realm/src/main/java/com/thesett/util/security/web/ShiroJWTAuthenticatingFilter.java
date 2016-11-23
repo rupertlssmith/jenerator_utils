@@ -106,6 +106,7 @@ public class ShiroJWTAuthenticatingFilter extends PathMatchingFilter
     {
         boolean loggedIn;
 
+        JwtUtils.extractJWTtoRequestAttribute(request, COOKIE_NAME, ATTRIBUTE_NAME);
         AuthenticationToken token = createToken(request, response);
 
         if (token == null)
