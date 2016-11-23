@@ -22,8 +22,11 @@ import javax.servlet.http.HttpServletResponse;
 import com.thesett.util.security.jwt.JwtUtils;
 import com.thesett.util.security.model.JWTAuthenticationToken;
 
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationToken;
-import org.apache.shiro.web.filter.authc.AuthenticatingFilter;
+import org.apache.shiro.subject.Subject;
+import org.apache.shiro.web.filter.PathMatchingFilter;
 import org.apache.shiro.web.util.WebUtils;
 
 /**
@@ -45,7 +48,7 @@ import org.apache.shiro.web.util.WebUtils;
  *
  * @author Rupert Smith
  */
-public class ShiroJWTAuthenticatingFilter extends AuthenticatingFilter
+public class ShiroJWTAuthenticatingFilter extends PathMatchingFilter
 {
     /** The name of the cookie used to present JWT tokens with requests. */
     public static final String COOKIE_NAME = "jwt";
@@ -54,33 +57,72 @@ public class ShiroJWTAuthenticatingFilter extends AuthenticatingFilter
     public static final String ATTRIBUTE_NAME = COOKIE_NAME;
 
     /** {@inheritDoc} */
-    public void setLoginUrl(String loginUrl)
-    {
-        String previous = getLoginUrl();
-
-        if (previous != null)
-        {
-            this.appliedPaths.remove(previous);
-        }
-
-        super.setLoginUrl(loginUrl);
-        this.appliedPaths.put(getLoginUrl(), null);
-    }
-
-    /** {@inheritDoc} */
     protected AuthenticationToken createToken(ServletRequest request, ServletResponse response) throws Exception
     {
         return JwtUtils.getAuthenticationToken(request, ATTRIBUTE_NAME);
     }
 
-    /** {@inheritDoc} */
-    protected boolean onAccessDenied(ServletRequest request, ServletResponse response) throws Exception
+    /**
+     * Convenience method that acquires the Subject associated with the request.
+     *
+     * <p/>The default implementation simply returns
+     * {@link org.apache.shiro.SecurityUtils#getSubject() SecurityUtils.getSubject()}.
+     *
+     * @param  request  the incoming <code>ServletRequest</code>
+     * @param  response the outgoing <code>ServletResponse</code>
+     *
+     * @return the Subject associated with the request.
+     */
+    protected Subject getSubject(ServletRequest request, ServletResponse response)
     {
-        boolean loggedIn = false;
+        return SecurityUtils.getSubject();
+    }
 
-        if (JwtUtils.extractJWTtoRequestAttribute(request, COOKIE_NAME, ATTRIBUTE_NAME))
+    /**
+     * Determines whether the current subject is authenticated.
+     *
+     * <p/>The default implementation
+     * {@link #getSubject(javax.servlet.ServletRequest, javax.servlet.ServletResponse) acquires} the currently executing
+     * Subject and then returns {@link org.apache.shiro.subject.Subject#isAuthenticated() subject.isAuthenticated()};
+     *
+     * @return true if the subject is authenticated; false if the subject is unauthenticated
+     */
+    protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue)
+    {
+        Subject subject = getSubject(request, response);
+
+        return subject.isAuthenticated();
+    }
+
+    /** {@inheritDoc} */
+    protected boolean onPreHandle(ServletRequest request, ServletResponse response) throws Exception
+    {
+        boolean loggedIn;
+
+        AuthenticationToken token = createToken(request, response);
+
+        if (token == null)
         {
-            loggedIn = executeLogin(request, response);
+            String msg =
+                "createToken method implementation returned null. A valid non-null AuthenticationToken " +
+                "must be created in order to execute a login attempt.";
+            throw new IllegalStateException(msg);
+        }
+
+        try
+        {
+            Subject subject = getSubject(request, response);
+            subject.login(token);
+
+            loggedIn = true;
+        }
+        catch (AuthenticationException e)
+        {
+            // The authentication exception is set to null to indicate that it is being deliberately ignored.
+            // The compensation action is to set the loggedIn flag to false, which will cause an appropriate
+            // response to be generated.
+            e = null;
+            loggedIn = false;
         }
 
         if (!loggedIn)
