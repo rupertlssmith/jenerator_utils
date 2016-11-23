@@ -57,6 +57,13 @@ public class ShiroJWTAuthenticatingFilter extends PathMatchingFilter
     public static final String ATTRIBUTE_NAME = COOKIE_NAME;
 
     /** {@inheritDoc} */
+    public boolean onPreHandle(ServletRequest request, ServletResponse response, Object mappedValue) throws Exception
+    {
+        return this.isAccessAllowed(request, response, mappedValue) ||
+            this.onAccessDenied(request, response, mappedValue);
+    }
+
+    /** {@inheritDoc} */
     protected AuthenticationToken createToken(ServletRequest request, ServletResponse response) throws Exception
     {
         return JwtUtils.getAuthenticationToken(request, ATTRIBUTE_NAME);
@@ -94,8 +101,8 @@ public class ShiroJWTAuthenticatingFilter extends PathMatchingFilter
         return subject.isAuthenticated();
     }
 
-    /** {@inheritDoc} */
-    protected boolean onPreHandle(ServletRequest request, ServletResponse response) throws Exception
+    protected boolean onAccessDenied(ServletRequest request, ServletResponse response, Object mappedValue)
+        throws Exception
     {
         boolean loggedIn;
 
