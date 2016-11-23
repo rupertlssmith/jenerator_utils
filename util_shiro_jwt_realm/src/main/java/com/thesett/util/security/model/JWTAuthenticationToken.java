@@ -16,7 +16,11 @@
 package com.thesett.util.security.model;
 
 import java.security.PublicKey;
-import java.util.*;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
 import com.thesett.util.security.jwt.JwtUtils;
 import com.thesett.util.security.shiro.LocalSubject;
@@ -35,6 +39,9 @@ import org.apache.shiro.subject.Subject;
  *
  * <p/>Prior to invoking the {@link #assertValid()} and {@link #extractClaims()} methods, the public key used to verify
  * the token must be set using the {@link #setPublicKey(PublicKey)} method.
+ *
+ * <p/>For the purpose of caching authentication tokens, the {@link #token} field containing the raw token is used. Once
+ * a token has been seen once it can be accepted (up to its expiry time).
  *
  * <pre><p/><table id="crc"><caption>CRC Card</caption>
  * <tr><th> Responsibilities <th> Collaborations
@@ -229,5 +236,30 @@ public class JWTAuthenticationToken implements AuthenticationToken
     public Date getExpiresAt()
     {
         return expiresAt;
+    }
+
+    /** {@inheritDoc} */
+    public boolean equals(Object o)
+    {
+        if (this == o)
+        {
+            return true;
+        }
+
+        if ((o == null) || (getClass() != o.getClass()))
+        {
+            return false;
+        }
+
+        JWTAuthenticationToken that = (JWTAuthenticationToken) o;
+
+        return token.equals(that.token);
+
+    }
+
+    /** {@inheritDoc} */
+    public int hashCode()
+    {
+        return token.hashCode();
     }
 }
