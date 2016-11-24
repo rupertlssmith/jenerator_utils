@@ -1,3 +1,4 @@
+/* Copyright Rupert Smith, 2005 to 2008, all rights reserved. */
 /*
  * Copyright The Sett Ltd.
  *
@@ -71,6 +72,12 @@ public class JWTAuthenticationToken implements AuthenticationToken
 
     /** Optional expiry time of the token. May be <tt>null</tt>. */
     private Date expiresAt;
+
+    /** Used to cache the hash code. */
+    private volatile int hashCode;
+
+    /** Used to indicate the hash code is cached. */
+    private volatile boolean hashCodeCached;
 
     /**
      * Creates an encapsulated JWT token from its raw representation.
@@ -181,6 +188,22 @@ public class JWTAuthenticationToken implements AuthenticationToken
     }
 
     /**
+     * Checks if this token has expired before now.
+     *
+     * <p/>{@link #extractClaims()} needs to have been called before this method can be used.
+     *
+     * @return <tt>true</tt> if this token has expired before now.
+     */
+    public boolean isExpired()
+    {
+        // Recheck the auth token expiry.
+        long now = System.currentTimeMillis();
+        long expiry = getExpiresAt().getTime();
+
+        return (expiry < now);
+    }
+
+    /**
      * Extracts the subject, roles and permissions from the token. {@link #assertValid()} or {@link #checkValid()}
      * should be called prior to this to check that the token can be decoded.
      *
@@ -202,7 +225,7 @@ public class JWTAuthenticationToken implements AuthenticationToken
         }
         catch (ExpiredJwtException e)
         {
-            throw new AuthenticationException();
+            throw new AuthenticationException(e);
         }
 
         subject = claims.get("sub", String.class);
@@ -259,6 +282,15 @@ public class JWTAuthenticationToken implements AuthenticationToken
     /** {@inheritDoc} */
     public int hashCode()
     {
-        return token.hashCode();
+        int result = hashCode;
+
+        if (!hashCodeCached)
+        {
+            result = token.hashCode();
+            hashCode = result;
+            hashCodeCached = true;
+        }
+
+        return result;
     }
 }
