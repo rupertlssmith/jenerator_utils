@@ -45,8 +45,8 @@ import org.apache.shiro.subject.Subject;
  * JWTAuthenticationToken wraps a JWT token as a Shiro {@link AuthenticationToken}. The logic to check the token is
  * valid and to extract its claims is encapsulated here for convenience.
  *
- * <p/>Prior to invoking the {@link #assertValid()} and {@link #extractClaims()} methods, the public key used to verify
- * the token must be set using the {@link #setPublicKey(PublicKey)} method.
+ * <p/>Prior to invoking the {@link #assertValid()} and {@link #extractClaims(String)} methods, the public key used to
+ * verify the token must be set using the {@link #setPublicKey(PublicKey)} method.
  *
  * <p/>For the purpose of caching authentication tokens, the {@link #token} field containing the raw token is used. Once
  * a token has been seen once it can be accepted (up to its expiry time).

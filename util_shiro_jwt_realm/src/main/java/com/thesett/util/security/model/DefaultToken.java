@@ -15,7 +15,15 @@
  */
 package com.thesett.util.security.model;
 
+import java.util.Collection;
+import java.util.LinkedList;
+
+import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
+import org.apache.shiro.authz.AuthorizationInfo;
+import org.apache.shiro.authz.Permission;
+import org.apache.shiro.subject.PrincipalCollection;
+import org.apache.shiro.subject.SimplePrincipalCollection;
 
 /**
  * DefaultToken is a Shiro authentication token, that provides no principal or credentials. It can be used if
@@ -28,15 +36,46 @@ import org.apache.shiro.authc.AuthenticationToken;
  *
  * @author Rupert Smith
  */
-public class DefaultToken implements AuthenticationToken
+public class DefaultToken implements AuthenticationToken, AuthenticationInfo, AuthorizationInfo
 {
+    private static final LinkedList<String> EMPTY_ROLES = new LinkedList<>();
+    private static final LinkedList<String> EMPTY_PERMISSIONS = new LinkedList<>();
+    private static final LinkedList<Permission> EMPTY_OBJECT_PERMISSIONS = new LinkedList<>();
+    private static final SimplePrincipalCollection EMPTY_PRINCIPAL_COLLECTION = new SimplePrincipalCollection();
+
+    /** {@inheritDoc} */
     public Object getPrincipal()
+    {
+        return "anonymous";
+    }
+
+    /** {@inheritDoc} */
+    public Object getCredentials()
     {
         return null;
     }
 
-    public Object getCredentials()
+    /** {@inheritDoc} */
+    public PrincipalCollection getPrincipals()
     {
-        return null;
+        return EMPTY_PRINCIPAL_COLLECTION;
+    }
+
+    /** {@inheritDoc} */
+    public Collection<String> getRoles()
+    {
+        return EMPTY_ROLES;
+    }
+
+    /** {@inheritDoc} */
+    public Collection<String> getStringPermissions()
+    {
+        return EMPTY_PERMISSIONS;
+    }
+
+    /** {@inheritDoc} */
+    public Collection<Permission> getObjectPermissions()
+    {
+        return EMPTY_OBJECT_PERMISSIONS;
     }
 }
