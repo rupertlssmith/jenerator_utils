@@ -1,4 +1,3 @@
-/* Copyright Rupert Smith, 2005 to 2008, all rights reserved. */
 /*
  * Copyright The Sett Ltd.
  *
@@ -27,12 +26,9 @@ import com.thesett.util.security.model.JWTAuthenticationToken;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
-import org.apache.shiro.authc.SimpleAuthenticationInfo;
 import org.apache.shiro.authz.AuthorizationInfo;
-import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
-import org.apache.shiro.subject.SimplePrincipalCollection;
 
 /**
  * ShiroJWTRealm implements a Shiro realm that looks verifies users and their roles and permissions from a JWT token.
@@ -120,7 +116,7 @@ public class ShiroJWTRealm extends AuthorizingRealm
             // Ensure that the token is validate and extract its claims.
             jwtAuthToken.setPublicKey(publicKey);
             jwtAuthToken.assertValid();
-            jwtAuthToken.extractClaims();
+            jwtAuthToken.extractClaims(getName());
 
             // Cache the auth token for subsequent uses.
             authTokenCache.put(jwtAuthToken, jwtAuthToken);
@@ -137,9 +133,7 @@ public class ShiroJWTRealm extends AuthorizingRealm
             }
         }
 
-        PrincipalCollection principals = new SimplePrincipalCollection(jwtAuthToken, getName());
-
-        return new SimpleAuthenticationInfo(principals, jwtAuthToken.getToken());
+        return jwtAuthToken;
     }
 
     /**
@@ -149,14 +143,7 @@ public class ShiroJWTRealm extends AuthorizingRealm
      */
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals)
     {
-        JWTAuthenticationToken jwtAuthToken = (JWTAuthenticationToken) principals.getPrimaryPrincipal();
-
-        // Extract the roles and permissions.
-        SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
-
-        jwtAuthToken.getPermissions().forEach(info::addStringPermission);
-
-        return info;
+        return (JWTAuthenticationToken) principals.getPrimaryPrincipal();
     }
 
     /**

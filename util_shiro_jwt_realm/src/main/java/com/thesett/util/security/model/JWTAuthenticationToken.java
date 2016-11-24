@@ -1,4 +1,3 @@
-/* Copyright Rupert Smith, 2005 to 2008, all rights reserved. */
 /*
  * Copyright The Sett Ltd.
  *
@@ -17,6 +16,7 @@
 package com.thesett.util.security.model;
 
 import java.security.PublicKey;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -31,7 +31,14 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 
 import org.apache.shiro.authc.AuthenticationException;
+import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
+import org.apache.shiro.authc.SimpleAuthenticationInfo;
+import org.apache.shiro.authz.AuthorizationInfo;
+import org.apache.shiro.authz.Permission;
+import org.apache.shiro.authz.SimpleAuthorizationInfo;
+import org.apache.shiro.subject.PrincipalCollection;
+import org.apache.shiro.subject.SimplePrincipalCollection;
 import org.apache.shiro.subject.Subject;
 
 /**
@@ -53,7 +60,7 @@ import org.apache.shiro.subject.Subject;
  *
  * @author Rupert Smith
  */
-public class JWTAuthenticationToken implements AuthenticationToken
+public class JWTAuthenticationToken implements AuthenticationToken, AuthenticationInfo, AuthorizationInfo
 {
     /** Holds the raw JWT token as a base64 encoded string. */
     private String token;
@@ -78,6 +85,9 @@ public class JWTAuthenticationToken implements AuthenticationToken
 
     /** Used to indicate the hash code is cached. */
     private volatile boolean hashCodeCached;
+
+    private AuthenticationInfo authenticationInfo;
+    private AuthorizationInfo authorizationInfo;
 
     /**
      * Creates an encapsulated JWT token from its raw representation.
@@ -213,9 +223,11 @@ public class JWTAuthenticationToken implements AuthenticationToken
      * <p/>The {@link #setPublicKey(PublicKey)} method needs to the invoked with the correct verification key, prior to
      * calling this.
      *
+     * @param  realmName The name of the Shiro realm to extract claims for.
+     *
      * @throws AuthenticationException If the token has expired.
      */
-    public void extractClaims()
+    public void extractClaims(String realmName)
     {
         Claims claims = null;
 
@@ -239,6 +251,17 @@ public class JWTAuthenticationToken implements AuthenticationToken
 
         expiresAt = claims.getExpiration();
         issuedAt = claims.getIssuedAt();
+
+        // Extract the authentication and authorization info in the form that Shiro uses.
+        PrincipalCollection principals = new SimplePrincipalCollection(this, realmName);
+
+        authenticationInfo = new SimpleAuthenticationInfo(principals, token);
+
+        SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
+
+        getPermissions().forEach(info::addStringPermission);
+
+        authorizationInfo = info;
     }
 
     /**
@@ -292,5 +315,29 @@ public class JWTAuthenticationToken implements AuthenticationToken
         }
 
         return result;
+    }
+
+    /** {@inheritDoc} */
+    public PrincipalCollection getPrincipals()
+    {
+        return authenticationInfo.getPrincipals();
+    }
+
+    /** {@inheritDoc} */
+    public Collection<String> getRoles()
+    {
+        return authorizationInfo.getRoles();
+    }
+
+    /** {@inheritDoc} */
+    public Collection<String> getStringPermissions()
+    {
+        return authorizationInfo.getStringPermissions();
+    }
+
+    /** {@inheritDoc} */
+    public Collection<Permission> getObjectPermissions()
+    {
+        return authorizationInfo.getObjectPermissions();
     }
 }
