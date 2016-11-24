@@ -59,67 +59,36 @@ public class ShiroJWTAuthenticatingFilter extends PathMatchingFilter
     /** {@inheritDoc} */
     public boolean onPreHandle(ServletRequest request, ServletResponse response, Object mappedValue) throws Exception
     {
-        return this.isAccessAllowed(request, response, mappedValue) ||
-            this.onAccessDenied(request, response, mappedValue);
-    }
-
-    /** {@inheritDoc} */
-    protected AuthenticationToken createToken(ServletRequest request, ServletResponse response) throws Exception
-    {
-        return JwtUtils.getAuthenticationToken(request, ATTRIBUTE_NAME);
+        return SecurityUtils.getSubject().isAuthenticated() || this.onAccessDenied(request, response);
     }
 
     /**
-     * Convenience method that acquires the Subject associated with the request.
+     * Invoked whenever the currently executing subject is not authenticated.
      *
-     * <p/>The default implementation simply returns
-     * {@link org.apache.shiro.SecurityUtils#getSubject() SecurityUtils.getSubject()}.
+     * @param  request  The HTTP request.
+     * @param  response The HTTP response.
      *
-     * @param  request  the incoming <code>ServletRequest</code>
-     * @param  response the outgoing <code>ServletResponse</code>
-     *
-     * @return the Subject associated with the request.
+     * @return <tt>true</tt> if a JWT token is supplied in an HTTP header attribute or cookie, which is valid. Also <tt>
+     *         true</tt> the path being filtered allows default users, in which case the
+     *         {@link com.thesett.util.security.model.DefaultToken} will be used to login and set up a default anonymous
+     *         user.
      */
-    protected Subject getSubject(ServletRequest request, ServletResponse response)
-    {
-        return SecurityUtils.getSubject();
-    }
-
-    /**
-     * Determines whether the current subject is authenticated.
-     *
-     * <p/>The default implementation
-     * {@link #getSubject(javax.servlet.ServletRequest, javax.servlet.ServletResponse) acquires} the currently executing
-     * Subject and then returns {@link org.apache.shiro.subject.Subject#isAuthenticated() subject.isAuthenticated()};
-     *
-     * @return true if the subject is authenticated; false if the subject is unauthenticated
-     */
-    protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue)
-    {
-        Subject subject = getSubject(request, response);
-
-        return subject.isAuthenticated();
-    }
-
-    protected boolean onAccessDenied(ServletRequest request, ServletResponse response, Object mappedValue)
-        throws Exception
+    private boolean onAccessDenied(ServletRequest request, ServletResponse response)
     {
         boolean loggedIn;
 
         JwtUtils.extractJWTtoRequestAttribute(request, COOKIE_NAME, ATTRIBUTE_NAME);
-        AuthenticationToken token = createToken(request, response);
+
+        AuthenticationToken token = JwtUtils.getAuthenticationToken(request, ATTRIBUTE_NAME);
 
         if (token == null)
         {
-            String msg =
-                "createToken method implementation returned null. A valid non-null AuthenticationToken " +
-                "must be created in order to execute a login attempt.";
-            throw new IllegalStateException(msg);
+            return false;
         }
 
         try
         {
-            Subject subject = getSubject(request, response);
+            Subject subject = SecurityUtils.getSubject();
             subject.login(token);
 
             loggedIn = true;
