@@ -15,6 +15,8 @@
  */
 package com.thesett.util.security.web;
 
+import java.util.Map;
+
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletResponse;
@@ -76,6 +78,31 @@ public class ShiroJWTAuthenticatingFilter extends PathMatchingFilter
     private boolean onAccessDenied(ServletRequest request, ServletResponse response)
     {
         boolean loggedIn;
+
+        Map<String, Object> pathConfig = appliedPaths;
+
+        String path = getPathWithinApplication(request);
+        System.out.println(path);
+
+        for (Map.Entry<String, Object> entry : pathConfig.entrySet())
+        {
+            String pattern = entry.getKey();
+
+            if (pathsMatch(pattern, path))
+            {
+                String[] values = (String[]) entry.getValue();
+
+                for (String value : values)
+                {
+                    if ("anonymous".equals(value))
+                    {
+                        System.out.println("Anonymous access allowed on this path.");
+
+                        break;
+                    }
+                }
+            }
+        }
 
         JwtUtils.extractJWTtoRequestAttribute(request, COOKIE_NAME, ATTRIBUTE_NAME);
 
