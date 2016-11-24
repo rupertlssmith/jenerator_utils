@@ -254,7 +254,6 @@ public class JWTAuthenticationToken implements AuthenticationToken
         JWTAuthenticationToken that = (JWTAuthenticationToken) o;
 
         return token.equals(that.token);
-
     }
 
     /** {@inheritDoc} */
