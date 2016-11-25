@@ -1,3 +1,4 @@
+/* Copyright Rupert Smith, 2005 to 2008, all rights reserved. */
 /*
  * Copyright The Sett Ltd.
  *
@@ -26,7 +27,7 @@ import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.subject.SimplePrincipalCollection;
 
 /**
- * DefaultToken is a Shiro authentication token, that provides no principal or credentials. It can be used if
+ * AnonymousToken is a Shiro authentication token, that provides no principal or credentials. It can be used if
  * non-authenticated users are allowed to access a protected resource as a default user.
  *
  * <pre><p/><table id="crc"><caption>CRC Card</caption>
@@ -36,12 +37,20 @@ import org.apache.shiro.subject.SimplePrincipalCollection;
  *
  * @author Rupert Smith
  */
-public class DefaultToken implements AuthenticationToken, AuthenticationInfo, AuthorizationInfo
+public class AnonymousToken implements AuthenticationToken, AuthenticationInfo, AuthorizationInfo
 {
     private static final LinkedList<String> EMPTY_ROLES = new LinkedList<>();
     private static final LinkedList<String> EMPTY_PERMISSIONS = new LinkedList<>();
     private static final LinkedList<Permission> EMPTY_OBJECT_PERMISSIONS = new LinkedList<>();
-    private static final SimplePrincipalCollection EMPTY_PRINCIPAL_COLLECTION = new SimplePrincipalCollection();
+
+    /** The Shiro security principals. */
+    private final PrincipalCollection principals;
+
+    /** Creates an anonymous token. */
+    public AnonymousToken()
+    {
+        this.principals = new SimplePrincipalCollection(this, "");
+    }
 
     /** {@inheritDoc} */
     public Object getPrincipal()
@@ -52,13 +61,13 @@ public class DefaultToken implements AuthenticationToken, AuthenticationInfo, Au
     /** {@inheritDoc} */
     public Object getCredentials()
     {
-        return null;
+        return "anonymous";
     }
 
     /** {@inheritDoc} */
     public PrincipalCollection getPrincipals()
     {
-        return EMPTY_PRINCIPAL_COLLECTION;
+        return principals;
     }
 
     /** {@inheritDoc} */

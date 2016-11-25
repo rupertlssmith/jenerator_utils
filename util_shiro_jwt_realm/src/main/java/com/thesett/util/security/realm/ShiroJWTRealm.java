@@ -21,6 +21,7 @@ import java.util.logging.Logger;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.thesett.util.security.model.AnonymousToken;
 import com.thesett.util.security.model.JWTAuthenticationToken;
 
 import org.apache.shiro.authc.AuthenticationException;
@@ -91,11 +92,11 @@ public class ShiroJWTRealm extends AuthorizingRealm
     /**
      * {@inheritDoc}
      *
-     * <p/>This realm supports {@link JWTAuthenticationToken}s only.
+     * <p/>This realm supports {@link JWTAuthenticationToken}s and {@link AnonymousToken}s.
      */
     public boolean supports(AuthenticationToken token)
     {
-        return (token != null) && (token instanceof JWTAuthenticationToken);
+        return (token != null) && ((token instanceof JWTAuthenticationToken) || (token instanceof AnonymousToken));
     }
 
     /**
@@ -105,8 +106,40 @@ public class ShiroJWTRealm extends AuthorizingRealm
      */
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authToken) throws AuthenticationException
     {
-        JWTAuthenticationToken jwtAuthToken = (JWTAuthenticationToken) authToken;
+        if (authToken instanceof JWTAuthenticationToken)
+        {
+            return getAuthenticationInfoFromJWTToken((JWTAuthenticationToken) authToken);
+        }
+        else if (authToken instanceof AnonymousToken)
+        {
+            return (AnonymousToken) authToken;
+        }
 
+        throw new IllegalStateException("Token type must be JWTAuthenticationToken or AnonymousToken");
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * <p/>Extracts the roles and permissions set in a JWT token.
+     */
+    protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals)
+    {
+        // The token types supported by this realm implement AuthorizationInfo directly, so can
+        // be cast to that type as the result.
+        return (AuthorizationInfo) principals.getPrimaryPrincipal();
+    }
+
+    /**
+     * Extracts AuthenticationInfo from a JWTAuthenticationToken. The token is decoded or looked up in a cache of
+     * recently decoded tokens.
+     *
+     * @param  jwtAuthToken The undecoded JWT authentication token.
+     *
+     * @return The Shiro authentication info.
+     */
+    private AuthenticationInfo getAuthenticationInfoFromJWTToken(JWTAuthenticationToken jwtAuthToken)
+    {
         Cache<JWTAuthenticationToken, JWTAuthenticationToken> authTokenCache = getAuthCache();
 
         JWTAuthenticationToken cachedToken = authTokenCache.getIfPresent(jwtAuthToken);
@@ -134,16 +167,6 @@ public class ShiroJWTRealm extends AuthorizingRealm
         }
 
         return jwtAuthToken;
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * <p/>Extracts the roles and permissions set in a JWT token.
-     */
-    protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals)
-    {
-        return (JWTAuthenticationToken) principals.getPrimaryPrincipal();
     }
 
     /**

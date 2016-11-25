@@ -1,3 +1,4 @@
+/* Copyright Rupert Smith, 2005 to 2008, all rights reserved. */
 /*
  * Copyright The Sett Ltd.
  *
@@ -22,6 +23,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletResponse;
 
 import com.thesett.util.security.jwt.JwtUtils;
+import com.thesett.util.security.model.AnonymousToken;
 import com.thesett.util.security.model.JWTAuthenticationToken;
 
 import org.apache.shiro.SecurityUtils;
@@ -42,6 +44,10 @@ import org.apache.shiro.web.util.WebUtils;
  * <p/>This filter only extracts the JWT token as a Shiro AuthenticationToken. It does not validate it in any way, that
  * is left up to the Shiro security realm.
  *
+ * <p/>The Shiro path parameter "anonymous" can be set on the path filter in the shiro.ini configuration. If this is set
+ * and no JWT token is presented then an {@link AnonymousToken} will be issued to establish an anonymous user as the
+ * current subject.
+ *
  * <pre><p/><table id="crc"><caption>CRC Card</caption>
  * <tr><th> Responsibilities <th> Collaborations
  * <tr><td> Extract JWT tokens from HTTP requests.
@@ -52,6 +58,9 @@ import org.apache.shiro.web.util.WebUtils;
  */
 public class ShiroJWTAuthenticatingFilter extends PathMatchingFilter
 {
+    /** The name of the anonymous flag that can be set on path patterns to allow anonymous users. */
+    private static final String ANONYMOUS = "anonymous";
+
     /** The name of the cookie used to present JWT tokens with requests. */
     public static final String COOKIE_NAME = "jwt";
 
@@ -71,47 +80,47 @@ public class ShiroJWTAuthenticatingFilter extends PathMatchingFilter
      * @param  response The HTTP response.
      *
      * @return <tt>true</tt> if a JWT token is supplied in an HTTP header attribute or cookie, which is valid. Also <tt>
-     *         true</tt> the path being filtered allows default users, in which case the
-     *         {@link com.thesett.util.security.model.DefaultToken} will be used to login and set up a default anonymous
-     *         user.
+     *         true</tt> the path being filtered allows default users, in which case the {@link AnonymousToken} will be
+     *         used to login and set up a default anonymous user.
      */
     private boolean onAccessDenied(ServletRequest request, ServletResponse response)
     {
+        boolean loggedIn = false;
+
+        // Try to obtain the JWT token from a cookie or header attribute.
+        boolean foundToken = JwtUtils.extractJWTtoRequestAttribute(request, COOKIE_NAME, ATTRIBUTE_NAME);
+
+        // If a token was found, use it to log in, otherwise try to set up the anonymous user if this is
+        // permitted on this path.
+        if (!foundToken && allowAnonymous(request))
+        {
+            loggedIn = tryLogIn(new AnonymousToken());
+        }
+        else
+        {
+            AuthenticationToken token = JwtUtils.getAuthenticationToken(request, ATTRIBUTE_NAME);
+            loggedIn = tryLogIn(token);
+        }
+
+        if (!loggedIn)
+        {
+            HttpServletResponse httpResponse = WebUtils.toHttp(response);
+            httpResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        }
+
+        return loggedIn;
+    }
+
+    /**
+     * Performs a login by Shiro authentication token.
+     *
+     * @param  token The authentication token.
+     *
+     * @return <tt>true</tt> if the user was authenticated.
+     */
+    private boolean tryLogIn(AuthenticationToken token)
+    {
         boolean loggedIn;
-
-        Map<String, Object> pathConfig = appliedPaths;
-
-        String path = getPathWithinApplication(request);
-        System.out.println(path);
-
-        for (Map.Entry<String, Object> entry : pathConfig.entrySet())
-        {
-            String pattern = entry.getKey();
-
-            if (pathsMatch(pattern, path))
-            {
-                String[] values = (String[]) entry.getValue();
-
-                for (String value : values)
-                {
-                    if ("anonymous".equals(value))
-                    {
-                        System.out.println("Anonymous access allowed on this path.");
-
-                        break;
-                    }
-                }
-            }
-        }
-
-        JwtUtils.extractJWTtoRequestAttribute(request, COOKIE_NAME, ATTRIBUTE_NAME);
-
-        AuthenticationToken token = JwtUtils.getAuthenticationToken(request, ATTRIBUTE_NAME);
-
-        if (token == null)
-        {
-            return false;
-        }
 
         try
         {
@@ -129,12 +138,40 @@ public class ShiroJWTAuthenticatingFilter extends PathMatchingFilter
             loggedIn = false;
         }
 
-        if (!loggedIn)
+        return loggedIn;
+    }
+
+    /**
+     * Checks if the path of a request allows anonymous users.
+     *
+     * @param  request The HTTP request.
+     *
+     * @return <tt>true</tt> iff the path of the request allows anonymous users.
+     */
+    private boolean allowAnonymous(ServletRequest request)
+    {
+        // Check the cache of anonymous paths.
+        String path = getPathWithinApplication(request);
+
+        // Try to match the path against the patterns and scan for the anonymous flag.
+        for (Map.Entry<String, Object> entry : appliedPaths.entrySet())
         {
-            HttpServletResponse httpResponse = WebUtils.toHttp(response);
-            httpResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            String pattern = entry.getKey();
+
+            if (pathsMatch(pattern, path))
+            {
+                String[] values = (String[]) entry.getValue();
+
+                for (String value : values)
+                {
+                    if (ANONYMOUS.equals(value))
+                    {
+                        return true;
+                    }
+                }
+            }
         }
 
-        return loggedIn;
+        return false;
     }
 }

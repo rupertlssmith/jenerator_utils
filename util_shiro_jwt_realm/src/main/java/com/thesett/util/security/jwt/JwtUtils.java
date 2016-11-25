@@ -1,3 +1,4 @@
+/* Copyright Rupert Smith, 2005 to 2008, all rights reserved. */
 /*
  * Copyright The Sett Ltd.
  *
@@ -259,6 +260,12 @@ public class JwtUtils
     public static JWTAuthenticationToken getAuthenticationToken(ServletRequest request, String attributeName)
     {
         String jwtToken = (String) request.getAttribute(attributeName);
+
+        if (jwtToken == null)
+        {
+            throw new IllegalArgumentException("The 'request' must have a value for the " + attributeName +
+                " attribute, but was null.");
+        }
 
         return new JWTAuthenticationToken(jwtToken);
     }
