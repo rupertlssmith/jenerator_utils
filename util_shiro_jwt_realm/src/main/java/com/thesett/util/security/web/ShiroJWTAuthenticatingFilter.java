@@ -96,7 +96,7 @@ public class ShiroJWTAuthenticatingFilter extends PathMatchingFilter
         {
             loggedIn = tryLogIn(new AnonymousToken());
         }
-        else
+        else if (foundToken)
         {
             AuthenticationToken token = JwtUtils.getAuthenticationToken(request, ATTRIBUTE_NAME);
             loggedIn = tryLogIn(token);
@@ -162,11 +162,14 @@ public class ShiroJWTAuthenticatingFilter extends PathMatchingFilter
             {
                 String[] values = (String[]) entry.getValue();
 
-                for (String value : values)
+                if (values != null)
                 {
-                    if (ANONYMOUS.equals(value))
+                    for (String value : values)
                     {
-                        return true;
+                        if (ANONYMOUS.equals(value))
+                        {
+                            return true;
+                        }
                     }
                 }
             }
