@@ -15,6 +15,7 @@ import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
 import com.google.common.io.Resources;
+import com.thesett.util.string.StringUtils;
 
 /**
  * ResourceUtils provides some helper methods for dealing with resources on the classpath/file system.
@@ -207,12 +208,16 @@ public class ResourceUtils {
      * @param matches     The list of matches files to add to.
      * @param packageName
      */
-    private static void addFileToListIfMatches(Pattern pattern, File file, Collection<String> matches, String packageName) {
+    private static void addFileToListIfMatches(Pattern pattern, File file, Collection<String> matches,
+        String packageName)
+    {
         String fileName = file.getName();
         boolean accept = pattern.matcher(fileName).matches();
 
-        if (accept) {
-            matches.add(packageName + "/" + fileName);
+        if (accept)
+        {
+            // A slash is only added if there is a package name, to allow for the root package.
+            matches.add(packageName + (StringUtils.nullOrEmpty(packageName) ? "" : "/") + fileName);
         }
     }
 }
