@@ -98,26 +98,30 @@ public class ResourceUtils {
         File file = new File(element);
 
         if (file.isDirectory()) {
-            String[] splits = packageName.split("\\.");
+            // Allowing for the empty package, attempt to walk down directory matching the package being
+            // searched for, to find the corresponding directory within the classpath.
+            if (!"".equals(packageName)) {
+                String[] splits = packageName.split("\\.");
 
-            for (String split : splits) {
-                File[] files = file.listFiles();
+                for (String split : splits) {
+                    File[] files = file.listFiles();
 
-                boolean match = false;
+                    boolean match = false;
 
-                for (File subDir : files) {
-                    String name = subDir.getName();
+                    for (File subDir : files) {
+                        String name = subDir.getName();
 
-                    if (name.equals(split)) {
-                        file = subDir;
-                        match = true;
+                        if (name.equals(split)) {
+                            file = subDir;
+                            match = true;
 
-                        break;
+                            break;
+                        }
                     }
-                }
 
-                if (!match) {
-                    return retval;
+                    if (!match) {
+                        return retval;
+                    }
                 }
             }
 
