@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URI;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -34,7 +36,12 @@ public class ResourceUtils {
      */
     public static String resourceFilePath(String resourceClassPathLocation) {
         try {
-            return new File(Resources.getResource(resourceClassPathLocation).toURI()).getAbsolutePath();
+            URL resourceUrl = Resources.getResource(resourceClassPathLocation);
+            URI resourceUri = resourceUrl.toURI();
+            File file = new File(resourceUri);
+            String path = file.getAbsolutePath();
+
+            return path;
         } catch (URISyntaxException e) {
             throw new IllegalArgumentException(e);
         }
