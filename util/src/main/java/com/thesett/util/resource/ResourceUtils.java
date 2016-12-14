@@ -60,9 +60,6 @@ public class ResourceUtils {
         String[] classPathElements = classPath.split(":");
 
         for (String element : classPathElements) {
-            if (element.contains("elm-render"))
-                System.out.println("hi");
-
             retval.addAll(getResources(element, pattern, packageName));
         }
 
