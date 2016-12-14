@@ -53,6 +53,9 @@ public class ResourceUtils {
         String[] classPathElements = classPath.split(":");
 
         for (String element : classPathElements) {
+            if (element.contains("elm-render"))
+                System.out.println("hi");
+
             retval.addAll(getResources(element, pattern, packageName));
         }
 
@@ -145,7 +148,7 @@ public class ResourceUtils {
      */
     private static Collection<String> getResourcesFromJarFile(File file, String pattern,
         String packageName) {
-        Pattern regexPattern = Pattern.compile(packageName + "/" + pattern);
+        Pattern regexPattern = Pattern.compile(packageName + (StringUtils.nullOrEmpty(packageName) ? "" : "/") + pattern);
         Collection<String> retval = new ArrayList<String>();
         ZipFile zf;
 
