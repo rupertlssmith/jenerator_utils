@@ -167,7 +167,6 @@ public class JsonUserType implements UserType
         try
         {
             ObjectMapper mapper = new ObjectMapper();
-            mapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);
 
             return mapper.readValue(content, Object.class);
         }
@@ -189,7 +188,6 @@ public class JsonUserType implements UserType
         try
         {
             ObjectMapper mapper = new ObjectMapper();
-            mapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);
             mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
             return mapper.writeValueAsString(object);
