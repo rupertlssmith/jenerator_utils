@@ -17,10 +17,8 @@
 package com.thesett.util.hibernate;
 
 import java.util.List;
-import java.util.Set;
 
 import org.hibernate.Session;
-import org.hibernate.collection.internal.PersistentSet;
 import org.hibernate.transform.ResultTransformer;
 
 /**
@@ -39,7 +37,7 @@ import org.hibernate.transform.ResultTransformer;
  * are to be implemented in a type specific way to create a new set on the subject, and to supply the set on the subject
  * to add new elements to.
  */
-public abstract class SetRelAssembler<E> implements ResultTransformer
+public abstract class SetRelAssembler<E, F> implements ResultTransformer
 {
     /** The Hibernate session for evicting parent and child. */
     private final Session session;
@@ -65,12 +63,12 @@ public abstract class SetRelAssembler<E> implements ResultTransformer
             session.evict(subject);
             session.evict(object);
 
-            if (getSet((E) subject) instanceof PersistentSet)
+            if (isSetUninitialized((E) subject))
             {
                 newSet((E) subject);
             }
 
-            getSet((E) subject).add(object);
+            addToSet((E) subject, (F) object);
         }
 
         return subject;
@@ -83,6 +81,15 @@ public abstract class SetRelAssembler<E> implements ResultTransformer
     }
 
     /**
+     * Checks if the set build built to hold the relationship is uninitialized.
+     *
+     * @param  subject The subject to check for an uninitialized set on.
+     *
+     * @return <tt>true</tt> iff the set build built to hold the relationship is uninitialized.
+     */
+    protected abstract boolean isSetUninitialized(E subject);
+
+    /**
      * Creates a new empty set on the subject.
      *
      * @param subject The subject to create the new empty set on.
@@ -90,11 +97,9 @@ public abstract class SetRelAssembler<E> implements ResultTransformer
     protected abstract void newSet(E subject);
 
     /**
-     * Provides the list on the subject, that object elements are to be added to.
+     * Adds an object to the set describing the relationship with the subject.
      *
-     * @param  subject The subject to get the object set from.
-     *
-     * @return The list to place object elements into.
+     * @param object The object to add to the subjects set.
      */
-    protected abstract Set getSet(E subject);
+    protected abstract void addToSet(E subject, F object);
 }
