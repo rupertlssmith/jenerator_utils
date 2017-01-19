@@ -25,7 +25,7 @@ import org.hibernate.transform.ResultTransformer;
  * It expects to receive the 2 entities and the list index in the array of objects, with the child at position 0, the
  * list index at position 1 and the parent at position 2.
  *
- * <p/>This is for use in situations where Hibernate is no to create the relationship query itself, but it is available
+ * <p/>This is for use in situations where Hibernate is not to create the relationship query itself, but it is available
  * in the output of some other query. For example, a native query to fetch a recursive relationship.
  *
  * <p/>The parent and child entities are evicted from the session, so that the work on the list does not cause Hibernate
