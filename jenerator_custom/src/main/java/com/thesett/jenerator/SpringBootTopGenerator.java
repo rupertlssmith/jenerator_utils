@@ -35,13 +35,13 @@ public class SpringBootTopGenerator extends BaseGenerator implements EntityTypeV
     /** Defines the name of the template to create the closing section of output files. */
     protected static final String FILE_CLOSE_TEMPLATE = "file_close";
 
-    /** Holds the name of the class to output the service factory interface. */
-    private static final String APPLICATION_CLASS_NAME = "Main";
+    /** Holds the name of the class to output the top Jersey component to. */
+    private static final String APPLICATION_CLASS_NAME = "JerseyComponent";
 
     /** Holds the string template group to generate the application top from. */
     private final STGroup applicationTemplates;
 
-    /** Holds the name of the file to output the application top to. */
+    /** Holds the name of the file to output the top Jersey component to. */
     private String applicationFileName = "JerseyComponent";
 
     /** Output handler used to build up the application methods in. */
